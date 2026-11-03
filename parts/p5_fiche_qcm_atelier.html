@@ -1,0 +1,144 @@
+
+  <!-- ---------- FICHE ---------- -->
+  <div class="pane fiche toc-auto" data-pane="fiche">
+    <button class="btn ghost printbtn" onclick="window.print()">🖨️ Imprimer</button>
+    <h2 style="margin-top:0">Fiche « À retenir » — Semaine 1</h2>
+
+    <h3>Chapitre 1 — Vocabulaire</h3>
+    <div class="tw"><table>
+      <tr><th>Notion</th><th>À retenir</th></tr>
+      <tr><td><b>Graphe</b></td><td>modèle mathématique : objets (<b>sommets</b>) + liens (<b>arêtes</b> si non orienté, <b>arcs</b> si orienté)</td></tr>
+      <tr><td><b>Simple non orienté</b></td><td>G = (S, A), A ⊆ {{u,v} / u≠v} : <b>ni boucle, ni arête multiple</b> ; relation symétrique non réflexive</td></tr>
+      <tr><td><b>Adjacents / voisins</b></td><td>extrémités d'une même arête ; Adj(u) = ensemble des voisins</td></tr>
+      <tr><td><b>Ordre / taille</b></td><td>nombre de sommets / nombre d'arêtes</td></tr>
+      <tr><td><b>Orienté</b></td><td>arcs = couples ordonnés ; (u,v) : u <b>prédécesseur</b> de v, v <b>successeur</b> de u ; Succ(u), Pred(u)</td></tr>
+      <tr><td><b>Boucle</b></td><td>arête d'un sommet vers lui-même</td></tr>
+      <tr><td><b>Multigraphe</b></td><td>plusieurs arêtes entre deux sommets ; m(u,v) = nombre d'arêtes ; ⚠ <b>successeurs ≠ arcs sortants</b></td></tr>
+      <tr><td><b>Étiqueté / valué / pondéré</b></td><td>étiquettes quelconques / étiquettes numériques (poids) / poids <b>positifs</b></td></tr>
+    </table></div>
+    <div class="box ret"><span class="bt">Idées-clés</span>La signification d'un sommet et d'un lien doit toujours être précisée. Un même système donne plusieurs graphes selon la question. Un dessin ne suffit plus pour un grand graphe.</div>
+
+    <h3>Chapitre 2 — Modéliser et représenter</h3>
+    <ol>
+      <li><b>Identifier les données</b> (entités, relations, informations sur les relations).</li>
+      <li><b>Construire le graphe</b> (sommets ? arêtes ou arcs ? exemples dessinés).</li>
+      <li><b>Diagramme de classes UML</b> (classes, attributs, relations, cardinalités).</li>
+    </ol>
+    <p>Démarche <b>itérative et incrémentale</b> : modèle → mise à l'épreuve → limites → modèle enrichi. Exemples : information sur le <i>couple</i> (U<sub>1</sub>,U<sub>2</sub>) → portée par le <b>lien</b> ; Raspail–Denfert → <b>multigraphe</b>. Modèle <b>conceptuel</b> ≠ modèle d'<b>implémentation</b> (traitements, stockage, performance).</p>
+    <div class="tw"><table>
+      <tr><th>Représentation</th><th>Adjacence</th><th>Successeurs</th><th>Mémoire</th><th>À privilégier pour</th></tr>
+      <tr><td><b>Matrice d'adjacence</b> (n×n)</td><td>O(1)</td><td>O(n)</td><td>n²</td><td>graphes <b>denses</b>, tests d'adjacence</td></tr>
+      <tr><td><b>Liste d'arêtes</b></td><td>O(m)</td><td>O(m)</td><td>n + m</td><td>liens <b>riches</b>, multigraphes, parcours des arêtes</td></tr>
+      <tr><td><b>Liste de successeurs</b></td><td>O(deg)</td><td>direct</td><td>n + m</td><td>graphes <b>peu denses</b>, parcours de voisinage</td></tr>
+    </table></div>
+    <ul>
+      <li>Matrice : successeurs de i = <b>ligne i</b>, prédécesseurs de j = <b>colonne j</b> ; non orienté ⇒ <b>symétrique</b> ; pondéré ⇒ poids dans la case (+ valeur « pas de lien »).</li>
+      <li>Liste d'arêtes : supprimer un sommet ⇒ supprimer ses arêtes incidentes.</li>
+      <li>Liste de successeurs : arête non orientée stockée <b>deux fois</b> ; prédécesseurs rapides ⇒ liste de prédécesseurs (mémoire + cohérence).</li>
+    </ul>
+
+    <h3>Chapitre 3 — Coloration</h3>
+    <div class="tw"><table>
+      <tr><th>Notion</th><th>À retenir</th></tr>
+      <tr><td><b>Degré</b></td><td>deg(s) = nombre d'arêtes incidentes ; deg(s) ≤ n−1 ; <b>Σ deg = 2m</b></td></tr>
+      <tr><td><b>Pendant / isolé</b></td><td>un seul voisin (degré 1) / aucun voisin (degré 0)</td></tr>
+      <tr><td><b>Sous-graphe</b></td><td>on garde certains <b>sommets</b> et les arêtes entre eux</td></tr>
+      <tr><td><b>Graphe partiel</b></td><td>on garde <b>tous les sommets</b>, certaines arêtes</td></tr>
+      <tr><td><b>K<sub>n</sub></b></td><td>complet : degrés <b>n−1</b>, <b>n(n−1)/2</b> arêtes ; χ(K<sub>n</sub>) = n</td></tr>
+      <tr><td><b>Coloration propre</b></td><td>sommets adjacents ⇒ couleurs différentes</td></tr>
+      <tr><td><b>k-colorable</b></td><td>coloration propre avec k couleurs</td></tr>
+      <tr><td><b>Nombre chromatique χ(G)</b></td><td>plus petit k tel que G soit k-colorable</td></tr>
+      <tr><td><b>Production / décision</b></td><td>trouver une coloration, trouver χ(G) / G est-il k-colorable ? existe-t-il une coloration minimale ?</td></tr>
+    </table></div>
+    <div class="box prop"><span class="bt">Algorithme séquentiel</span>Pour chaque sommet (dans un certain ordre) : lui donner la <b>plus petite couleur non utilisée par ses voisins déjà colorés</b>. Toujours <b>propre</b>, <b>pas forcément optimal</b>, <b>dépend de l'ordre</b>.</div>
+    <ul>
+      <li><b>Welsh-Powell</b> : ordre de <b>degré décroissant</b>. <b>DSATUR</b> : on choisit le sommet de plus grande <b>saturation</b> (couleurs différentes chez ses voisins), puis le plus grand degré.</li>
+      <li>Même « amélioré », le glouton n'est qu'une <b>heuristique</b> (exercice 5 : 3 couleurs alors que χ = 2). Trouver χ(G) est NP-difficile.</li>
+      <li><b>Borne inférieure</b> : une clique K<sub>k</sub> ⇒ χ ≥ k. <b>Borne supérieure</b> : le glouton donne au plus Δ+1 couleurs. <b>χ ≤ 2 ⇔ aucun cycle impair</b> (biparti).</li>
+    </ul>
+    <h3>Modéliser un problème par une coloration</h3>
+    <p><b>Sommets</b> = objets à placer · <b>arêtes</b> = incompatibilités / conflits · <b>couleurs</b> = ressources (créneau, zone, fréquence, registre).</p>
+    <div class="tw"><table>
+      <tr><th>Problème</th><th>Résultat</th></tr>
+      <tr><td>Produits chimiques (ex. 4)</td><td>ordre p<sub>1</sub>…p<sub>8</sub> : 3 zones ; ordre de degré décroissant : 2 zones ; χ = 2</td></tr>
+      <tr><td>Graphe de l'exercice 5</td><td>glouton : 3 couleurs ; optimum : 2 (biparti)</td></tr>
+      <tr><td>Examens (activité 4)</td><td>clique {Cn, E, M, S} ⇒ χ ≥ 4 ; <b>4 créneaux</b> suffisent ; sans Physique ni SVT : <b>3 créneaux</b></td></tr>
+    </table></div>
+    <div class="box warn"><span class="bt">Pièges classiques</span>
+      <ul>
+        <li>Confondre <b>sous-graphe</b> et <b>graphe partiel</b> ; confondre <b>ordre</b> (sommets) et <b>taille</b> (arêtes).</li>
+        <li>Dans un multigraphe, <b>successeurs ≠ arcs sortants</b>.</li>
+        <li>Croire que le glouton donne χ(G) : il donne <i>une</i> coloration propre, dépendante de l'ordre.</li>
+        <li>Oublier que deux sommets <b>non adjacents</b> peuvent partager une couleur (et c'est le but !).</li>
+        <li>Matrice d'adjacence : ligne = <b>successeurs</b>, colonne = <b>prédécesseurs</b>.</li>
+      </ul>
+    </div>
+  </div> <!-- /pane fiche -->
+
+  <!-- ---------- QCM ---------- -->
+  <div class="pane" data-pane="qcm">
+    <h2 style="margin-top:0">QCM — Semaine 1</h2>
+    <p>46 questions sur les chapitres 1, 2 et 3. Réponds, clique sur <b>Valider</b> pour voir la correction et l'explication. Ta progression est mémorisée dans ce navigateur. Les questions « plusieurs réponses » sont signalées.</p>
+    <div id="qcm-s1"></div>
+  </div>
+</section>
+
+<!-- ============ ATELIER ============ -->
+<section class="view" id="view-atelier">
+  <h1>🎨 Atelier de coloration</h1>
+  <p>Exécute pas à pas l'algorithme séquentiel sur des graphes du cours. Choisis un graphe et un ordre de traitement, avance sommet par sommet et compare avec le nombre chromatique χ(G) (calculé par recherche exhaustive). <b>Astuce :</b> en mode manuel, clique sur les sommets dans l'ordre de ton choix.</p>
+  <div class="atelier">
+    <div class="panel">
+      <div class="ctl">
+        <label for="at-graph">Graphe</label>
+        <select id="at-graph">
+          <option value="chem">Produits chimiques (ex. 4)</option>
+          <option value="ex5">Graphe de l'exercice 5</option>
+          <option value="exams">Examens (activité 4)</option>
+          <option value="exams2">Examens sans Physique ni SVT</option>
+          <option value="couronne">Graphe « couronne » (piège du glouton)</option>
+          <option value="c5">Cycle impair C₅</option>
+          <option value="petersen">Graphe de Petersen</option>
+        </select>
+        <label for="at-mode">Ordre</label>
+        <select id="at-mode">
+          <option value="naturel">Naturel (ordre des sommets)</option>
+          <option value="degre">Degré décroissant (Welsh-Powell)</option>
+          <option value="dsatur">DSATUR</option>
+          <option value="manuel">Manuel (clic sur les sommets)</option>
+        </select>
+      </div>
+      <div id="at-svg" style="max-width:640px;margin:0 auto"></div>
+      <div class="ctl" style="justify-content:center">
+        <button class="btn" id="at-next">Sommet suivant ▶</button>
+        <button class="btn ghost" id="at-all">Tout colorier ⏭</button>
+        <button class="btn ghost" id="at-reset">↺ Recommencer</button>
+      </div>
+      <div class="legend" id="at-legend"></div>
+    </div>
+    <div class="panel">
+      <h3>Résultat</h3>
+      <div class="stat" id="at-stats"></div>
+      <p id="at-verdict" style="font-weight:600"></p>
+      <h3>Déroulé</h3>
+      <div class="log" id="at-log" aria-live="polite"></div>
+      <div class="box comp" style="margin-top:14px"><span class="bt">À essayer</span>
+        <ul style="margin:.3em 0 0">
+          <li><b>Couronne</b> en ordre naturel : le glouton utilise 4 couleurs alors que χ = 2 ; en DSATUR, 2.</li>
+          <li><b>Exercice 5</b> : 3 couleurs en naturel et en degré décroissant, 2 avec DSATUR.</li>
+          <li><b>Examens</b> : essaie un ordre manuel qui dépasse 4 couleurs : impossible de faire moins que χ = 4.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer>Cours de théorie des graphes — ECE Ing2. Contenu rédigé à partir des supports du cours et des activités ; les exemples de code Java sont dans <code>code/Graphes.java</code>.</footer>
+
+<script src="js/graph.js"></script>
+<script src="js/qcm-data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/atelier.js"></script>
+</body>
+</html>

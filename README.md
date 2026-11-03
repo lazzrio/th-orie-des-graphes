@@ -1,0 +1,30 @@
+# Théorie des graphes — Ing2 (ECE)
+
+Site de révision statique : cours semaine par semaine, exercices et activités corrigés, fiche « À retenir », QCM par semaine et atelier de coloration pas à pas.
+
+## Contenu
+
+**Semaine 1** (chapitres 1, 2 et 3 partie 1)
+- Cours : présentation des graphes, modélisation et représentation (UML, matrice d'adjacence, liste d'arêtes, liste de successeurs), coloration.
+- Corrigés : activités 1, 2 (sujets A et B), 3 et 4, exercices 1 à 5, questions sur K<sub>n</sub>.
+- Fiche « À retenir » imprimable.
+- QCM de 46 questions corrigées avec explications (progression enregistrée dans le navigateur).
+- Atelier : algorithme séquentiel, degré décroissant, DSATUR ou ordre manuel sur 7 graphes.
+
+## Utilisation
+
+Ouvrir `index.html` dans un navigateur, ou servir le dossier :
+
+```
+python -m http.server 8000
+```
+
+## Structure
+
+- `index.html` : page unique, générée par `outils/build.py` à partir de `parts/`
+- `parts/` : fragments HTML (cours, corrigés, fiche, QCM, atelier)
+- `css/style.css`, `js/graph.js` (rendu SVG des graphes et diagrammes de classes), `js/app.js`, `js/atelier.js`, `js/qcm-data.js`
+- `code/Graphes.java` : implémentations Java des trois représentations et des algorithmes de coloration (compilé et exécuté pour vérifier les corrigés)
+
+Pour modifier le contenu : éditer les fichiers de `parts/` puis lancer `python outils/build.py`.
+Pour ajouter une semaine : nouveaux fragments dans `parts/`, une entrée dans `PARTS` de `build.py`, un bouton dans la barre de navigation (`p0_head.html`) et un bloc dans `js/qcm-data.js`.

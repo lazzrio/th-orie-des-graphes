@@ -1,0 +1,115 @@
+
+<!-- ============ SEMAINE 1 ============ -->
+<section class="view" id="view-s1">
+  <div class="weekhead"><h1>Semaine 1</h1><span class="tag">Chapitres 1 · 2 · 3 (partie 1)</span></div>
+  <p style="color:var(--muted);margin-top:0">Présentation des graphes, modélisation et représentation, problèmes de coloration. Activités 1, 2 et 4.</p>
+  <div class="tabs" role="tablist">
+    <button data-pane="cours" data-go="s1/cours">📘 Cours</button>
+    <button data-pane="corriges" data-go="s1/corriges">✅ Exercices corrigés</button>
+    <button data-pane="fiche" data-go="s1/fiche">📌 À retenir</button>
+    <button data-pane="qcm" data-go="s1/qcm">🎯 QCM</button>
+  </div>
+
+  <!-- ---------- COURS ---------- -->
+  <div class="pane" data-pane="cours">
+    <div class="chnav">
+      <button data-chap="1" data-go="s1/cours/1">Chap. 1 · Présentation</button>
+      <button data-chap="2" data-go="s1/cours/2">Chap. 2 · Modéliser et représenter</button>
+      <button data-chap="3" data-go="s1/cours/3">Chap. 3 · Coloration</button>
+    </div>
+
+    <!-- ===== CHAPITRE 1 ===== -->
+    <article class="chap" data-chap="1">
+      <h2 style="margin-top:0">Chapitre 1 — Présentation des graphes</h2>
+      <p><b>Objectifs :</b> découvrir l'univers des graphes, apprendre et comprendre les définitions de base.</p>
+
+      <h2>I. Exemples</h2>
+      <div class="box def"><span class="bt">Idée générale</span>Un <b>graphe</b> est un <b>modèle mathématique</b> représentant des <b>objets</b> et des <b>liens</b> (relations ou interactions) entre ces objets.</div>
+      <div class="tw"><table>
+        <tr><th>Système</th><th>Objets (sommets)</th><th>Liens</th></tr>
+        <tr><td>Réseau ferré de la RATP</td><td>stations</td><td>tronçons entre deux stations consécutives</td></tr>
+        <tr><td>Réseau routier (trafic journalier)</td><td>villes, intersections</td><td>routes (valuées par le trafic)</td></tr>
+        <tr><td>Réseau électrique</td><td>postes, centrales</td><td>lignes (flux en temps réel)</td></tr>
+        <tr><td>Échanges commerciaux</td><td>zones, pays</td><td>flux de marchandises (orientés, valués)</td></tr>
+        <tr><td>Échanges de tweets, réseau Facebook</td><td>utilisateurs, publications, groupes</td><td>abonnement, réaction, création, message</td></tr>
+        <tr><td>Graphe du web</td><td>sites internet</td><td>liens hypertextes</td></tr>
+        <tr><td>Trame forestière, graphes trophiques</td><td>habitats, espèces</td><td>connectivité, « mange / est mangé par »</td></tr>
+        <tr><td>Morpion, automate (graphes d'états)</td><td>états du jeu ou de l'automate</td><td>coups possibles, transitions étiquetées</td></tr>
+      </table></div>
+
+      <h2>II. Domaines d'applications et problématiques</h2>
+      <div class="tw"><table>
+        <tr><th>Domaine</th><th>Exemples de graphes</th><th>Problématiques</th></tr>
+        <tr><td><b>Transports et logistique</b></td><td>réseaux routiers, ferroviaires, aériens, maritimes</td><td>calcul d'itinéraires, plus courts chemins, couverture et connectivité, minimisation des coûts</td></tr>
+        <tr><td><b>Énergie</b></td><td>distribution d'électricité, pipelines</td><td>optimisation, analyse des flux, connectivité et robustesse, reconfiguration en cas de panne</td></tr>
+        <tr><td><b>Télécommunications</b></td><td>téléphonie mobile, fibre, Wi-Fi, capteurs</td><td>allocation de fréquences et interférences, routage optimal, détection de coupures</td></tr>
+        <tr><td><b>Sociologie</b></td><td>réseaux sociaux, graphe du web</td><td>influence, diffusion d'information, rumeurs, communautés, indexation</td></tr>
+        <tr><td><b>Écologie</b></td><td>réseaux trophiques, graphes d'habitats</td><td>chaînes alimentaires, impacts, espèces invasives</td></tr>
+        <tr><td><b>Santé publique</b></td><td>—</td><td>propagation des maladies infectieuses</td></tr>
+        <tr><td><b>Industrie, robotique</b></td><td>graphes d'états, d'activités</td><td>ordonnancement, planification, contrôle de chaînes de production</td></tr>
+        <tr><td><b>Finance, économie</b></td><td>—</td><td>flots financiers, détection de fraudes</td></tr>
+        <tr><td><b>Intelligence artificielle</b></td><td>graphes d'états, réseaux de neurones</td><td>prise de décision, extraction d'informations, analyse sémantique, images</td></tr>
+      </table></div>
+
+      <h2>III. Définitions — différents types de graphes</h2>
+      <h3>Graphe simple non orienté</h3>
+      <div class="box def"><span class="bt">Définition</span>
+        Un <b>graphe simple non orienté</b> est un couple <b>G = (S, A)</b> où :
+        <ul>
+          <li><b>S</b> est un ensemble <i>non vide</i> d'objets appelés <b>sommets</b> (ou nœuds) ;</li>
+          <li><b>A ⊆ {{u,v} / u,v ∈ S, u ≠ v}</b> est un ensemble de paires distinctes non ordonnées de sommets appelées <b>arêtes</b>.</li>
+        </ul>
+        Il se modélise par une relation binaire <b>symétrique</b> et <b>non réflexive</b> R ⊆ S×S définie par (u,v) ∈ R ⇔ {u,v} ∈ A.
+      </div>
+      <ul>
+        <li>Deux sommets sont <b>adjacents</b> (ou <b>voisins</b>) s'ils sont les <b>extrémités</b> d'une même arête. <b>Adj(u)</b> est l'ensemble des sommets adjacents à u.</li>
+        <li>L'<b>ordre</b> du graphe est son nombre de sommets, sa <b>taille</b> est son nombre d'arêtes.</li>
+      </ul>
+      <div class="box ex"><span class="bt">Exemple G<sub>1</sub></span>
+        Graphe simple non orienté d'<b>ordre 6</b> et de <b>taille 7</b> : S = {s<sub>1</sub>,…,s<sub>6</sub>}, A = {{s<sub>1</sub>,s<sub>2</sub>}, {s<sub>1</sub>,s<sub>3</sub>}, {s<sub>1</sub>,s<sub>5</sub>}, {s<sub>2</sub>,s<sub>4</sub>}, {s<sub>2</sub>,s<sub>6</sub>}, {s<sub>3</sub>,s<sub>4</sub>}, {s<sub>5</sub>,s<sub>6</sub>}}. s<sub>1</sub> a 3 voisins : Adj(s<sub>1</sub>) = {s<sub>2</sub>, s<sub>3</sub>, s<sub>5</sub>}.
+      </div>
+      <div class="figs">
+        <figure class="fig"><div data-graph="g1"></div><figcaption>Une représentation possible de G<sub>1</sub></figcaption></figure>
+        <figure class="fig"><div data-graph="g1b"></div><figcaption>Une autre représentation de G<sub>1</sub> : même graphe, autre dessin</figcaption></figure>
+      </div>
+
+      <h3>Graphe orienté</h3>
+      <div class="box def"><span class="bt">Définition</span>Si la relation n'est pas forcément symétrique, on parle de <b>graphe orienté</b> : les arêtes sont des <b>paires ordonnées</b> de sommets, appelées <b>arcs</b>.
+        S'il existe un arc (u,v), alors <b>u est un prédécesseur de v</b> et <b>v est un successeur de u</b>. <b>Succ(u)</b> et <b>Pred(u)</b> désignent respectivement l'ensemble des successeurs et des prédécesseurs de u.</div>
+      <div class="box ex"><span class="bt">Exemple G<sub>2</sub></span>
+        Graphe simple orienté d'ordre 5 et de taille 9 : S = {B,C,D,E,F}, A = {(B,C), (B,D), (C,B), (C,D), (C,E), (D,E), (E,D), (E,F), (F,C)}.<br>
+        D a 3 voisins : Adj(D) = {B,C,E} ; 1 successeur : Succ(D) = {E} ; 3 prédécesseurs : Pred(D) = {B,C,E}.
+      </div>
+      <figure class="fig" style="max-width:420px"><div data-graph="g2"></div><figcaption>G<sub>2</sub> : graphe simple orienté</figcaption></figure>
+
+      <h3>Graphe avec boucle</h3>
+      <div class="box def"><span class="bt">Définition</span>Si la relation peut être réflexive, c'est-à-dire s'il peut exister une arête reliant un sommet à lui-même, on parle de <b>graphe avec boucle</b>.</div>
+      <div class="box ex"><span class="bt">Exemple G<sub>3</sub></span>Graphe orienté avec boucles, d'ordre 4 et de taille 7 : S = {C,D,E,F}, A = {(C,C), (C,D), (C,E), (D,D), (E,D), (E,F), (F,C)}.</div>
+      <figure class="fig" style="max-width:420px"><div data-graph="g3"></div><figcaption>G<sub>3</sub> : boucles en C et en D</figcaption></figure>
+
+      <h3>Multigraphe</h3>
+      <div class="box def"><span class="bt">Définition</span>Si deux sommets peuvent être reliés par <b>plus d'une arête</b>, on parle de <b>multigraphe</b>. On définit alors m : S×S → ℕ où <b>m(u,v)</b> est le nombre d'arêtes entre u et v.</div>
+      <div class="box warn"><span class="bt">Attention</span>Dans un multigraphe, il faut distinguer le <b>nombre de successeurs</b> du <b>nombre d'arcs sortants</b> d'un sommet.</div>
+      <div class="box ex"><span class="bt">Exemple G<sub>4</sub></span>
+        Multigraphe orienté avec boucles, d'ordre 6 et de taille 11 : a<sub>1</sub>=(s<sub>1</sub>,s<sub>1</sub>), a<sub>2</sub>=(s<sub>1</sub>,s<sub>2</sub>), a<sub>3</sub>=(s<sub>2</sub>,s<sub>1</sub>), a<sub>4</sub>=a<sub>5</sub>=(s<sub>2</sub>,s<sub>5</sub>), a<sub>6</sub>=(s<sub>3</sub>,s<sub>3</sub>), a<sub>7</sub>=(s<sub>4</sub>,s<sub>2</sub>), a<sub>8</sub>=(s<sub>5</sub>,s<sub>3</sub>), a<sub>9</sub>=a<sub>10</sub>=a<sub>11</sub>=(s<sub>6</sub>,s<sub>5</sub>).<br>
+        m(s<sub>2</sub>,s<sub>5</sub>) = 2 et m(s<sub>6</sub>,s<sub>5</sub>) = 3 ; s<sub>6</sub> a <b>1 successeur</b> (s<sub>5</sub>) mais <b>3 arcs sortants</b>.
+      </div>
+      <figure class="fig" style="max-width:480px"><div data-graph="g4"></div><figcaption>G<sub>4</sub> : multigraphe orienté avec boucles</figcaption></figure>
+
+      <h3>Graphe étiqueté, valué, pondéré</h3>
+      <div class="box def"><span class="bt">Définitions</span>
+        <ul>
+          <li><b>Graphe étiqueté</b> : les arêtes portent des informations (lettre, mot, nombre, symbole, code…) qui seront prises en compte dans certains traitements (analyse structurale, recherche de chemins, optimisation…).</li>
+          <li><b>Graphe valué</b> : les étiquettes sont des valeurs numériques appelées <b>poids</b>.</li>
+          <li><b>Graphe pondéré</b> : les poids sont <b>positifs</b>.</li>
+        </ul>
+      </div>
+      <div class="box ret"><span class="bt">Bilan du chapitre</span>
+        <ul>
+          <li>Un graphe est un modèle représentant certains objets et certaines relations ; la signification d'un sommet ou d'un lien doit toujours être précisée.</li>
+          <li>Un même système peut être modélisé par plusieurs graphes selon la problématique étudiée ; les problématiques accessibles dépendent de l'information portée par les sommets et les liens.</li>
+          <li>Un dessin aide à comprendre un petit graphe mais devient insuffisant quand il est « grand » : pour le traiter informatiquement, il faut choisir des structures de données adaptées (chapitre 2).</li>
+        </ul>
+      </div>
+      <p>👉 <a data-go="s1/corriges" href="#s1/corriges">Activité 1 corrigée</a> (analyse des 4 graphes G1 à G4).</p>
+    </article>

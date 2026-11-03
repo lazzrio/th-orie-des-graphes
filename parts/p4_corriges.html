@@ -1,0 +1,291 @@
+
+  <!-- ---------- CORRIGÉS ---------- -->
+  <div class="pane" data-pane="corriges">
+    <div class="box"><span class="bt">Comment s'en servir</span>Cherche d'abord seul : chaque corrigé est replié. Les réponses sont rédigées pour être <i>comprises</i> (pas seulement recopiées). Le code Java a été compilé et exécuté ; les résultats annoncés (3 zones, 2 zones, 3 couleurs…) sont ceux de ces exécutions.</div>
+    <div class="cxbar"><button data-cx="open">Tout ouvrir</button><button data-cx="close">Tout fermer</button><button class="printbtn" onclick="window.print()">🖨️ Imprimer</button></div>
+
+    <!-- ===== ACTIVITÉ 1 ===== -->
+    <details class="cx"><summary>Activité 1 — Analyser un graphe <span class="tag">Chap. 1</span></summary><div class="cxb">
+      <p>Le sujet demande d'étudier un des 4 graphes G<sub>1</sub> à G<sub>4</sub> : voici l'analyse des quatre, avec les mêmes questions.</p>
+      <div class="tw"><table>
+        <tr><th>Question</th><th>G<sub>1</sub> RATP</th><th>G<sub>2</sub> carte IGN</th><th>G<sub>3</sub> Enedis</th><th>G<sub>4</sub> retweets</th></tr>
+        <tr><td><b>Système</b></td><td>réseau ferré (métro, RER, tram) de Paris</td><td>réseau routier d'une région (Gaillac, Lisle-sur-Tarn, Rabastens…)</td><td>distribution électrique (lignes HTA et BT, postes)</td><td>interactions Twitter : qui retweete qui</td></tr>
+        <tr><td><b>Sommets</b></td><td>stations et gares (nom, lignes desservies, zone, accessibilité…)</td><td>villes, villages, carrefours (nom, altitude, population)</td><td>postes HTA/BT, points de livraison, jonctions (type, puissance, localisation)</td><td>comptes (pseudo, nombre d'abonnés…)</td></tr>
+        <tr><td><b>Arête / arc</b></td><td>deux stations consécutives sur une même ligne</td><td>tronçon de route reliant directement deux points</td><td>ligne électrique entre deux équipements</td><td>« A a retweeté B »</td></tr>
+        <tr><td><b>Symétrique ?</b></td><td>oui → non orienté</td><td>oui en général ; orienté pour les sens uniques</td><td>topologie non orientée ; le sens du flux d'énergie peut s'orienter (poste source → consommateurs)</td><td><b>non</b> → orienté ; le sens va de qui retweete vers l'auteur d'origine</td></tr>
+        <tr><td><b>Simple / boucle / multigraphe</b></td><td><b>multigraphe</b> : plusieurs lignes peuvent relier les mêmes stations (Raspail–Denfert)</td><td>multigraphe possible (plusieurs routes entre deux villes) ; boucles rares</td><td>multigraphe (lignes aériennes et souterraines parallèles)</td><td>boucles possibles (auto-retweet) ; multi-arcs ou arc pondéré (plusieurs retweets)</td></tr>
+        <tr><td><b>Informations sur les liens</b></td><td>ligne, temps de trajet, fréquence</td><td>distance, type de route (A, N, D), sens</td><td>HTA/BT, aérien/souterrain, longueur, capacité</td><td>nombre de retweets, date, contenu</td></tr>
+        <tr><td><b>Problématiques résolues</b></td><td>itinéraires, plus courts chemins, nombre de correspondances, connexité (robustesse à une panne)</td><td>plus court chemin (GPS), tournées, connexité</td><td>qui est alimenté ? points de fragilité, câblage minimal</td><td>comptes influents (fort degré entrant), communautés, propagation</td></tr>
+        <tr><td><b>Limites</b></td><td>pas d'horaires ni d'attente, temps de correspondance non modélisé, pas d'affluence ; carte schématique (géographie perdue)</td><td>pas de trafic en temps réel ni de travaux ; document papier non structuré</td><td>pas de charge ni de capacité réelle, pas d'état des équipements</td><td>dessin illisible au centre, pas de temporalité, ni de contenu, ni des abonnements</td></tr>
+        <tr><td><b>À ajouter</b></td><td>poids (temps), correspondances, horaires</td><td>poids (distance, temps), orientation des sens uniques</td><td>poids (capacité, charge), orientation du flux, état de panne</td><td>pondération, dates, filtrage</td></tr>
+      </table></div>
+      <div class="sol"><b>Conclusion.</b> Un même mot, « graphe », désigne des modèles très différents. Ce qu'est un sommet, ce que signifie une arête, son orientation et ses poids <b>dépendent de la question à résoudre</b> ; un modèle ne répond qu'aux questions pour lesquelles ses informations ont été prévues, et un dessin ne suffit plus quand le graphe est grand (G<sub>4</sub>) : il faut une structure de données.</div>
+    </div></details>
+
+    <!-- ===== ACTIVITÉ 2 A ===== -->
+    <details class="cx"><summary>Activité 2, sujet A — Modéliser un réseau social <span class="tag">Chap. 2</span></summary><div class="cxb">
+      <span class="qn"><b class="num">1</b>Identifier les données et construire le graphe</span>
+      <div class="sol">
+        <b>Entités :</b> Compte (pseudo, photo optionnelle, bio optionnelle) ; Publication (date, contenu), appartenant à un compte.<br>
+        <b>Relation :</b> « est abonné à » entre deux comptes, <b>non symétrique</b>.<br>
+        <b>Graphe :</b> sommets = comptes ; <b>arc</b> U<sub>1</sub> → U<sub>2</sub> ⇔ U<sub>1</sub> est abonné à U<sub>2</sub>. Graphe <b>orienté simple</b> : pas de boucle (on ne s'abonne pas à soi-même), un seul abonnement possible entre deux comptes dans un sens donné.
+        Les publications sont des <i>attributs</i> du compte (grille) et non des sommets : le modèle ne cherche qu'à décrire qui voit qui.
+      </div>
+      <span class="qn"><b class="num">2</b>Graphe exemple</span>
+      <div class="sol"><figure class="fig" style="max-width:440px;margin:0 auto"><div data-graph="social"></div><figcaption>Alice et Bob sont abonnés l'un à l'autre ; David est abonné à Alice ; Chloé est abonnée à Bob ; Alice est abonnée à Bob et à Chloé</figcaption></figure></div>
+      <span class="qn"><b class="num">3</b>Que peut-on déduire d'un tel graphe ?</span>
+      <div class="sol"><ul>
+        <li><b>Abonnés d'un compte</b> = prédécesseurs = <i>degré entrant</i> ; <b>abonnements</b> = successeurs = <i>degré sortant</i>.</li>
+        <li><b>Qui peut voir quoi</b> : les publications de U<sub>2</sub> sont visibles par Pred(U<sub>2</sub>) (ses abonnés).</li>
+        <li>Les comptes les plus <b>influents</b> (fort degré entrant), les <b>abonnements mutuels</b> (arcs dans les deux sens), les comptes isolés, les <b>communautés</b> (composantes), les <b>chemins</b> (« amis d'amis » : suggestions d'abonnement), la façon dont une publication se propage.</li>
+      </ul></div>
+      <span class="qn"><b class="num">4</b>Pourquoi 100 abonnés affichés, mais 98 dans la liste ?</span>
+      <div class="sol">Le compteur est une <b>valeur stockée à part</b> (dénormalisée, mise en cache) mise à jour de façon asynchrone, alors que la liste est <b>recalculée à l'affichage</b> et exclut certains comptes : comptes supprimés, désactivés, suspendus ou bannis, bloqués, bots purgés. Le compteur est simplement « en retard » (cohérence éventuelle) : le modèle conceptuel est juste, c'est l'implémentation qui introduit un écart.</div>
+      <span class="qn"><b class="num">5</b>Où stocker le nombre de publications de U<sub>2</sub> likées par U<sub>1</sub> ?</span>
+      <div class="sol">Cette donnée dépend du <b>couple (U<sub>1</sub>, U<sub>2</sub>)</b> : ni dans le compte U<sub>1</sub> seul (il faudrait un tableau par compte suivi), ni dans U<sub>2</sub> seul. Elle se stocke <b>sur le lien</b> d'abonnement U<sub>1</sub> → U<sub>2</sub> : attribut <code>nbPublicationsLikees</code> de l'arc. C'est un graphe <b>valué</b>.</div>
+      <span class="qn"><b class="num">6</b>Diagramme de classes</span>
+      <div class="sol"><figure class="fig" style="max-width:640px;margin:0 auto"><div data-uml="social"></div></figure>
+        <ul>
+          <li><b>Compte</b> : pseudo (identifiant), photo et bio optionnelles (cardinalité 0..1).</li>
+          <li><b>Publication</b> liée à Compte par une <b>composition</b> (1—*) : une publication n'existe pas sans son compte et disparaît avec lui.</li>
+          <li><b>Abonnement</b> : le lien devient une <b>classe</b> (équivalent à une classe d'association sur la relation réflexive Compte *—* Compte), car il porte une information propre (<code>nbPublicationsLikees</code>) ; ses deux extrémités ont des rôles distincts (abonné, suivi). Règle : U<sub>1</sub> voit les publications de U<sub>2</sub> s'il existe un Abonnement U<sub>1</sub> → U<sub>2</sub>.</li>
+        </ul></div>
+      <span class="qn"><b class="num">7</b>Pour aller plus loin</span>
+      <div class="sol">Likes, commentaires et partages comme classes ; comptes privés/publics et demandes d'abonnement ; blocages ; messages ; recommandation d'amis (voisins de voisins) ; détection de communautés ; pondération par la fréquence d'interaction ; notifications.</div>
+    </div></details>
+
+    <!-- ===== ACTIVITÉ 2 B ===== -->
+    <details class="cx"><summary>Activité 2, sujet B — Modéliser un réseau ferré <span class="tag">Chap. 2</span></summary><div class="cxb">
+      <span class="qn"><b class="num">1</b>Identifier les données et construire le graphe</span>
+      <div class="sol"><b>Entités :</b> Station (nom), Ligne (numéro, couleur) avec deux terminus. <b>Relation :</b> deux stations qui se suivent sur une ligne. <b>Graphe :</b> sommets = <b>stations</b> (une station sur plusieurs lignes est <i>un seul</i> sommet : c'est la correspondance) ; arêtes = tronçons entre stations consécutives, <b>étiquetées par la ligne</b>. Non orienté (on circule dans les deux sens).</div>
+      <span class="qn"><b class="num">2</b>Graphe exemple</span>
+      <div class="sol"><figure class="fig" style="max-width:520px;margin:0 auto"><div data-graph="metro"></div><figcaption>Ligne 1 : A–B–C–D ; ligne 2 : E–B–F ; B est une correspondance</figcaption></figure></div>
+      <span class="qn"><b class="num">3</b>Quels itinéraires calcule-t-on ?</span>
+      <div class="sol">Sans temps : <b>existence</b> d'un trajet entre deux stations (connexité), trajet le plus court <b>en nombre de stations</b> (parcours en largeur), nombre minimal de <b>changements</b> de ligne (en comptant les changements d'étiquette de ligne le long du trajet).</div>
+      <span class="qn"><b class="num">4</b>Où stocker les temps de trajet ?</span>
+      <div class="sol">Sur les <b>arêtes</b> (attribut <code>temps</code> du tronçon), pas sur les sommets : un temps est une information sur le <i>déplacement entre deux stations</i>.</div>
+      <span class="qn"><b class="num">5</b>Peut-on trouver les itinéraires les plus courts en temps ?</span>
+      <div class="sol">Oui : le graphe devient <b>pondéré</b> (temps positifs) et on cherche le chemin de poids minimal (algorithme de Dijkstra, vu plus tard). Limites : le <b>temps de changement</b> de ligne et l'attente ne sont pas modélisés.</div>
+      <span class="qn"><b class="num">6</b>Diagramme de classes</span>
+      <div class="sol"><figure class="fig" style="max-width:600px;margin:0 auto"><div data-uml="metro"></div></figure>
+        <ul><li><b>Station</b> et <b>Ligne</b> ont chacune un identifiant ; la ligne a deux terminus (association vers Station, cardinalité 2).</li>
+        <li><b>Liaison</b> est un objet à part entière (origine, destination, ligne, temps) plutôt qu'un simple couple de stations : elle porte l'information.</li></ul></div>
+      <span class="qn"><b class="num">7</b>Raspail — Denfert-Rochereau sur les lignes 4 et 6</span>
+      <div class="sol"><figure class="fig" style="max-width:400px;margin:0 auto"><div data-graph="raspail"></div><figcaption>Deux arêtes entre les mêmes sommets</figcaption></figure>
+        Un graphe simple impose <b>une seule arête</b> par paire de stations : on ne peut pas distinguer les deux lignes (ni leurs temps éventuellement différents). Il faut un <b>multigraphe</b> : une arête par (ligne, tronçon). Avec le diagramme ci-dessus, c'est déjà possible puisque <code>Liaison</code> est une classe indépendante de la paire de stations (deux instances Liaison avec des lignes différentes). Variante : un sommet par couple (station, ligne) et des arêtes de correspondance pondérées par le temps de changement.</div>
+      <span class="qn"><b class="num">8</b>Pour aller plus loin</span>
+      <div class="sol">Temps de correspondance, horaires et fréquences (graphe dépendant du temps), lignes à fourches (RER), sens uniques, affluence, pannes, zones tarifaires, accessibilité, critères multiples (temps, changements, marche).</div>
+    </div></details>
+
+    <!-- ===== EXERCICE 1 ===== -->
+    <details class="cx"><summary>Exercice 1 — Matrice d'adjacence <span class="tag">Chap. 2</span></summary><div class="cxb">
+      <p>Graphe orienté de l'énoncé, lu sur la figure : arcs A→B, B→A, C→B, B→D, B→E, B→F, C→F, F→C, F→D (9 arcs).</p>
+      <figure class="fig" style="max-width:420px;margin:8px auto"><div data-graph="ex1"></div></figure>
+      <span class="qn"><b class="num">1</b>Matrice d'adjacence (A, B, C, D, E, F = sommets 0 à 5)</span>
+      <div class="sol">{{MAT:ex1}}La case (i,j) vaut 1 si j est un successeur de i. Code d'initialisation : <code>for (int[] a : arcs) g.ajouterArc(a[0], a[1]);</code></div>
+      <span class="qn"><b class="num">2</b>Nombre de successeurs ou de prédécesseurs ?</span>
+      <div class="sol">Successeurs de i = <b>somme de la ligne i</b> (ex. B : 1+0+0+1+1+1 = 4). Prédécesseurs de j = <b>somme de la colonne j</b> (ex. D : B et F, soit 2). Vérifié en Java : <code>nbSuccesseurs(1) = 4</code>, <code>nbPredecesseurs(3) = 2</code>.</div>
+      <span class="qn"><b class="num">3</b>Propriété pour un graphe non orienté ?</span>
+      <div class="sol">La matrice est <b>symétrique</b> (m<sub>ij</sub> = m<sub>ji</sub>), avec une diagonale nulle si le graphe est simple. On pourrait donc ne stocker que la moitié.</div>
+      <span class="qn"><b class="num">4</b>Efficace pour savoir si deux sommets sont adjacents ?</span>
+      <div class="sol">Oui : <b>accès direct en O(1)</b> à <code>matAdj[i][j]</code>.</div>
+      <span class="qn"><b class="num">5</b>Graphes pondérés ?</span>
+      <div class="sol">On remplace le 1 par le <b>poids</b> (<code>double[][]</code>). Il faut une valeur « pas de lien » qui ne soit pas un poids possible : 0 si les poids sont non nuls, sinon +∞ (<code>Double.POSITIVE_INFINITY</code>), <code>NaN</code> ou <code>null</code> (<code>Double[][]</code>).</div>
+      <span class="qn"><b class="num">6</b>Mémoire pour un graphe peu dense ?</span>
+      <div class="sol">Mauvaise : la matrice a <b>n² cases</b> quel que soit le nombre de liens m. Pour n = 10 000 sommets et 30 000 liens, 100 millions de cases dont l'immense majorité vaut 0.</div>
+      <span class="qn"><b class="num">7</b>Du point de vue conception objet ?</span>
+      <div class="sol">Peu satisfaisante : les <b>liens ne sont pas des objets</b> (impossible de leur donner des informations, un comportement…) ; <code>Sommet</code> et la matrice sont deux structures séparées à synchroniser à la main ; la logique d'accès par indices (<code>i</code>, <code>j</code>) est de bas niveau.</div>
+      <span class="qn"><b class="num">8</b>Difficultés liées à la numérotation ?</span>
+      <div class="sol">Il faut maintenir la correspondance <b>identifiant ↔ numéro</b> (<code>Sommet.num</code>) ; <b>ajouter</b> un sommet oblige à créer une nouvelle matrice (n+1)×(n+1) et à tout recopier ; <b>supprimer</b> un sommet laisse un trou ou oblige à <b>renuméroter</b> les suivants et à décaler lignes et colonnes ; le numéro stocké dans le Sommet peut devenir incohérent avec sa position réelle.</div>
+    </div></details>
+
+    <!-- ===== EXERCICE 2 ===== -->
+    <details class="cx"><summary>Exercice 2 — Liste d'arêtes <span class="tag">Chap. 2</span></summary><div class="cxb">
+      <span class="qn"><b class="num">1</b>Deux sommets donnés sont-ils adjacents ?</span>
+      <div class="sol">On <b>parcourt toutes les arêtes</b> en cherchant une arête dont les extrémités sont ces deux sommets : <b>O(m)</b>.<pre class="code"><code>boolean adjacents(Sommet a, Sommet b) {
+    for (Arete e : aretes) if (e.relie(a, b)) return true;
+    return false;
+}</code></pre></div>
+      <span class="qn"><b class="num">2</b>Voisins d'un sommet ?</span>
+      <div class="sol">Parcourir toutes les arêtes et retenir « l'autre extrémité » de celles qui touchent le sommet : <b>O(m)</b> également, même si le sommet a peu de voisins.</div>
+      <span class="qn"><b class="num">3</b>Adapter aux graphes orientés ?</span>
+      <div class="sol">Les deux extrémités de l'arête deviennent <b>ordonnées</b> : <code>origine</code> et <code>destination</code> (au lieu de deux extrémités équivalentes). <code>relie(a,b)</code> ne teste plus que le sens a → b.</div>
+      <span class="qn"><b class="num">4</b>Adaptée aux multigraphes ?</span>
+      <div class="sol"><b>Oui, très naturellement</b> : chaque lien est un objet <code>Arete</code> avec son identifiant et son information ; rien n'empêche d'avoir plusieurs arêtes entre les mêmes sommets (exemple Raspail–Denfert).</div>
+      <span class="qn"><b class="num">5</b>Cohérence à la suppression d'un sommet ?</span>
+      <div class="sol">Il faut <b>supprimer aussi toutes les arêtes incidentes</b> à ce sommet, sinon elles référencent un sommet qui n'existe plus : <code>aretes.removeIf(e -&gt; e.touche(s)); sommets.remove(s);</code> (vérifié : après suppression de B dans A–B–C, il reste 2 sommets et 0 arête).</div>
+    </div></details>
+
+    <!-- ===== EXERCICE 3 ===== -->
+    <details class="cx"><summary>Exercice 3 — Liste de successeurs <span class="tag">Chap. 2</span></summary><div class="cxb">
+      <span class="qn"><b class="num">1</b>Nombre de successeurs ?</span>
+      <div class="sol">Taille de la liste : <code>successeurs.size()</code>, en O(1). (Dans un multigraphe avec doublons, cela donne le nombre d'<i>arcs</i> sortants, pas de successeurs distincts.)</div>
+      <span class="qn"><b class="num">2</b>Prédécesseurs ? Comment l'accélérer ?</span>
+      <div class="sol">Sans structure supplémentaire, il faut <b>parcourir la liste de successeurs de tous les sommets</b> (O(n + m)). Pour accélérer : chaque sommet mémorise aussi une <b>liste de prédécesseurs</b>.
+        <ul><li><b>Avantage :</b> accès direct aux prédécesseurs.</li><li><b>Inconvénients :</b> mémoire doublée, et à chaque ajout ou suppression d'arc il faut <b>mettre à jour les deux listes</b> (risque d'incohérence). Dans le code : <code>ajouterSuccesseur</code> ajoute aussi dans <code>autre.predecesseurs</code>.</li></ul></div>
+      <span class="qn"><b class="num">3</b>Graphes pondérés ?</span>
+      <div class="sol">On ne peut plus stocker directement un <code>Sommet</code> : la liste contient des objets <b><code>Arc(destination, poids)</code></b>, ou le sommet utilise une <code>Map&lt;Sommet, Double&gt;</code> (successeur → poids).</div>
+      <span class="qn"><b class="num">4</b>Graphe non orienté : où est mémorisée l'arête {A,B} ?</span>
+      <div class="sol"><b>Deux fois</b> : B dans la liste de A <i>et</i> A dans la liste de B. <b>Inconvénients :</b> redondance de mémoire, risque d'incohérence (oublier l'une des deux copies), les arêtes sont comptées deux fois en parcourant tous les sommets, une information portée par l'arête serait dupliquée (ou partagée via un objet Arc commun).</div>
+      <span class="qn"><b class="num">5</b>Multigraphes ?</span>
+      <div class="sol">Utiliser une <b>liste (avec doublons autorisés)</b> plutôt qu'un ensemble, ce qui permet de compter m(u,v) ; ou une <code>Map&lt;Sommet,Integer&gt;</code> successeur → multiplicité ; ou, si chaque lien porte une information, une liste d'objets <code>Arc</code>.</div>
+    </div></details>
+
+    <!-- ===== ACTIVITÉ 3 ===== -->
+    <details class="cx"><summary>Activité 3 — Bilan collectif des représentations <span class="tag">Chap. 2</span></summary><div class="cxb">
+      <p><span class="pp">++</span> très adaptée · <span class="p">+</span> plutôt adaptée · <span class="mm">−</span> peu adaptée · <span class="q">?</span> dépend de choix d'implémentation supplémentaires. Notation : n = ordre, m = taille.</p>
+      <div class="tw"><table>
+        <tr><th>Opération ou situation</th><th class="c">Matrice</th><th class="c">Liste d'arêtes</th><th class="c">Liste de succ.</th><th>Justification</th></tr>
+        <tr><td>Savoir si deux sommets sont adjacents</td><td class="c pp">++</td><td class="c mm">−</td><td class="c p">+</td><td>matrice : accès direct O(1) ; arêtes : parcours de toutes les arêtes O(m) ; successeurs : parcours de la liste d'un sommet (O(degré), ++ avec un <code>HashSet</code>)</td></tr>
+        <tr><td>Obtenir tous les successeurs d'un sommet</td><td class="c p">+</td><td class="c mm">−</td><td class="c pp">++</td><td>matrice : lire une ligne en O(n) même si peu de successeurs ; arêtes : parcours de tout ; successeurs : la liste est directement là</td></tr>
+        <tr><td>Obtenir tous les prédécesseurs d'un sommet</td><td class="c p">+</td><td class="c mm">−</td><td class="c q">?</td><td>matrice : lire une colonne en O(n) ; arêtes : parcours de tout ; successeurs : parcours de tous les sommets, sauf si l'on ajoute une liste de prédécesseurs (<b>?</b>)</td></tr>
+        <tr><td>Parcourir l'ensemble des arêtes ou arcs</td><td class="c mm">−</td><td class="c pp">++</td><td class="c p">+</td><td>matrice : n² cases à examiner ; arêtes : la liste est la collection cherchée ; successeurs : O(n+m)</td></tr>
+        <tr><td>Mémoriser des liens contenant plusieurs informations</td><td class="c q">?</td><td class="c pp">++</td><td class="c q">?</td><td>arêtes : l'objet Arete porte ses attributs ; matrice : possible avec une matrice d'objets, mais pas un 0/1 ; successeurs : il faut un objet Arc ou une Map</td></tr>
+        <tr><td>Autoriser plusieurs liens entre deux mêmes sommets</td><td class="c mm">−</td><td class="c pp">++</td><td class="c p">+</td><td>matrice : une case = un lien (sauf compteur, sans info par lien) ; arêtes : une arête par lien ; successeurs : doublons autorisés dans la liste</td></tr>
+        <tr><td>Ajouter fréquemment de nouveaux sommets</td><td class="c mm">−</td><td class="c pp">++</td><td class="c pp">++</td><td>matrice : recréer et recopier une matrice (n+1)² et numéroter ; les deux autres : simple ajout dans une liste</td></tr>
+        <tr><td>Supprimer un sommet et tous ses liens</td><td class="c mm">−</td><td class="c p">+</td><td class="c p">+</td><td>matrice : retirer ligne et colonne, renuméroter ; arêtes : retirer le sommet et parcourir les arêtes pour supprimer les incidentes (O(m)) ; successeurs : retirer le sommet de toutes les listes (O(n+m))</td></tr>
+        <tr><td>Mémoriser un graphe comportant peu de liens</td><td class="c mm">−</td><td class="c pp">++</td><td class="c pp">++</td><td>mémoire en n + m contre n² pour la matrice</td></tr>
+        <tr><td>Mémoriser un graphe comportant beaucoup de liens</td><td class="c pp">++</td><td class="c mm">−</td><td class="c p">+</td><td>matrice : n² cases bien utilisées, tests rapides ; arêtes : m proche de n² objets, adjacence en O(m) très lente ; successeurs : correct mais surcoût des objets</td></tr>
+      </table></div>
+      <div class="sol"><b>Conclusion.</b> Matrice : tests d'adjacence et graphes denses. Liste d'arêtes : liens riches, multigraphes, parcours des arêtes. Liste de successeurs : bon compromis pour les graphes peu denses et les parcours de voisinage. Le choix dépend des opérations fréquentes et de la densité.</div>
+    </div></details>
+
+    <!-- ===== GRAPHE COMPLET ===== -->
+    <details class="cx"><summary>Questions sur le graphe complet K<sub>n</sub> <span class="tag">Chap. 3</span></summary><div class="cxb">
+      <span class="qn"><b class="num">1</b>Degrés des sommets dans K<sub>n</sub> ?</span>
+      <div class="sol">Chaque sommet est adjacent aux <b>n−1</b> autres : tous les sommets ont pour degré <b>n−1</b> (le maximum possible dans un graphe simple d'ordre n).</div>
+      <span class="qn"><b class="num">2</b>Nombre d'arêtes de K<sub>n</sub> ?</span>
+      <div class="sol">Somme des degrés = n(n−1) = 2m, donc <b>m = n(n−1)/2</b>. Autre façon : on choisit 2 sommets parmi n, soit C(n,2). Vérification : K<sub>2</sub> : 1, K<sub>3</sub> : 3, K<sub>4</sub> : 6, K<sub>5</sub> : 10 (confirmé par un programme de comptage).</div>
+    </div></details>
+
+    <!-- ===== EXERCICE 4 ===== -->
+    <details class="cx"><summary>Exercice 4 — Stockage de produits chimiques <span class="tag">Chap. 3</span></summary><div class="cxb">
+      <h4>Étape 1 : modélisation</h4>
+      <div class="sol">
+        <b>Sommets</b> = les 8 produits p<sub>1</sub>…p<sub>8</sub>. <b>Arête</b> {p<sub>i</sub>, p<sub>j</sub>} ⇔ p<sub>i</sub> et p<sub>j</sub> sont incompatibles, donc ne peuvent pas être stockés dans la même zone. Les 8 arêtes : p<sub>1</sub>p<sub>4</sub>, p<sub>2</sub>p<sub>3</sub>, p<sub>3</sub>p<sub>4</sub>, p<sub>3</sub>p<sub>5</sub>, p<sub>3</sub>p<sub>8</sub>, p<sub>4</sub>p<sub>7</sub>, p<sub>5</sub>p<sub>6</sub>, p<sub>7</sub>p<sub>8</sub> (chaque incompatibilité est symétrique).
+        <figure class="fig" style="max-width:520px;margin:10px auto"><div data-graph="chem"></div></figure>
+        <b>Matrice des incompatibilités</b> (1 = incompatibles) :
+        {{MAT:chem}}
+        Cette matrice est la <b>matrice d'adjacence</b> du graphe (symétrique, diagonale nulle).<br>
+        <b>Problème de coloration :</b> affecter à chaque produit une <i>couleur</i> (= une zone) de sorte que deux produits incompatibles (adjacents) aient des couleurs différentes, avec le <b>minimum de couleurs</b> : on cherche le nombre chromatique χ(G).
+      </div>
+      <h4>Étape 2 : algorithme séquentiel</h4>
+      <span class="qn"><b class="num">A</b>Ordre p<sub>1</sub>, p<sub>2</sub>, …, p<sub>8</sub></span>
+      <div class="sol">
+        <div class="tw"><table><tr><th>Sommet</th><th>Voisins déjà colorés</th><th>Zone</th></tr>
+          <tr><td>p<sub>1</sub></td><td>aucun</td><td>1</td></tr>
+          <tr><td>p<sub>2</sub></td><td>aucun (p<sub>3</sub> pas encore traité)</td><td>1</td></tr>
+          <tr><td>p<sub>3</sub></td><td>p<sub>2</sub> (zone 1)</td><td>2</td></tr>
+          <tr><td>p<sub>4</sub></td><td>p<sub>1</sub> (1), p<sub>3</sub> (2)</td><td>3</td></tr>
+          <tr><td>p<sub>5</sub></td><td>p<sub>3</sub> (2)</td><td>1</td></tr>
+          <tr><td>p<sub>6</sub></td><td>p<sub>5</sub> (1)</td><td>2</td></tr>
+          <tr><td>p<sub>7</sub></td><td>p<sub>4</sub> (3)</td><td>1</td></tr>
+          <tr><td>p<sub>8</sub></td><td>p<sub>3</sub> (2), p<sub>7</sub> (1)</td><td>3</td></tr></table></div>
+        <b>3 zones</b> : {p<sub>1</sub>,p<sub>2</sub>,p<sub>5</sub>,p<sub>7</sub>}, {p<sub>3</sub>,p<sub>6</sub>}, {p<sub>4</sub>,p<sub>8</sub>}. Optimale ? <b>Non, pas forcément</b> — voir B.
+        <figure class="fig" style="max-width:520px;margin:10px auto"><div data-graph="chem" data-colors="p1:0,p2:0,p3:1,p4:2,p5:0,p6:1,p7:0,p8:2"></div><figcaption>Coloration obtenue dans l'ordre p<sub>1</sub>…p<sub>8</sub> : 3 zones</figcaption></figure>
+      </div>
+      <span class="qn"><b class="num">B</b>Ordre p<sub>3</sub>, p<sub>4</sub>, p<sub>5</sub>, p<sub>7</sub>, p<sub>8</sub>, p<sub>1</sub>, p<sub>2</sub>, p<sub>6</sub></span>
+      <div class="sol">
+        <div class="tw"><table><tr><th>Sommet</th><th>Voisins déjà colorés</th><th>Zone</th></tr>
+          <tr><td>p<sub>3</sub></td><td>aucun</td><td>1</td></tr>
+          <tr><td>p<sub>4</sub></td><td>p<sub>3</sub> (1)</td><td>2</td></tr>
+          <tr><td>p<sub>5</sub></td><td>p<sub>3</sub> (1)</td><td>2</td></tr>
+          <tr><td>p<sub>7</sub></td><td>p<sub>4</sub> (2)</td><td>1</td></tr>
+          <tr><td>p<sub>8</sub></td><td>p<sub>3</sub> (1), p<sub>7</sub> (1)</td><td>2</td></tr>
+          <tr><td>p<sub>1</sub></td><td>p<sub>4</sub> (2)</td><td>1</td></tr>
+          <tr><td>p<sub>2</sub></td><td>p<sub>3</sub> (1)</td><td>2</td></tr>
+          <tr><td>p<sub>6</sub></td><td>p<sub>5</sub> (2)</td><td>1</td></tr></table></div>
+        <b>2 zones</b> : {p<sub>1</sub>,p<sub>3</sub>,p<sub>6</sub>,p<sub>7</sub>} et {p<sub>2</sub>,p<sub>4</sub>,p<sub>5</sub>,p<sub>8</sub>}. 2 est optimal : il y a au moins une arête donc χ ≥ 2.
+        <figure class="fig" style="max-width:520px;margin:10px auto"><div data-graph="chem" data-colors="p1:0,p2:1,p3:0,p4:1,p5:1,p6:0,p7:0,p8:1"></div><figcaption>Coloration en 2 zones</figcaption></figure>
+        <b>Constat :</b> le résultat dépend de l'ordre de traitement (3 zones contre 2).
+      </div>
+      <span class="qn"><b class="num">C</b>Conclusion sur l'algorithme séquentiel</span>
+      <div class="sol">Il fournit <b>toujours une coloration propre</b>, mais <b>pas forcément optimale</b>, et la qualité dépend de l'ordre de traitement.</div>
+      <h4>Étape 3 : peut-on améliorer l'algorithme ?</h4>
+      <div class="sol">
+        <ul>
+          <li><b>Ordre de la question B :</b> degrés décroissants. Degrés : p<sub>3</sub>=4, p<sub>4</sub>=3, p<sub>5</sub>=p<sub>7</sub>=p<sub>8</sub>=2, p<sub>1</sub>=p<sub>2</sub>=p<sub>6</sub>=1.</li>
+          <li><b>Pourquoi c'est judicieux :</b> les sommets très connectés ont le plus de contraintes ; en les traitant en premier, on les place quand il reste le plus de choix. Les sommets de petit degré (peu de voisins) se casent facilement à la fin.</li>
+          <li><b>Stratégie encore plus pertinente : DSATUR</b> — à chaque étape on colorie le sommet dont les voisins portent le plus de couleurs différentes (égalité : plus grand degré). Sur ce graphe, DSATUR trouve aussi 2 zones.</li>
+        </ul>
+        <p>Vérification Java : degré décroissant → 2 zones ; DSATUR → 2 zones ; nombre chromatique calculé par recherche exhaustive : 2.</p>
+      </div>
+    </div></details>
+
+    <!-- ===== EXERCICE 5 ===== -->
+    <details class="cx"><summary>Exercice 5 — Tester l'optimalité sur un exemple <span class="tag">Chap. 3</span></summary><div class="cxb">
+      <p>Graphe de 12 sommets ; arêtes lues sur la figure : s<sub>3</sub>s<sub>7</sub>, s<sub>3</sub>s<sub>8</sub>, s<sub>3</sub>s<sub>9</sub>, s<sub>3</sub>s<sub>2</sub>, s<sub>3</sub>s<sub>11</sub>, s<sub>4</sub>s<sub>10</sub>, s<sub>4</sub>s<sub>6</sub>, s<sub>4</sub>s<sub>1</sub>, s<sub>4</sub>s<sub>5</sub>, s<sub>1</sub>s<sub>12</sub>, s<sub>1</sub>s<sub>11</sub>, s<sub>2</sub>s<sub>5</sub> (12 arêtes).</p>
+      <figure class="fig" style="max-width:520px;margin:8px auto"><div data-graph="ex5"></div></figure>
+      <div class="sol">
+        <b>Degrés</b> (ordre du tableau de l'énoncé : s<sub>3</sub>, s<sub>4</sub>, s<sub>1</sub>, s<sub>2</sub>, s<sub>5</sub>, s<sub>11</sub>, s<sub>6</sub>…) : s<sub>3</sub>=5, s<sub>4</sub>=4, s<sub>1</sub>=3, s<sub>2</sub>=s<sub>5</sub>=s<sub>11</sub>=2, s<sub>6</sub>=s<sub>7</sub>=s<sub>8</sub>=s<sub>9</sub>=s<sub>10</sub>=s<sub>12</sub>=1 : c'est bien l'ordre des <b>degrés décroissants</b>.
+        <div class="tw"><table><tr><th>Sommet</th><th>Degré</th><th>Voisins déjà colorés</th><th>Couleur</th></tr>
+          <tr><td>s<sub>3</sub></td><td>5</td><td>aucun</td><td>1</td></tr>
+          <tr><td>s<sub>4</sub></td><td>4</td><td>aucun (non adjacent à s<sub>3</sub>)</td><td>1</td></tr>
+          <tr><td>s<sub>1</sub></td><td>3</td><td>s<sub>4</sub> (1)</td><td>2</td></tr>
+          <tr><td>s<sub>2</sub></td><td>2</td><td>s<sub>3</sub> (1)</td><td>2</td></tr>
+          <tr><td>s<sub>5</sub></td><td>2</td><td>s<sub>4</sub> (1), s<sub>2</sub> (2)</td><td><b>3</b></td></tr>
+          <tr><td>s<sub>11</sub></td><td>2</td><td>s<sub>3</sub> (1), s<sub>1</sub> (2)</td><td><b>3</b></td></tr>
+          <tr><td>s<sub>6</sub>, s<sub>7</sub>, s<sub>8</sub>, s<sub>9</sub>, s<sub>10</sub></td><td>1</td><td>s<sub>4</sub> ou s<sub>3</sub> (1)</td><td>2</td></tr>
+          <tr><td>s<sub>12</sub></td><td>1</td><td>s<sub>1</sub> (2)</td><td>1</td></tr></table></div>
+        <b>3 couleurs.</b>
+        <figure class="fig" style="max-width:520px;margin:10px auto"><div data-graph="ex5" data-colors="s1:1,s2:1,s3:0,s4:0,s5:2,s6:1,s7:1,s8:1,s9:1,s10:1,s11:2,s12:0"></div><figcaption>Résultat de l'algorithme séquentiel « amélioré » : 3 couleurs</figcaption></figure>
+        <b>Est-ce optimal ? Non.</b> Le graphe est formé d'un cycle de longueur 6 (s<sub>3</sub>–s<sub>2</sub>–s<sub>5</sub>–s<sub>4</sub>–s<sub>1</sub>–s<sub>11</sub>) sur lequel sont accrochés des sommets pendants ; il n'a aucun cycle impair donc il est <b>2-colorable</b> (biparti) :
+        <figure class="fig" style="max-width:520px;margin:10px auto"><div data-graph="ex5" data-colors="s3:0,s5:0,s1:0,s6:0,s10:0,s2:1,s4:1,s11:1,s7:1,s8:1,s9:1,s12:1"></div><figcaption>Coloration optimale en 2 couleurs : χ = 2</figcaption></figure>
+        <b>Pourquoi le glouton échoue :</b> s<sub>3</sub> et s<sub>4</sub> (non adjacents) reçoivent la même couleur 1. Or s<sub>2</sub> et s<sub>5</sub> sont adjacents entre eux et chacun est voisin d'un sommet de couleur 1 (s<sub>3</sub> pour s<sub>2</sub>, s<sub>4</sub> pour s<sub>5</sub>) : ils doivent prendre deux couleurs <i>différentes</i> et différentes de 1, donc 2 et 3. Dans la solution optimale, s<sub>3</sub> et s<sub>4</sub> ont des couleurs différentes.<br>
+        <b>Conclusion :</b> même « amélioré », l'algorithme séquentiel est une <b>heuristique</b> : il ne garantit pas le minimum de couleurs (vérifié en Java : 3 couleurs pour l'ordre de l'énoncé et pour le degré décroissant, 2 avec DSATUR, χ = 2 par recherche exhaustive).
+      </div>
+    </div></details>
+
+    <!-- ===== ACTIVITÉ 4 ===== -->
+    <details class="cx" open><summary>Activité 4 — Planification des examens d'une université <span class="tag">Chap. 3</span> <span class="tag warm">à rendre</span></summary><div class="cxb">
+      <div class="box"><span class="bt">Énoncé</span>9 modules : Anglais (A), Chimie (Ch), Chinois (Cn), Électronique (E), Informatique (I), Mathématiques (M), Mécanique (Me), Physique (P), SVT (S). Un examen par module. Deux examens passés par un même étudiant ne doivent pas avoir lieu sur le même créneau ; on veut le plus petit nombre de créneaux. Combinaisons des étudiants : {Cn, E, M, S}, {A, Ch, E, S}, {Ch, I, P}, {Cn, I, Me}, {Ch, M, Me}.</div>
+
+      <h4>1. Modélisation</h4>
+      <div class="sol">
+        <b>Sommets</b> = modules (examens). <b>Arête</b> entre deux modules ⇔ au moins un étudiant passe les deux examens ⇒ conflit : créneaux <b>différents</b>. <b>Couleurs</b> = créneaux. Résoudre le problème = trouver une coloration propre qui utilise le moins de couleurs, c'est-à-dire χ(G).<br>
+        Chaque étudiant crée une <b>clique</b> sur ses modules :
+        <div class="tw"><table><tr><th>Étudiant</th><th>Modules</th><th>Arêtes créées</th></tr>
+          <tr><td>1</td><td>Cn, E, M, S</td><td>Cn-E, Cn-M, Cn-S, E-M, E-S, M-S</td></tr>
+          <tr><td>2</td><td>A, Ch, E, S</td><td>A-Ch, A-E, A-S, Ch-E, Ch-S, E-S (E-S déjà présente)</td></tr>
+          <tr><td>3</td><td>Ch, I, P</td><td>Ch-I, Ch-P, I-P</td></tr>
+          <tr><td>4</td><td>Cn, I, Me</td><td>Cn-I, Cn-Me, I-Me</td></tr>
+          <tr><td>5</td><td>Ch, M, Me</td><td>Ch-M, Ch-Me, M-Me</td></tr></table></div>
+        Graphe simple non orienté d'<b>ordre 9</b> et de <b>taille 20</b> (les paires déjà présentes ne sont pas comptées deux fois).
+        <figure class="fig" style="max-width:560px;margin:10px auto"><div data-graph="exams"></div><figcaption>Graphe de conflits</figcaption></figure>
+        <div class="tw"><table class="mat"><tr><th>Module</th><th>Ch</th><th>Cn</th><th>E</th><th>M</th><th>S</th><th>I</th><th>Me</th><th>A</th><th>P</th></tr>
+          <tr><th>Degré</th><td class="one">7</td><td>5</td><td>5</td><td>5</td><td>5</td><td>4</td><td>4</td><td>3</td><td>2</td></tr></table></div>
+        Somme des degrés = 40 = 2 × 20 ✓.
+      </div>
+
+      <h4>2. Est-il possible de faire les examens sur 3 créneaux ?</h4>
+      <div class="sol"><b>Non.</b> Chinois, Électronique, Maths et SVT sont passés par le même étudiant : ils forment une <b>clique K<sub>4</sub></b> (6 arêtes) ; leurs 4 examens sont deux à deux en conflit et exigent 4 créneaux distincts : χ(G) ≥ 4. (A, Ch, E, S forme aussi une K<sub>4</sub>.)
+        <figure class="fig" style="max-width:560px;margin:10px auto"><div data-graph="exams" data-hl="Cn-E,Cn-M,Cn-S,E-M,E-S,M-S" data-hln="Cn,E,M,S"></div><figcaption>La clique {Chinois, Électronique, Maths, SVT} impose au moins 4 créneaux</figcaption></figure>
+      </div>
+
+      <h4>3. Planification sur un minimum de créneaux — algorithme</h4>
+      <div class="sol">
+        <b>Algorithme de Welsh-Powell</b> (glouton, ordre de degré décroissant) :
+        <ol><li>Trier les sommets par degré décroissant : Ch (7), Cn, E, M, S (5), I, Me (4), A (3), P (2).</li>
+          <li>Ouvrir un nouveau créneau ; le donner au premier sommet non coloré, puis à chaque sommet suivant (dans l'ordre) <b>non adjacent</b> à ceux déjà placés dans ce créneau.</li>
+          <li>Recommencer jusqu'à ce que tout soit placé.</li></ol>
+        <div class="tw"><table><tr><th>Créneau</th><th>Déroulement</th><th>Résultat</th></tr>
+          <tr><td>1</td><td>Ch ; Cn est le seul sommet non voisin de Ch</td><td>{Ch, Cn}</td></tr>
+          <tr><td>2</td><td>E ; I n'est pas voisin de E ; Me et P sont voisins de I</td><td>{E, I}</td></tr>
+          <tr><td>3</td><td>M ; puis A ; puis P</td><td>{M, A, P}</td></tr>
+          <tr><td>4</td><td>S ; puis Me (S et Me non adjacents)</td><td>{S, Me}</td></tr></table></div>
+        <figure class="fig" style="max-width:560px;margin:10px auto"><div data-graph="exams" data-colors="Ch:0,Cn:0,E:1,I:1,M:2,A:2,P:2,S:3,Me:3"></div><figcaption>Planification en 4 créneaux (une couleur = un créneau)</figcaption></figure>
+        <b>Planning :</b> créneau 1 : Chimie, Chinois ; créneau 2 : Électronique, Informatique ; créneau 3 : Maths, Anglais, Physique ; créneau 4 : SVT, Mécanique. Aucune paire d'un même créneau n'est reliée par une arête ✓. Comme χ ≥ 4 (clique), <b>4 créneaux est optimal : χ(G) = 4</b> (confirmé par une recherche exhaustive en Java).
+      </div>
+
+      <h4>4. Physique et SVT sont annulés</h4>
+      <div class="sol">On supprime les sommets P et S (sous-graphe) : il reste A, Ch, Cn, E, I, M, Me. La clique K<sub>4</sub> a disparu (SVT n'est plus là) mais il reste le triangle {Cn, E, M} donc χ ≥ 3, et 3 créneaux suffisent :
+        <figure class="fig" style="max-width:560px;margin:10px auto"><div data-graph="exams2" data-colors="Ch:0,Cn:0,E:1,Me:1,M:2,A:2,I:2"></div><figcaption>Sans Physique ni SVT : 3 créneaux</figcaption></figure>
+        Créneau 1 : Chimie, Chinois ; créneau 2 : Électronique, Mécanique ; créneau 3 : Maths, Anglais, Informatique. <b>Oui, cela change quelque chose : on passe de 4 à 3 créneaux.</b>
+      </div>
+
+      <h4>5. Quels examens sont les plus difficiles à planifier ?</h4>
+      <div class="sol">Ceux qui ont le plus de conflits, donc de <b>degré élevé</b> : la <b>Chimie (7 voisins)</b>, puis Chinois, Électronique, Maths et SVT (5 chacun), qui en plus font partie de la clique K<sub>4</sub>. À l'inverse, la Physique (2 voisins) se place facilement.<br>
+        <b>Comment en tenir compte :</b> colorier <b>d'abord</b> les sommets les plus contraints. <b>Welsh-Powell</b> : ordre de degré décroissant. <b>DSATUR</b> : à chaque étape, on prend le sommet de plus grand <i>degré de saturation</i> (nombre de couleurs différentes déjà présentes chez ses voisins), en cas d'égalité le plus grand degré, avec la plus petite couleur possible ; l'ordre s'adapte à la coloration en cours.
+        <p>👉 <a data-go="atelier" href="#atelier">Voir le déroulé dans l'atelier</a> (choisir « Examens (activité 4) »).</p></div>
+    </div></details>
+  </div> <!-- /pane corrigés -->

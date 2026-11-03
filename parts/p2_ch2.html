@@ -1,0 +1,124 @@
+
+    <!-- ===== CHAPITRE 2 ===== -->
+    <article class="chap" data-chap="2">
+      <h2 style="margin-top:0">Chapitre 2 — Modéliser et représenter les graphes</h2>
+      <p><b>Objectifs :</b> comprendre les différentes couches d'abstraction, construire un modèle pas à pas, distinguer un modèle <i>conceptuel</i> d'un modèle <i>logiciel</i>, faire des choix d'implémentation.</p>
+
+      <h2>I. Du système réel au modèle conceptuel</h2>
+      <p>Modéliser sous forme de graphe peut avoir deux objectifs : <b>décrire formellement</b> un système complexe pour en comprendre la structure, ou <b>répondre à des questions précises</b> (vérifier des propriétés, chercher des solutions). <b>Le niveau de précision du modèle dépend de l'objectif poursuivi.</b></p>
+      <div class="box prop"><span class="bt">Démarche en trois étapes</span>
+        <ol>
+          <li><b>Identifier les données du système</b> : les entités et leurs caractéristiques ; les relations entre entités et les informations portées par ces relations.</li>
+          <li><b>Construire le graphe</b> : quelles entités seront des <i>sommets</i> ? quelles entités ou relations seront des <i>arêtes</i> ou <i>arcs</i> ? Dessiner des graphes exemples.</li>
+          <li><b>Proposer un diagramme de classes UML</b> : classes et attributs ; relations entre classes, leur nature et leurs cardinalités.</li>
+        </ol>
+      </div>
+      <p>La modélisation objet est particulièrement bien adaptée à l'étude des graphes : la structure d'un système modélisé par un graphe se décrit avec un diagramme de classes.</p>
+
+      <h3>Une démarche itérative et incrémentale</h3>
+      <svg class="flow" viewBox="0 0 560 250" role="img" aria-label="Boucle de modélisation : système et questions, premier modèle, mise à l'épreuve, modèle enrichi, nouveaux besoins" style="width:100%;max-width:560px;display:block;margin:10px auto">
+        <defs><marker id="fa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <rect x="30" y="10" width="170" height="38" rx="8"/><text x="115" y="34">Système</text>
+        <rect x="260" y="10" width="190" height="38" rx="8"/><text x="355" y="34">Questions, problématiques</text>
+        <rect x="150" y="80" width="190" height="38" rx="8"/><text x="245" y="104">Premier modèle</text>
+        <rect x="100" y="145" width="290" height="38" rx="8"/><text x="245" y="169">Mise à l'épreuve · limites du modèle</text>
+        <rect x="120" y="205" width="250" height="38" rx="8"/><text x="245" y="229">Modèle restructuré ou enrichi</text>
+        <path d="M115 48 V64 H245 V78" marker-end="url(#fa)"/><path d="M355 48 V64 H245" />
+        <path d="M245 118 V143" marker-end="url(#fa)"/><path d="M245 183 V203" marker-end="url(#fa)"/>
+        <path d="M370 224 H460 V164 H392" marker-end="url(#fa)"/>
+        <text x="505" y="195" style="font-size:12px">nouveaux</text><text x="505" y="210" style="font-size:12px">besoins</text>
+      </svg>
+      <div class="box ret"><span class="bt">À retenir</span>Un modèle est une <b>sélection de la réalité</b> basée sur des hypothèses ; il peut évoluer lorsque de nouveaux besoins apparaissent. Le modèle retenu dépend du niveau de précision recherché, des informations à conserver et de la problématique étudiée. Un système complexe peut donner plusieurs graphes (niveaux de description différents).</div>
+
+      <h3>Exemple : un réseau de métro</h3>
+      <p>Premier modèle : stations = sommets ; deux stations consécutives sur une ligne sont reliées par une arête qui porte la ligne et le temps de trajet. Une station sur plusieurs lignes est <b>un seul sommet</b> (c'est la correspondance).</p>
+      <figure class="fig" style="max-width:520px"><div data-graph="metro"></div><figcaption>B est en correspondance entre les lignes L1 et L2</figcaption></figure>
+      <p><b>Mise à l'épreuve :</b> Raspail et Denfert-Rochereau sont consécutives sur <i>deux</i> lignes (4 et 6) : un graphe simple ne suffit plus. Il faut un <b>multigraphe</b> (une arête par ligne et par tronçon) — ou une classe <code>Liaison</code> indépendante dans le diagramme de classes.</p>
+      <figure class="fig" style="max-width:420px"><div data-graph="raspail"></div><figcaption>Deux liaisons entre les mêmes stations : multigraphe</figcaption></figure>
+
+      <h2>II. Diagrammes de classes UML pour les graphes</h2>
+      <p>On identifie les <b>classes</b> et leurs <b>attributs</b>, puis les <b>relations</b> (association, composition…) avec leurs <b>cardinalités</b>. Exemple : le réseau social. L'information « nombre de publications likées » dépend du couple (abonné, suivi) : elle est portée par la <b>relation</b>, ici réifiée en classe <code>Abonnement</code>.</p>
+      <figure class="fig" style="max-width:640px"><div data-uml="social"></div><figcaption>Le lien d'abonnement devient une classe pour porter ses propres informations</figcaption></figure>
+
+      <h2>III. Du modèle conceptuel au modèle logiciel</h2>
+      <p>Un même modèle conceptuel peut donner lieu à <b>plusieurs implémentations</b> en mémoire vive. Le choix dépend :</p>
+      <ul>
+        <li>des <b>opérations</b> que le programme doit exécuter (tester l'adjacence, parcourir les voisins, supprimer un sommet…) ;</li>
+        <li>des <b>volumes de données</b> : ordre, taille, <i>densité</i> du graphe ;</li>
+        <li>des <b>exigences d'efficacité</b> des algorithmes utilisés.</li>
+      </ul>
+      <p>Le passage à l'implémentation peut conduire à compléter ou modifier le <b>diagramme de classes conceptuel</b> pour obtenir le <b>diagramme de classes d'implémentation</b> utilisé pour programmer.</p>
+      <p><i>Système + questions → diagramme conceptuel → (contraintes de traitement, de stockage, de performance) → diagramme d'implémentation → représentation en mémoire vive.</i></p>
+      <div class="box comp"><span class="bt">Complément</span>Notation : n = ordre, m = taille. Une matrice pleine contient n² cases ; un graphe est <b>dense</b> quand m est proche de n² (ou n(n−1)/2) et <b>peu dense</b> quand m est de l'ordre de n.</div>
+
+      <h3>A. Matrice d'adjacence</h3>
+      <div data-uml="matrice" style="max-width:460px"></div>
+      <p>Pour un graphe simple non étiqueté d'ordre n dont les sommets sont numérotés de 0 à n−1 : <b>M = (m<sub>ij</sub>)</b>, taille n×n, avec <b>m<sub>ij</sub> = 1 si j est un successeur de i</b>, 0 sinon.</p>
+      <pre class="code"><code>class GrapheMatrice {
+    private final int ordre;
+    private final int[][] matAdj;
+
+    GrapheMatrice(int ordre) {
+        this.ordre = ordre;
+        this.matAdj = new int[ordre][ordre];
+    }
+    void ajouterArc(int i, int j) { matAdj[i][j] = 1; }
+    boolean sontAdjacents(int i, int j) { return matAdj[i][j] == 1; }   // O(1)
+    int nbSuccesseurs(int i) {                                          // somme de la ligne i
+        int n = 0;
+        for (int j = 0; j &lt; ordre; j++) n += matAdj[i][j];
+        return n;
+    }
+    int nbPredecesseurs(int j) {                                        // somme de la colonne j
+        int n = 0;
+        for (int i = 0; i &lt; ordre; i++) n += matAdj[i][j];
+        return n;
+    }
+}</code></pre>
+      <p><b>Points forts :</b> test d'adjacence en O(1) ; bien adaptée aux graphes <i>denses</i> ; ajout/retrait d'un lien immédiat. <b>Limites :</b> n² cases quel que soit le nombre de liens (gaspillage si peu dense) ; numérotation des sommets obligatoire (correspondance id ↔ numéro) ; ajouter ou supprimer un sommet impose de redimensionner et de renuméroter ; pas d'information sur les liens (sauf poids) ni de multi-liens avec le 0/1 simple ; peu « objet » (les liens ne sont pas des objets).</p>
+
+      <h3>B. Liste d'arêtes</h3>
+      <div data-uml="aretes" style="max-width:520px"></div>
+      <p>Le graphe mémorise la <b>liste de ses sommets</b> et la <b>liste de ses arêtes</b> ; chaque arête connaît ses deux extrémités (et éventuellement une information).</p>
+      <pre class="code"><code>class Arete {
+    final Sommet origine, extremite;
+    final double info;
+    Arete(Sommet o, Sommet e, double info) { this.origine = o; this.extremite = e; this.info = info; }
+    boolean touche(Sommet s) { return origine == s || extremite == s; }
+    boolean relie(Sommet a, Sommet b) {                                  // cas non orienté
+        return (origine == a &amp;&amp; extremite == b) || (origine == b &amp;&amp; extremite == a);
+    }
+}
+class GrapheAretes {
+    private final List&lt;Sommet&gt; sommets = new ArrayList&lt;&gt;();
+    private final List&lt;Arete&gt; aretes = new ArrayList&lt;&gt;();
+
+    boolean adjacents(Sommet a, Sommet b) {                              // O(m)
+        for (Arete e : aretes) if (e.relie(a, b)) return true;
+        return false;
+    }
+    void supprimerSommet(Sommet s) {                                     // cohérence : supprimer aussi les arêtes incidentes
+        aretes.removeIf(e -&gt; e.touche(s));
+        sommets.remove(s);
+    }
+}</code></pre>
+      <p><b>Points forts :</b> liens = objets (informations, multigraphes naturels) ; parcours de toutes les arêtes immédiat ; mémoire proportionnelle à n + m. <b>Limites :</b> adjacence et voisins en O(m) ; suppression d'un sommet → il faut aussi supprimer ses arêtes.</p>
+
+      <h3>C. Liste de successeurs</h3>
+      <div data-uml="succ" style="max-width:420px"></div>
+      <p>Chaque sommet mémorise la <b>liste de ses successeurs</b> dans une collection.</p>
+      <pre class="code"><code>class SommetS {
+    final String id;
+    final List&lt;SommetS&gt; successeurs = new ArrayList&lt;&gt;();
+    final List&lt;SommetS&gt; predecesseurs = new ArrayList&lt;&gt;();   // optionnel : accès rapide aux prédécesseurs
+    SommetS(String id) { this.id = id; }
+
+    void ajouterSuccesseur(SommetS autre) {
+        successeurs.add(autre);
+        autre.predecesseurs.add(this);                           // maintenir la cohérence des deux listes
+    }
+}</code></pre>
+      <p><b>Points forts :</b> accès direct aux successeurs, mémoire en n + m, bien adaptée aux graphes peu denses et aux ajouts de sommets. <b>Limites :</b> prédécesseurs coûteux sans liste supplémentaire ; en non orienté, une arête est stockée <i>deux fois</i> ; liens enrichis ou multiples → il faut un objet « arc » (ou une <code>Map</code>).</p>
+      <p>👉 Le <a data-go="s1/corriges" href="#s1/corriges">tableau comparatif (activité 3)</a> et les exercices 1 à 3 sont corrigés.</p>
+      <div class="box ret"><span class="bt">À retenir</span>Aucune représentation n'est « la meilleure » : on choisit selon les <b>opérations fréquentes</b> et la <b>densité</b> du graphe.</div>
+    </article>

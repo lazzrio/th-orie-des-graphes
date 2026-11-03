@@ -1,0 +1,132 @@
+
+    <!-- ===== CHAPITRE 3 ===== -->
+    <article class="chap" data-chap="3">
+      <h2 style="margin-top:0">Chapitre 3 — Problèmes de coloration (partie 1)</h2>
+      <p><b>Objectifs :</b> modéliser un problème de contraintes par un problème de coloration ; construire et évaluer une coloration propre ; concevoir et comparer différentes stratégies de coloration.</p>
+
+      <h2>I. Définitions</h2>
+      <h3>1. Sommets et arêtes — degré d'un sommet</h3>
+      <div class="box def"><span class="bt">Définitions</span>
+        <ul>
+          <li>Deux sommets sont <b>adjacents</b> s'il existe au moins une arête entre eux.</li>
+          <li>Un sommet est <b>pendant</b> s'il n'est adjacent qu'à <i>un seul</i> autre sommet.</li>
+          <li>Un sommet est <b>isolé</b> s'il n'est adjacent à <i>aucun</i> autre sommet.</li>
+          <li>Deux arêtes sont <b>adjacentes</b> si elles ont au moins une extrémité en commun.</li>
+          <li>Une arête est <b>incidente</b> à un sommet s si s est l'une de ses extrémités.</li>
+          <li>Le <b>degré</b> d'un sommet s, noté <b>deg(s)</b>, est le nombre d'arêtes incidentes à s. Dans un graphe simple d'ordre n, c'est aussi le nombre de sommets adjacents à s et <b>deg(s) ≤ n−1</b>.</li>
+        </ul>
+      </div>
+      <div class="figs">
+        <figure class="fig"><div data-graph="gdeg" data-hln="s1,s6"></div><figcaption>Graphe d'ordre 6 et de taille 5 : A = {{s<sub>1</sub>,s<sub>4</sub>}, {s<sub>2</sub>,s<sub>3</sub>}, {s<sub>2</sub>,s<sub>4</sub>}, {s<sub>3</sub>,s<sub>4</sub>}, {s<sub>4</sub>,s<sub>5</sub>}}. s<sub>1</sub> est pendant, s<sub>6</sub> est isolé.</figcaption></figure>
+        <div class="tw"><table class="mat"><tr><th>s</th><th>s<sub>1</sub></th><th>s<sub>2</sub></th><th>s<sub>3</sub></th><th>s<sub>4</sub></th><th>s<sub>5</sub></th><th>s<sub>6</sub></th></tr><tr><th>deg(s)</th><td>1</td><td>2</td><td>2</td><td class="one">4</td><td>1</td><td>0</td></tr></table>
+        <p style="padding:0 12px">Adj(s<sub>2</sub>) = {s<sub>3</sub>, s<sub>4</sub>}. {s<sub>2</sub>,s<sub>3</sub>} et {s<sub>3</sub>,s<sub>4</sub>} sont adjacentes. {s<sub>1</sub>,s<sub>4</sub>} est incidente à s<sub>1</sub> et à s<sub>4</sub>.</p></div>
+      </div>
+      <div class="box comp"><span class="bt">Complément (lemme des poignées de main)</span>Dans un graphe non orienté de taille m : <b>Σ deg(s) = 2m</b> (chaque arête compte deux fois). Ici 1+2+2+4+1+0 = 10 = 2×5. Conséquence : le nombre de sommets de degré impair est toujours pair.</div>
+
+      <h3>2. Sous-graphes — graphes partiels</h3>
+      <div class="box def"><span class="bt">Définitions</span>Soit G = (S, A) un graphe.
+        <ul>
+          <li>Un <b>sous-graphe</b> de G est un graphe G′ = (S′, A′) avec <b>S′ ⊆ S</b> et A′ = les arêtes de A dont les <i>deux</i> extrémités sont dans S′.</li>
+          <li>Un <b>graphe partiel</b> de G est un graphe G′ = (S, A′) avec <b>A′ ⊆ A</b> : mêmes sommets, certaines arêtes seulement.</li>
+        </ul>
+      </div>
+      <div class="figs">
+        <figure class="fig"><div data-graph="gsub"></div><figcaption>Un graphe G</figcaption></figure>
+        <figure class="fig"><div data-graph="gsub1"></div><figcaption>Sous-graphe de G obtenu en ôtant le sommet 2</figcaption></figure>
+        <figure class="fig"><div data-graph="gsub2"></div><figcaption>Un graphe partiel de G (tous les sommets, moins d'arcs)</figcaption></figure>
+        <figure class="fig"><div data-graph="gsub3"></div><figcaption>Un sous-graphe partiel de G</figcaption></figure>
+      </div>
+
+      <h3>3. Graphe complet</h3>
+      <div class="box def"><span class="bt">Définition</span>Un graphe simple est <b>complet</b> si et seulement si ses sommets sont <b>deux à deux adjacents</b> : pour deux sommets distincts x et y, il existe une arête reliant x à y. On note <b>K<sub>n</sub></b> le graphe complet d'ordre n.</div>
+      <div class="figs" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+        <figure class="fig"><div data-graph="k2"></div><figcaption>K<sub>2</sub></figcaption></figure>
+        <figure class="fig"><div data-graph="k3"></div><figcaption>K<sub>3</sub></figcaption></figure>
+        <figure class="fig"><div data-graph="k4"></div><figcaption>K<sub>4</sub></figcaption></figure>
+        <figure class="fig"><div data-graph="k5"></div><figcaption>K<sub>5</sub></figcaption></figure>
+      </div>
+      <div class="box prop"><span class="bt">À savoir</span>Dans K<sub>n</sub> : tous les sommets ont pour degré <b>n−1</b> et il y a <b>n(n−1)/2</b> arêtes (K<sub>2</sub> : 1, K<sub>3</sub> : 3, K<sub>4</sub> : 6, K<sub>5</sub> : 10). <i>Justification :</i> Σ deg = n(n−1) = 2m.</div>
+
+      <h2>II. Problèmes de coloration — domaines d'applications</h2>
+      <h3>1. Définitions</h3>
+      <div class="box def"><span class="bt">Définitions</span>
+        <ul>
+          <li>Étant donné un graphe simple non orienté G = (S, A), une <b>coloration propre</b> est une fonction f qui attribue une couleur à chaque sommet de sorte que <b>deux sommets adjacents n'aient jamais la même couleur</b> : ∀ {x,y} ∈ A, f(x) ≠ f(y).</li>
+          <li>G est <b>k-colorable</b> s'il existe une coloration propre avec k couleurs.</li>
+          <li>Le <b>nombre chromatique</b> χ(G) est le plus petit entier k pour lequel G est k-colorable.</li>
+        </ul>
+      </div>
+      <h3>2. Problématiques et domaines d'applications</h3>
+      <ul>
+        <li><b>Problèmes de production</b> (trouver une solution) : comment trouver une coloration propre de G ? Quel est le nombre chromatique de G ?</li>
+        <li><b>Problèmes de décision</b> (une solution existe-t-elle ?) : peut-on trouver une coloration propre minimale ? Étant donné k &lt; n, G est-il k-colorable ?</li>
+      </ul>
+      <div class="tw"><table>
+        <tr><th>Domaine</th><th>Problématiques</th></tr>
+        <tr><td><b>Organisation</b></td><td>gestion d'emploi du temps, répartition de tâches</td></tr>
+        <tr><td><b>Logistique</b></td><td>stockage dans des entrepôts de produits incompatibles</td></tr>
+        <tr><td><b>Télécommunications</b></td><td>attribution de fréquences</td></tr>
+        <tr><td><b>Informatique</b></td><td>allocation de registres</td></tr>
+      </table></div>
+      <p>De nombreuses problématiques d'<b>attribution de ressources rares</b> se résolvent par des algorithmes de coloration : <i>sommets</i> = objets à placer, <i>arêtes</i> = incompatibilités, <i>couleurs</i> = ressources (créneau, zone, fréquence, registre).</p>
+
+      <h2>III. Trouver une coloration propre</h2>
+      <p>Exemple fil rouge : 8 produits chimiques dangereux à répartir en zones de stockage, p<sub>1</sub> incompatible avec p<sub>4</sub>, p<sub>2</sub> avec p<sub>3</sub>, p<sub>3</sub> avec p<sub>2</sub>, p<sub>4</sub>, p<sub>5</sub>, p<sub>8</sub>, etc. (graphe ci-dessous, détail dans l'exercice 4 corrigé).</p>
+      <figure class="fig" style="max-width:520px"><div data-graph="chem"></div><figcaption>Graphe des incompatibilités : sommets = produits, arêtes = « ne peuvent pas être stockés ensemble »</figcaption></figure>
+
+      <h3>1. L'algorithme séquentiel</h3>
+      <div class="box prop"><span class="bt">Principe</span>Parcourir les sommets les uns après les autres et attribuer à chaque sommet la <b>plus petite couleur non déjà utilisée par un de ses voisins</b>.</div>
+      <pre class="code"><code>Pour chaque sommet i :
+    c ← 0
+    Faire :
+        test ← vrai
+        Pour chaque sommet j &lt; i :
+            si j est adjacent à i et que la couleur de j est c : test ← faux
+        si (test = faux) c ← c + 1
+    Tant que (test = faux)
+    Attribuer la couleur c à i</code></pre>
+      <p>Version Java (testée), où <code>ordre</code> donne l'ordre de traitement :</p>
+      <pre class="code"><code>static int[] sequentiel(boolean[][] adj, int[] ordre) {
+    int n = adj.length;
+    int[] couleur = new int[n];
+    Arrays.fill(couleur, -1);
+    for (int i : ordre) {
+        int c = 0;
+        boolean test;
+        do {
+            test = true;
+            for (int j = 0; j &lt; n; j++) {
+                if (adj[i][j] &amp;&amp; couleur[j] == c) test = false;
+            }
+            if (!test) c++;
+        } while (!test);
+        couleur[i] = c;
+    }
+    return couleur;
+}</code></pre>
+      <p>Cet algorithme donne <b>toujours une coloration propre</b>. Mais le nombre de couleurs dépend de l'<b>ordre de traitement</b> : sur les produits chimiques, l'ordre p<sub>1</sub>…p<sub>8</sub> utilise 3 zones, un autre ordre n'en utilise que 2 (exercice 4).</p>
+
+      <h3>2. Comment choisir l'ordre de traitement ?</h3>
+      <div class="box prop"><span class="bt">Stratégies</span>
+        <ul>
+          <li><b>Degré décroissant (Welsh-Powell)</b> : on traite d'abord les sommets qui ont le plus de voisins, c'est-à-dire les plus contraints (ceux qui ont le plus de chances de poser problème plus tard).</li>
+          <li><b>DSATUR</b> : à chaque étape, on choisit le sommet non coloré dont les voisins portent le plus de couleurs <i>différentes</i> (« degré de saturation »), en cas d'égalité celui de plus grand degré. L'ordre n'est plus fixé à l'avance : il s'adapte à la coloration en cours.</li>
+        </ul>
+      </div>
+      <p>👉 Teste-les dans l'<a data-go="atelier" href="#atelier">atelier de coloration</a>.</p>
+
+      <h3>3. Obtenir une solution optimale ?</h3>
+      <p>Même avec l'ordre « degré décroissant », <b>rien ne garantit l'optimalité</b> : sur le graphe de l'exercice 5 (12 sommets), l'algorithme amélioré utilise 3 couleurs alors que χ = 2. Trouver χ(G) est un problème difficile (<b>NP-difficile</b> dans le cas général) : les algorithmes gloutons sont des <i>heuristiques</i> qui donnent une borne supérieure.</p>
+      <div class="box comp"><span class="bt">Compléments utiles pour encadrer χ(G)</span>
+        <ul>
+          <li><b>Borne inférieure :</b> si G contient une <b>clique</b> (sous-graphe complet) K<sub>k</sub>, alors χ(G) ≥ k. Dès qu'une arête existe, χ ≥ 2 ; avec un triangle, χ ≥ 3.</li>
+          <li><b>Borne supérieure :</b> l'algorithme séquentiel n'utilise jamais plus de Δ+1 couleurs, où Δ est le degré maximum.</li>
+          <li><b>Graphes bipartis :</b> χ(G) ≤ 2 ⇔ G n'a pas de cycle de longueur impaire. Les graphes des exercices 4 et 5 sont bipartis : leur nombre chromatique est 2.</li>
+          <li>χ(K<sub>n</sub>) = n.</li>
+        </ul>
+      </div>
+      <figure class="fig" style="max-width:340px"><div data-graph="c5" data-colors="u1:0,u2:1,u3:0,u4:1,u5:2"></div><figcaption>Un cycle impair (C<sub>5</sub>) a besoin de 3 couleurs</figcaption></figure>
+      <div class="box ret"><span class="bt">Bilan</span>Modéliser (sommets = objets, arêtes = incompatibilités, couleurs = ressources) → colorier avec un bon ordre → encadrer χ(G) : borne inférieure par une clique, borne supérieure par l'algorithme glouton.</div>
+      <p>👉 <a data-go="s1/corriges" href="#s1/corriges">Exercices 4 et 5 et activité 4 corrigés</a>.</p>
+    </article>
+  </div> <!-- /pane cours -->
