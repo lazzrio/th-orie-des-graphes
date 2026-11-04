@@ -72,3 +72,18 @@ window.QCM.s2 = {
     { ch: 4, q: "Vrai ou faux : l'algorithme d'exploration visite toutes les pages du wiki, même celles qu'aucun lien n'atteint depuis la page de départ.", o: ["Vrai", "Faux"], ok: [1], e: "Il ne découvre que les pages accessibles depuis le sommet de départ. Pour couvrir toutes les pages, il faudrait relancer l'exploration depuis chaque sommet non encore vu." }
   ]
 };
+
+/* Le chapitre 3 (partie 2) fait aussi partie du QCM de la semaine 1 : on y reprend les questions
+   sur les propriétés des algorithmes, la complexité et les algorithmes de coloration (groupes 1 et 2). */
+(function () {
+  var s1 = window.QCM && window.QCM.s1;
+  if (!s1) return;
+  s1.chapitres[3] = "Chapitre 3 (partie 1)";
+  s1.chapitres[4] = "Chapitre 3 (partie 2)";
+  window.QCM.s2.questions.forEach(function (q) {
+    if (q.ch === 1 || q.ch === 2) {
+      s1.questions.push({ ch: 4, q: q.q, o: q.o, ok: q.ok, e: q.e });
+    }
+  });
+  s1.titre = "Semaine 1 — Chapitres 1, 2 et 3 (parties 1 et 2)";
+})();
