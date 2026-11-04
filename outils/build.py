@@ -40,6 +40,12 @@ html = ""
 for p in PARTS:
     with open(os.path.join(ROOT, "parts", p), encoding="utf-8") as f:
         html += f.read()
+def inclure(m):
+    with open(os.path.join(ROOT, "parts", m.group(1)), encoding="utf-8") as f:
+        return f.read()
+
+
+html = re.sub(r"\{\{PART:([\w.]+)\}\}", inclure, html)
 html = re.sub(r"\{\{MAT:(\w+)\}\}", lambda m: MATS[m.group(1)], html)
 with open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8", newline="\n") as f:
     f.write(html)

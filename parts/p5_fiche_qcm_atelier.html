@@ -83,6 +83,7 @@
   </div>
 </section>
 
+{{PART:p6_s2_cours.html}}{{PART:p7_s2_corriges.html}}{{PART:p8_s2_fiche_qcm.html}}
 <!-- ============ ATELIER ============ -->
 <section class="view" id="view-atelier">
   <h1>🎨 Atelier de coloration</h1>
@@ -103,7 +104,8 @@
         <label for="at-mode">Ordre</label>
         <select id="at-mode">
           <option value="naturel">Naturel (ordre des sommets)</option>
-          <option value="degre">Degré décroissant (Welsh-Powell)</option>
+          <option value="degre">Séquentiel ordonné (degré décroissant)</option>
+          <option value="wp">Welsh-Powell (une couleur à la fois)</option>
           <option value="dsatur">DSATUR</option>
           <option value="manuel">Manuel (clic sur les sommets)</option>
         </select>
@@ -127,18 +129,22 @@
           <li><b>Couronne</b> en ordre naturel : le glouton utilise 4 couleurs alors que χ = 2 ; en DSATUR, 2.</li>
           <li><b>Exercice 5</b> : 3 couleurs en naturel et en degré décroissant, 2 avec DSATUR.</li>
           <li><b>Examens</b> : essaie un ordre manuel qui dépasse 4 couleurs : impossible de faire moins que χ = 4.</li>
+          <li><b>Welsh-Powell</b> sur les examens : couleur 1 = {Chimie, Chinois}, couleur 2 = {Électronique, Informatique}… compare avec « Séquentiel ordonné » : l'une traite une couleur à la fois, l'autre un sommet à la fois.</li>
         </ul>
       </div>
     </div>
   </div>
 </section>
 
+{{PART:p9_exploration.html}}
 </main>
-<footer>Cours de théorie des graphes — ECE Ing2. Contenu rédigé à partir des supports du cours et des activités ; les exemples de code Java sont dans <code>code/Graphes.java</code>.</footer>
+<footer>Cours de théorie des graphes — ECE Ing2. Contenu rédigé à partir des supports du cours et des activités ; les exemples de code Java sont dans <code>code/Graphes.java</code> et <code>code/Semaine2.java</code>.</footer>
 
 <script src="js/graph.js"></script>
 <script src="js/qcm-data.js"></script>
+<script src="js/qcm-data2.js"></script>
 <script src="js/app.js"></script>
 <script src="js/atelier.js"></script>
+<script src="js/exploration.js"></script>
 </body>
 </html>

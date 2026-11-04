@@ -101,6 +101,8 @@
     var data = window.QCM && QCM[wk], box = $("#qcm-" + wk);
     if (!data || !box) return;
     var key = "tg_qcm_" + wk, N = data.questions.length;
+    var chap = data.chapitres || { 1: "Chapitre 1", 2: "Chapitre 2", 3: "Chapitre 3" };
+    $$("[data-qcount='" + wk + "']").forEach(function (e) { e.textContent = N; });
     var st; try { st = JSON.parse(safeGet(key)); } catch (e) { st = null; }
     if (!st || !st.order || st.order.length !== N) st = { order: data.questions.map(function (_, i) { return i; }), ans: {}, val: {} };
     var filter = "0";
@@ -113,14 +115,14 @@
       var done = 0, good = 0;
       Object.keys(st.val).forEach(function (i) { if (st.val[i]) { done++; if (isGood(+i)) good++; } });
       var html = "<div class='qbar'><label for='qf-" + wk + "'><b>Chapitre :</b></label><select id='qf-" + wk + "'>" +
-        ["0|Tous", "1|Chapitre 1", "2|Chapitre 2", "3|Chapitre 3"].map(function (o) { var p = o.split("|"); return "<option value='" + p[0] + "'" + (filter === p[0] ? " selected" : "") + ">" + p[1] + "</option>"; }).join("") +
+        (["0|Tous"].concat(Object.keys(chap).map(function (k) { return k + "|" + chap[k]; }))).map(function (o) { var p = o.split("|"); return "<option value='" + p[0] + "'" + (filter === p[0] ? " selected" : "") + ">" + p[1] + "</option>"; }).join("") +
         "</select><div class='prog'><i style='width:" + Math.round(100 * done / N) + "%'></i></div><span><b>" + good + "</b> bonnes / " + done + " validées (sur " + N + ")</span>" +
         "<button class='btn ghost' data-act='valall'>Tout valider</button><button class='btn ghost' data-act='reset'>Recommencer (mélanger)</button></div>";
       st.order.forEach(function (i) {
         var q = data.questions[i];
         if (filter !== "0" && String(q.ch) !== filter) return;
         var multi = q.ok.length > 1, locked = !!st.val[i], a = st.ans[i] || [], good1 = locked && isGood(i);
-        html += "<div class='qc" + (locked ? " locked " + (good1 ? "ok" : "ko") : "") + "' data-i='" + i + "'><div class='qh'><span class='tag'>Chapitre " + q.ch + "</span>" +
+        html += "<div class='qc" + (locked ? " locked " + (good1 ? "ok" : "ko") : "") + "' data-i='" + i + "'><div class='qh'><span class='tag'>" + chap[q.ch] + "</span>" +
           (multi ? "<span class='tag warm'>plusieurs réponses</span>" : "") + (locked ? "<span class='tag " + (good1 ? "" : "warm") + "'>" + (good1 ? "✔ juste" : "✘ à revoir") + "</span>" : "") +
           "</div><div class='qt'>" + q.q + "</div>";
         q.o.forEach(function (o, k) {
@@ -132,7 +134,7 @@
         else html += "<div style='margin-top:8px'><button class='btn' data-act='val' data-i='" + i + "'>Valider</button></div>";
         html += "</div>";
       });
-      if (done === N) html += "<div class='result'><div>Score final</div><b>" + good + " / " + N + "</b><div>" + (good === N ? "Parfait, tu maîtrises la semaine 1 !" : good >= N * 0.75 ? "Très bien — relis les explications des questions ratées." : "Relis la fiche « À retenir » puis recommence.") + "</div></div>";
+      if (done === N) html += "<div class='result'><div>Score final</div><b>" + good + " / " + N + "</b><div>" + (good === N ? "Parfait, tu maîtrises cette semaine !" : good >= N * 0.75 ? "Très bien — relis les explications des questions ratées." : "Relis la fiche « À retenir » puis recommence.") + "</div></div>";
       box.innerHTML = html;
       var sel = $("#qf-" + wk); if (sel) sel.addEventListener("change", function () { filter = this.value; draw(); });
     }
@@ -151,6 +153,7 @@
     draw();
   }
   initQcm("s1");
+  initQcm("s2");
 
   show();
 })();

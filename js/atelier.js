@@ -40,12 +40,26 @@
 
   function planOrder() {
     var mode = $("at-mode").value, ids = S.ids.slice();
-    if (mode === "degre") {
+    if (mode === "degre" || mode === "wp") {
       ids = ids.map(function (v, i) { return [v, i]; }).sort(function (a, b) {
         return S.nb[b[0]].length - S.nb[a[0]].length || a[1] - b[1];
       }).map(function (x) { return x[0]; });
     }
-    S.order = (mode === "naturel" || mode === "degre") ? ids : [];
+    S.order = (mode === "naturel" || mode === "degre" || mode === "wp") ? ids : [];
+    S.wpSeq = null;
+    if (mode === "wp") {  // Welsh-Powell : une couleur à la fois, remplie au maximum
+      S.wpSeq = [];
+      var tmp = {}, restants = ids.length, c = 0;
+      while (restants > 0) {
+        var first = true;
+        ids.forEach(function (v) {
+          if (tmp[v] == null && S.nb[v].every(function (u) { return tmp[u] !== c; })) {
+            tmp[v] = c; S.wpSeq.push({ v: v, c: c, first: first }); restants--; first = false;
+          }
+        });
+        c++;
+      }
+    }
   }
 
   function pickDsatur() {
@@ -60,7 +74,14 @@
     return best;
   }
 
+  function colorVertexWP(e) {
+    S.color[e.v] = e.c; S.step++;
+    S.log.push((e.first ? "<i>Nouvelle couleur " + (e.c + 1) + "</i> — " : "") + "<b>" + name(S.spec, e.v) + "</b> (deg " + S.nb[e.v].length +
+      ") : aucun voisin dans la couleur " + (e.c + 1) + " → reçoit la couleur <b>" + (e.c + 1) + "</b>");
+  }
+
   function colorVertex(v) {
+    if (S.wpSeq) { colorVertexWP(S.wpSeq[S.step]); return; }
     var used = [];
     S.nb[v].forEach(function (u) { if (S.color[u] != null && used.indexOf(S.color[u]) < 0) used.push(S.color[u]); });
     used.sort(function (a, b) { return a - b; });
@@ -74,6 +95,7 @@
 
   function nextVertex() {
     var mode = $("at-mode").value;
+    if (mode === "wp") return S.wpSeq[S.step] ? S.wpSeq[S.step].v : null;
     if (mode === "dsatur") return pickDsatur();
     if (mode === "manuel") return null;
     return S.order[S.step] || null;
@@ -87,7 +109,8 @@
     var nxt = !done ? nextVertex() : null;
     S.handle.setCur(nxt);
     var h = "";
-    if (mode === "naturel" || mode === "degre") h = "Ordre de traitement : " + S.order.map(function (v) { return name(S.spec, v); }).join(" → ");
+    if (mode === "wp") h = "Welsh-Powell : sommets triés par degré décroissant (" + S.order.map(function (v) { return name(S.spec, v); }).join(", ") + "). On remplit une couleur au maximum, puis on passe à la suivante.";
+    else if (mode === "naturel" || mode === "degre") h = "Ordre de traitement : " + S.order.map(function (v) { return name(S.spec, v); }).join(" → ");
     else if (mode === "dsatur") h = "DSATUR : à chaque étape on choisit le sommet non coloré dont les voisins portent le plus de couleurs différentes (égalité : plus grand degré).";
     else h = "Mode manuel : cliquez sur les sommets dans l'ordre de votre choix, chacun reçoit la plus petite couleur libre.";
     var lg = S.log.map(function (l, i) { return "<div" + (i === S.log.length - 1 && !done ? " class='now'" : "") + ">" + (i + 1) + ". " + l + "</div>"; }).join("");

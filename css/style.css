@@ -16,8 +16,8 @@
   --accent:#5fcfc8; --accent-ink:#0b1f1e; --accent-soft:#17312f; --warm:#f0a35a; --warm-soft:#33261a;
   --ok:#74c777; --ok-soft:#1b2f1d; --bad:#f08a82; --bad-soft:#35201e; --info:#7fb3ee; --info-soft:#18283a;
   --code-bg:#141a17; --shadow:none;
-  --c0f:#5a2c2a; --c0s:#e08f8b; --c1f:#27405e; --c1s:#7fa6d6; --c2f:#2c4a2c; --c2s:#8fc48a;
-  --c3f:#58491f; --c3s:#e0c568; --c4f:#44335a; --c4s:#b79bd0; --c5f:#5b3c14; --c5s:#e9b25a;
+  --c0f:#8a2f2b; --c0s:#e08f8b; --c1f:#1f55a0; --c1s:#7fa6d6; --c2f:#2f7a3a; --c2s:#8fc48a;
+  --c3f:#8a7410; --c3s:#e0c568; --c4f:#68409a; --c4s:#b79bd0; --c5f:#9a5a10; --c5s:#e9b25a;
   --edge:#8c9892; --hot:#ff7b6b;
 }
 @media (prefers-color-scheme:dark){
@@ -26,8 +26,8 @@
     --accent:#5fcfc8; --accent-ink:#0b1f1e; --accent-soft:#17312f; --warm:#f0a35a; --warm-soft:#33261a;
     --ok:#74c777; --ok-soft:#1b2f1d; --bad:#f08a82; --bad-soft:#35201e; --info:#7fb3ee; --info-soft:#18283a;
     --code-bg:#141a17; --shadow:none;
-    --c0f:#5a2c2a; --c0s:#e08f8b; --c1f:#27405e; --c1s:#7fa6d6; --c2f:#2c4a2c; --c2s:#8fc48a;
-    --c3f:#58491f; --c3s:#e0c568; --c4f:#44335a; --c4s:#b79bd0; --c5f:#5b3c14; --c5s:#e9b25a;
+    --c0f:#8a2f2b; --c0s:#e08f8b; --c1f:#1f55a0; --c1s:#7fa6d6; --c2f:#2f7a3a; --c2s:#8fc48a;
+    --c3f:#8a7410; --c3s:#e0c568; --c4f:#68409a; --c4s:#b79bd0; --c5f:#9a5a10; --c5s:#e9b25a;
     --edge:#8c9892; --hot:#ff7b6b;
   }
 }
@@ -181,6 +181,9 @@ details.cx>.cxb{padding:2px 18px 16px;border-top:1px solid var(--line)}
 .gsvg .nd.c0 circle{fill:var(--c0f);stroke:var(--c0s)}.gsvg .nd.c1 circle{fill:var(--c1f);stroke:var(--c1s)}
 .gsvg .nd.c2 circle{fill:var(--c2f);stroke:var(--c2s)}.gsvg .nd.c3 circle{fill:var(--c3f);stroke:var(--c3s)}
 .gsvg .nd.c4 circle{fill:var(--c4f);stroke:var(--c4s)}.gsvg .nd.c5 circle{fill:var(--c5f);stroke:var(--c5s)}
+.gsvg .bd circle{fill:var(--ink);stroke:var(--bg);stroke-width:1.5}
+.gsvg .bd text{font:700 9.5px var(--head);fill:var(--bg);text-anchor:middle;dominant-baseline:central}
+.gsvg .bd.off{display:none}
 .gsvg .nd.hot circle{stroke:var(--hot);stroke-width:4}
 .gsvg .nd.cur circle{stroke:var(--hot);stroke-width:4;stroke-dasharray:4 3}
 .gsvg .nd.clk{cursor:pointer}
@@ -204,7 +207,8 @@ details.cx>.cxb{padding:2px 18px 16px;border-top:1px solid var(--line)}
 
 /* atelier */
 .atelier{display:grid;gap:18px;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}
-@media (max-width:900px){.atelier{grid-template-columns:1fr}}
+@media (max-width:900px){.atelier{grid-template-columns:minmax(0,1fr)}}
+.atelier>.panel{min-width:0}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
 .panel h3{margin:.1em 0 .5em;font-size:1.05rem}
 .ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}

@@ -11,6 +11,12 @@ Site de révision statique : cours semaine par semaine, exercices et activités 
 - QCM de 46 questions corrigées avec explications (progression enregistrée dans le navigateur).
 - Atelier : algorithme séquentiel, degré décroissant, DSATUR ou ordre manuel sur 7 graphes.
 
+**Semaine 2** (chapitre 3 partie 2 et exploration d'un graphe)
+- Cours : exhaustif / glouton / heuristiques, complexité, séquentiel, séquentiel ordonné, Welsh-Powell, DSATUR, encadrement de χ(G) ; exploration d'un graphe (file, pile).
+- Corrigés : exercice 6, activité 5 (code Java compilé et exécuté sur les 6 jeux de données fournis) et activité 6 (exploration d'un wiki).
+- Fiche « À retenir » et QCM de 57 questions.
+- Atelier de coloration (nouveau mode Welsh-Powell) et atelier d'exploration (file / pile).
+
 ## Utilisation
 
 Ouvrir `index.html` dans un navigateur, ou servir le dossier :
@@ -24,7 +30,7 @@ python -m http.server 8000
 - `index.html` : page unique, générée par `outils/build.py` à partir de `parts/`
 - `parts/` : fragments HTML (cours, corrigés, fiche, QCM, atelier)
 - `css/style.css`, `js/graph.js` (rendu SVG des graphes et diagrammes de classes), `js/app.js`, `js/atelier.js`, `js/qcm-data.js`
-- `code/Graphes.java` : implémentations Java des trois représentations et des algorithmes de coloration (compilé et exécuté pour vérifier les corrigés)
+- `code/Graphes.java` (semaine 1) et `code/Semaine2.java` (Welsh-Powell, parcours en largeur et en profondeur) : implémentations Java compilées et exécutées pour vérifier les corrigés
 
 Pour modifier le contenu : éditer les fichiers de `parts/` puis lancer `python outils/build.py`.
 Pour ajouter une semaine : nouveaux fragments dans `parts/`, une entrée dans `PARTS` de `build.py`, un bouton dans la barre de navigation (`p0_head.html`) et un bloc dans `js/qcm-data.js`.

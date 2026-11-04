@@ -1,0 +1,247 @@
+
+  <!-- ---------- CORRIGÉS ---------- -->
+  <div class="pane" data-pane="corriges">
+    <div class="box"><span class="bt">Comment s'en servir</span>Cherche d'abord seul : chaque corrigé est replié. Le code Java de l'activité 5 a été compilé et exécuté dans le projet fourni (<code>Universite</code>, <code>Examen</code>, <code>Creneau</code>) sur les six jeux de données ; l'algorithme d'exploration de l'activité 6 aussi. Les résultats annoncés sont ceux de ces exécutions.</div>
+    <div class="cxbar"><button data-cx="open">Tout ouvrir</button><button data-cx="close">Tout fermer</button><button class="printbtn" onclick="window.print()">🖨️ Imprimer</button></div>
+
+    <!-- ===== EXERCICE 6 ===== -->
+    <details class="cx"><summary>Exercice 6 — Complexité et représentation mémoire <span class="tag">Chap. 3 (2)</span></summary><div class="cxb">
+      <p>G est d'ordre n et de taille m. On discute la complexité de quatre traitements selon la représentation.</p>
+      <div class="tw"><table>
+        <tr><th>Traitement</th><th>Matrice d'adjacence</th><th>Liste de successeurs</th></tr>
+        <tr><td><b>Tester si i et j sont adjacents</b></td><td><b>O(1)</b> : lecture de <code>matAdj[i][j]</code></td><td><b>O(deg(i))</b>, au pire O(n) : parcourir la liste de i (O(1) en moyenne avec un <code>HashSet</code>)</td></tr>
+        <tr><td><b>Degré d'un sommet</b></td><td><b>O(n)</b> : somme de la ligne i</td><td><b>O(1)</b> : <code>successeurs.size()</code></td></tr>
+        <tr><td><b>Degrés de tous les sommets</b></td><td><b>O(n²)</b> : n lignes de n cases</td><td><b>O(n)</b> si chaque liste connaît sa taille ; <b>O(n + m)</b> si on recompte les éléments</td></tr>
+        <tr><td><b>Trier les sommets par degré décroissant</b></td><td>degrés O(n²) + tri O(n log n) = <b>O(n²)</b></td><td>degrés O(n + m) + tri O(n log n) = <b>O(n log n + m)</b></td></tr>
+      </table></div>
+      <div class="sol"><b>Explications.</b>
+        <ul>
+          <li>Le tri de n valeurs par un bon algorithme (tri fusion, tri rapide, <code>List.sort</code>) coûte O(n log n) comparaisons. Un tri naïf (à bulles) coûterait O(n²) comparaisons ; et si chaque comparaison recalcule des degrés avec la matrice (O(n)), on tombe à <b>O(n³)</b> : c'est ce que fait le code fourni (activité 5).</li>
+          <li>C'est ce qui explique le tableau du cours : séquentiel ordonné en O(n²) avec matrice et O(n log n + m) avec listes de successeurs.</li>
+          <li><b>Conclusion :</b> la matrice gagne pour <i>tester l'adjacence</i> ; les listes gagnent pour <i>tout ce qui concerne les voisins d'un sommet</i> (degré, parcours des voisins) et pour les graphes peu denses.</li>
+        </ul></div>
+    </div></details>
+
+    <!-- ===== ACTIVITÉ 5 ===== -->
+    <details class="cx" open><summary>Activité 5 — Implémenter en Java et tester les algorithmes de coloration <span class="tag">Chap. 3 (2)</span> <span class="tag warm">à présenter</span></summary><div class="cxb">
+
+      <h3>Étape 1 : étudier et comprendre le code fourni</h3>
+      <h4>A. Modélisation du système</h4>
+      <span class="qn"><b class="num">1</b>Relations entre Universite, Examen et Creneau (d'après les attributs)</span>
+      <div class="sol">
+        <ul>
+          <li><code>Universite</code> possède <code>ArrayList&lt;Examen&gt; l_exams</code> : une université <b>contient</b> plusieurs examens (1 — *). C'est une <b>composition</b> : les examens sont créés par l'université (<code>chargerExams</code>) et n'existent pas sans elle.</li>
+          <li><code>Universite</code> possède <code>ArrayList&lt;Creneau&gt; l_creneaux</code> : elle gère plusieurs créneaux (1 — *), créés par les algorithmes (<code>null</code> tant qu'aucune attribution n'a été faite).</li>
+          <li><code>Examen</code> possède <code>Creneau c</code> : un examen est affecté à <b>un seul créneau</b> ou à aucun (<code>null</code> au départ) : cardinalité 0..1 côté Creneau, * côté Examen (un créneau peut accueillir plusieurs examens). Association <b>orientée</b> : un Examen connaît son Creneau, mais <code>Creneau</code> ne connaît pas ses examens.</li>
+        </ul></div>
+      <span class="qn"><b class="num">2</b>Diagramme de classes</span>
+      <div class="sol"><figure class="fig" style="max-width:640px;margin:0 auto"><div data-uml="planif"></div></figure></div>
+
+      <h4>B. Modélisation du graphe et représentation mémoire</h4>
+      <span class="qn"><b class="num">3</b>Contenu de <code>matriceAdj</code> après chargement ; sens du 1</span>
+      <div class="sol">La matrice est de taille n×n et ne contient que des <b>0 et des 1</b>. Pour chaque ligne du fichier (combinaison d'un étudiant), toutes les paires d'examens de la ligne sont mises à 1 <b>dans les deux sens</b> (<code>matriceAdj[a][b] = matriceAdj[b][a] = 1</code>) : la matrice est <b>symétrique</b> avec une diagonale nulle. <b>1 en (i, j)</b> signifie que les examens i et j sont <b>incompatibles</b> : au moins un étudiant passe les deux, donc il existe une <b>arête</b> entre i et j dans le graphe de conflits. (Les identifiants du fichier sont diminués de 1 pour correspondre aux indices.)</div>
+      <span class="qn"><b class="num">4</b>Représentation mémoire utilisée</span>
+      <div class="sol">Une <b>matrice d'adjacence</b> <code>int[][]</code> (graphe simple non orienté, sommets numérotés de 0 à n−1), complétée par une liste d'objets <code>Examen</code> dont l'indice est l'identifiant.</div>
+      <span class="qn"><b class="num">5</b>Rôle de <code>getDegre(Examen e)</code></span>
+      <div class="sol">Elle renvoie le <b>degré</b> de l'examen, c'est-à-dire le nombre d'examens avec lesquels il est incompatible : on parcourt la <b>ligne</b> <code>e.getId()</code> de la matrice et on compte les cases égales à 1. Complexité <b>O(n)</b>.</div>
+
+      <h3>Étape 2 : implémenter l'algorithme séquentiel</h3>
+      <pre class="code"><code>public void attribuerCreneaux_sequentiel(){
+    l_creneaux = new ArrayList&lt;Creneau&gt;();
+    //les sommets sont traités dans l'ordre du fichier (id croissant)
+    for (int i = 0; i &lt; l_exams.size(); i++) {
+        Examen e = l_exams.get(i);
+        int c = 0;
+        boolean test;
+        do {
+            test = true;
+            //on parcourt les sommets déjà traités (j &lt; i)
+            for (int j = 0; j &lt; i; j++) {
+                if ((matriceAdj[i][j] == 1) &amp;&amp; (l_exams.get(j).getCreneauId() == c)) test = false;
+            }
+            if (!test) c++;
+        } while (!test);
+        //c vaut au plus l_creneaux.size() : on crée le créneau s'il n'existe pas encore
+        if (c &gt;= l_creneaux.size()) l_creneaux.add(new Creneau(c));
+        e.attribuerCreneau(l_creneaux.get(c));
+    }
+}</code></pre>
+      <div class="sol"><b>Test.</b> Sur <code>activite4_4C.txt</code> : <b>5 créneaux</b> — {Anglais, Chinois, Physique}, {Chimie}, {Électronique, Informatique}, {Maths}, {Mécanique, SVT}. La coloration est propre (<code>verifColoration()</code> n'affiche rien).<br>
+        <b>Ordre de traitement :</b> l'<b>ordre du fichier</b> (Anglais, Chimie, Chinois, Électronique, Informatique, Maths, Mécanique, Physique, SVT). <b>Cet ordre peut-il changer le nombre de créneaux ? Oui</b> : ici 5 créneaux alors que χ = 4 ; en traitant les sommets par degrés décroissants, on obtient 4.
+        <div class="tw"><table><tr><th>Examen</th><th>Voisins déjà traités (créneau)</th><th>Créneau</th></tr>
+          <tr><td>Anglais</td><td>aucun</td><td>1</td></tr>
+          <tr><td>Chimie</td><td>Anglais (1)</td><td>2</td></tr>
+          <tr><td>Chinois</td><td>aucun</td><td>1</td></tr>
+          <tr><td>Électronique</td><td>Anglais (1), Chimie (2), Chinois (1)</td><td>3</td></tr>
+          <tr><td>Informatique</td><td>Chimie (2), Chinois (1)</td><td>3</td></tr>
+          <tr><td>Maths</td><td>Chimie (2), Chinois (1), Électronique (3)</td><td>4</td></tr>
+          <tr><td>Mécanique</td><td>Chimie (2), Chinois (1), Informatique (3), Maths (4)</td><td>5</td></tr>
+          <tr><td>Physique</td><td>Chimie (2), Informatique (3)</td><td>1</td></tr>
+          <tr><td>SVT</td><td>Anglais (1), Chimie (2), Chinois (1), Électronique (3), Maths (4)</td><td>5</td></tr></table></div></div>
+
+      <h3>Étape 3 : étudier les algorithmes fournis et les améliorer</h3>
+      <h4>A. Séquentiel ordonné (<code>attribuerCreneaux_sequentiel_ordonne</code>)</h4>
+      <div class="sol">
+        <ul>
+          <li><b>Instruction qui choisit le prochain sommet :</b> <code>e = getMaxDegre();</code> (dans la boucle <code>while(nColore &lt; l_exams.size())</code>). Elle renvoie l'examen <b>non coloré de plus haut degré</b>.</li>
+          <li><b>Même ordre que dans le cours ?</b> Oui : à chaque tour on prend le non coloré de plus haut degré ; en cas d'égalité <code>getMaxDegre</code> garde le premier rencontré (test <code>&gt;</code> strict). Comme les degrés ne changent pas pendant la coloration, c'est exactement l'ordre « degré décroissant, à égalité l'ordre du fichier ».</li>
+          <li><b>Complexité de la détermination de l'ordre :</b> <code>getMaxDegre</code> parcourt les n examens et appelle <code>getDegre</code> (O(n)) pour chaque candidat non coloré (et de nouveau à chaque nouveau maximum) : O(n²) par appel, donc <b>O(n³)</b> pour les n tours. Le cours (tableau de complexité) annonce O(n²) avec la matrice : les deux versions n'ont <b>pas la même complexité</b>.</li>
+          <li><b>Calculs inutiles :</b> les degrés sont <b>recalculés</b> à chaque tour alors qu'ils ne changent jamais (et parfois plusieurs fois pour un même candidat). Amélioration : calculer les degrés <b>une seule fois</b> (tableau <code>deg[]</code>, O(n²)), puis soit chercher le maximum dans ce tableau (O(n) par tour), soit <b>trier une seule fois</b> les sommets (O(n log n)). Autre gaspillage : pour chaque examen, on repart du créneau 0 et on reparcourt les n examens à chaque créneau testé.</li>
+          <li><b>Conclusion :</b> un même algorithme (même résultat) peut avoir des implémentations de complexités très différentes ; la complexité dépend de l'<b>implémentation</b> et des structures de données, pas seulement de l'idée. Il faut éviter de recalculer ce qui ne change pas.</li>
+        </ul></div>
+
+      <h4>B. Welsh et Powell (<code>attribuerCreneaux_WP</code>)</h4>
+      <div class="sol">
+        <ul>
+          <li><b>Rôle de l'ArrayList <code>ordre</code> :</b> elle contient les <b>indices</b> (identifiants) des examens rangés par degré décroissant : c'est l'ordre de parcours de l'algorithme, sans modifier la liste des examens.</li>
+          <li><b>Pourquoi ne pas trier <code>l_exams</code> directement ?</b> Parce que le code suppose que l'<b>indice dans <code>l_exams</code> est l'identifiant</b> de l'examen, utilisé aussi comme numéro de ligne dans <code>matriceAdj</code> (<code>l_exams.get(id)</code>, <code>matriceAdj[id][j]</code>). Trier la liste casserait la correspondance indice ↔ id ↔ ligne de la matrice. D'où un <b>tri indirect</b> : on trie une liste d'indices.</li>
+          <li><b>Algorithme de tri utilisé :</b> un <b>tri à bulles</b> (tri par permutations), avec arrêt dès qu'un passage ne permute plus.</li>
+          <li><b>Complexité :</b> O(n²) comparaisons ; comme chaque comparaison appelle <code>getDegre</code> (O(n)) deux fois, on obtient <b>O(n³)</b> au total (O(n²) comparaisons × O(n)).</li>
+          <li><b>Plus simple et plus efficace en Java :</b> calculer les degrés une fois dans un tableau, puis trier la liste avec un comparateur :
+<pre class="code"><code>int[] deg = new int[n];
+for (int i = 0; i &lt; n; i++) deg[i] = getDegre(l_exams.get(i));      // calculés une seule fois
+ArrayList&lt;Integer&gt; ordre = new ArrayList&lt;&gt;();
+for (int i = 0; i &lt; n; i++) ordre.add(i);
+ordre.sort((a, b) -&gt; deg[b] - deg[a]);                              // tri stable, O(n log n)</code></pre>
+            (ou <code>Collections.sort(ordre, comparateur)</code>). Résultat identique (le tri de Java est stable comme le tri à bulles), complexité totale O(n²) pour les degrés puis O(n log n) pour le tri. Vérifié : cette version donne les mêmes créneaux que le code fourni sur les six jeux de données.</li>
+        </ul></div>
+
+      <h4>C. DSATUR (<code>attribuerCreneaux_DSATUR</code>)</h4>
+      <div class="sol">
+        <ul>
+          <li><b>Degré de saturation :</b> nombre de couleurs (créneaux) <b>différentes</b> déjà utilisées par les voisins du sommet.</li>
+          <li><b>Rôle du tableau <code>tab</code> :</b> <code>tab[i]</code> compte combien de voisins de l'examen ont déjà le créneau i. On compte ensuite le nombre de cases non nulles : c'est le nombre de créneaux différents chez les voisins.</li>
+          <li><b>Pourquoi ne pas compter les voisins colorés ?</b> Parce que plusieurs voisins peuvent avoir le <b>même</b> créneau : trois voisins colorés tous en créneau 1 ne « bloquent » qu'une seule couleur (saturation 1, pas 3).</li>
+          <li><b>Information réellement mémorisée :</b> l'<b>ensemble des créneaux distincts</b> présents chez les voisins (la multiplicité ne sert à rien).</li>
+          <li><b>Structure Java adaptée :</b> un <b>ensemble</b> sans doublons : <code>Set</code> / <code>HashSet&lt;Integer&gt;</code>.</li>
+          <li><b>Code simplifié :</b>
+<pre class="code"><code>public int getDegSaturation(Examen e){
+    HashSet&lt;Integer&gt; couleurs = new HashSet&lt;&gt;();
+    for (int j = 0; j &lt; l_exams.size(); j++) {
+        if ((matriceAdj[e.getId()][j] == 1) &amp;&amp; (l_exams.get(j).getCreneau() != null)) {
+            couleurs.add(l_exams.get(j).getCreneauId());       // les doublons sont ignorés
+        }
+    }
+    return couleurs.size();
+}</code></pre>
+            Plus de tableau <code>tab</code>, plus de seconde boucle sur les créneaux. <b>Complexité par appel :</b> de <b>O(k·n)</b> (k créneaux utilisés × n examens) à <b>O(n)</b> : un seul passage sur la ligne de la matrice. Comme k ≤ n, on passe au pire de O(n²) à O(n) par appel. Résultats vérifiés identiques sur les six jeux de données.</li>
+        </ul></div>
+
+      <h3>Étape 4 : tester et comparer</h3>
+      <p>Nombre de créneaux (ou de couleurs) obtenu avec le projet fourni, sur chaque fichier (χ est calculé par recherche exhaustive) :</p>
+      <div class="tw"><table>
+        <tr><th>Jeu de données</th><th class="c">n</th><th class="c">m</th><th class="c">χ</th><th class="c">Séquentiel</th><th class="c">Séq. ordonné</th><th class="c">WP</th><th class="c">DSATUR</th></tr>
+        <tr><td><code>activite4_4C</code></td><td class="c">9</td><td class="c">20</td><td class="c">4</td><td class="c mm">5</td><td class="c">4</td><td class="c">4</td><td class="c">4</td></tr>
+        <tr><td><code>activite4_sansSVT_sansP</code></td><td class="c">7</td><td class="c">13</td><td class="c">3</td><td class="c mm">5</td><td class="c">3</td><td class="c">3</td><td class="c">3</td></tr>
+        <tr><td><code>examens</code></td><td class="c">7</td><td class="c">8</td><td class="c">2</td><td class="c mm">4</td><td class="c">2</td><td class="c">2</td><td class="c">2</td></tr>
+        <tr><td><code>exercice4_produits</code></td><td class="c">8</td><td class="c">8</td><td class="c">2</td><td class="c mm">3</td><td class="c">2</td><td class="c">2</td><td class="c">2</td></tr>
+        <tr><td><code>exercice5_WPnonOpti</code></td><td class="c">12</td><td class="c">12</td><td class="c">2</td><td class="c mm">3</td><td class="c mm">3</td><td class="c mm">3</td><td class="c pp">2</td></tr>
+        <tr><td><code>exercice5_WPnonOpti_v2</code></td><td class="c">12</td><td class="c">12</td><td class="c">2</td><td class="c mm">3</td><td class="c mm">3</td><td class="c mm">3</td><td class="c pp">2</td></tr>
+      </table></div>
+      <p style="color:var(--muted);font-size:.9rem">Les 6 colorations obtenues sont propres (vérifié). Le fichier <code>exercice5_WPnonOpti_v2</code> est exactement le graphe de l'exercice 5 de la semaine 1 ; <code>exercice4_produits</code> contient deux fois la ligne « 3 4 », sans effet (la case vaut 1 dans les deux cas).</p>
+      <div class="sol">
+        <ul>
+          <li><b>Le nombre de créneaux est-il toujours le même ?</b> Non : le séquentiel (ordre du fichier) utilise 1 à 2 créneaux de plus que les autres sur les quatre premiers jeux, et sur les graphes de l'exercice 5, DSATUR en utilise 2 contre 3.</li>
+          <li><b>Quel algorithme a les meilleurs résultats ?</b> <b>DSATUR</b> : il est au moins aussi bon que les autres sur tous les jeux et strictement meilleur sur l'exercice 5. Séquentiel ordonné et Welsh-Powell donnent ici les mêmes nombres.</li>
+          <li><b>Ces essais prouvent-ils que le résultat est minimal ?</b> <b>Non, pas par eux-mêmes</b> : tester ne prouve rien. On sait qu'un résultat est minimal seulement si on le compare à une <b>borne inférieure</b> : activité 4 (clique de 4 sommets, donc 4 minimal), ou « au moins une arête » donc χ ≥ 2 pour les graphes de χ = 2. Sans borne ou sans brute force, on ne peut pas conclure.</li>
+          <li><b>Un algorithme est-il toujours meilleur ?</b> <b>Non</b> : six jeux de données ne démontrent aucune propriété générale ; ce sont des heuristiques, sans garantie d'optimalité (cf. le tableau « limites » du cours).</li>
+        </ul></div>
+
+      <h3>Étape 5 : limites de la représentation par matrice</h3>
+      <div class="sol">
+        <ul>
+          <li><b>Pourquoi <code>getDegre</code> n'est-elle pas dans <code>Examen</code> ?</b> Le degré est une propriété du sommet, mais <code>Examen</code> ne connaît <b>pas ses voisins</b> : les liens sont dans la matrice, attribut de <code>Universite</code>. Seule l'université peut donc calculer le degré. <b>Conclusion :</b> la matrice d'adjacence est une structure <b>extérieure aux objets</b> : peu satisfaisante du point de vue <b>conception objet</b> (les sommets sont « idiots », tout passe par des indices et par la classe Universite).</li>
+          <li><b>Nombre de cases :</b> <b>n²</b>. <b>Complexité mémoire :</b> <b>O(n²)</b>.</li>
+          <li><b>Si chaque examen n'est incompatible qu'avec peu d'autres :</b> la matrice est presque entièrement remplie de <b>0</b> (matrice <i>creuse</i>) : n² cases pour très peu d'informations utiles.</li>
+          <li><b>Représentation plus adaptée :</b> la <b>liste de successeurs</b> : chaque <code>Examen</code> possède une <code>List&lt;Examen&gt; incompatibles</code> (mémoire O(n + m)).</li>
+          <li><b>Opérations qui en bénéficieraient :</b> <code>getDegre</code> (taille de la liste, O(1) au lieu de O(n)) et donc <code>getMaxDegre</code>, le tri de WP et DSATUR ; <code>getDegSaturation</code> (on ne parcourt que les voisins : O(deg) au lieu de O(n)) ; la recherche d'un créneau compatible dans les trois algorithmes (parcours des voisins seulement). Et la méthode <code>getDegre</code> irait enfin dans la classe <code>Examen</code>.</li>
+          <li><b>Toujours avantageux ?</b> <b>Non.</b> Si le graphe est <b>dense</b> (beaucoup d'incompatibilités), la matrice n'est plus gaspillée et le <b>test d'adjacence en O(1)</b> est précieux ; les listes demandent plus d'objets. De plus, tester si deux examens précis sont incompatibles devient O(deg) au lieu de O(1). Enfin, changer de représentation a un coût de réécriture.</li>
+        </ul></div>
+    </div></details>
+
+    <!-- ===== ACTIVITÉ 6 ===== -->
+    <details class="cx" open><summary>Activité 6 — Explorer un graphe (wiki) <span class="tag">Exploration</span> <span class="tag warm">à présenter</span></summary><div class="cxb">
+      <div class="box"><span class="bt">Énoncé résumé</span>Un wiki : on s'intéresse aux liens hypertextes internes ; objectif : visiter toutes les pages accessibles depuis une page A. Mini wiki de 11 pages : A → B, C, D ; B → C, E ; C → F ; D → F ; E → G, K ; F → E, H ; G → A ; H → D, I ; J → F, I (I et K n'ont aucun lien sortant).</div>
+
+      <h3>1. Modéliser</h3>
+      <div class="sol"><b>Sommets</b> = les pages. <b>Arc</b> p → q ⇔ la page p contient un lien hypertexte vers la page q. Le graphe est <b>orienté</b> : un lien de p vers q n'implique pas un lien de q vers p. Les doublons ayant été supprimés et les listes ne contenant que « les <i>autres</i> pages », il n'y a ni arcs multiples ni boucles : c'est un <b>graphe orienté simple</b>.
+        <figure class="fig" style="max-width:560px;margin:10px auto"><div data-graph="wiki"></div></figure></div>
+
+      <h3>2. Tenter d'explorer à partir de B</h3>
+      <span class="qn"><b class="num">a</b>Représentation mémoire naturelle</span>
+      <div class="sol">Les données sont des <b>listes de liens par page</b> : la <b>liste de successeurs</b> (par exemple <code>Map&lt;String, List&lt;String&gt;&gt;</code>) est la représentation naturelle.</div>
+      <span class="qn"><b class="num">b</b>Exploration depuis B : informations à mémoriser</span>
+      <div class="sol">À chaque étape, on mémorise : (1) les pages <b>vues mais non explorées</b> (à faire), (2) les pages <b>déjà explorées</b> (pour ne pas les refaire). On prend toujours la page vue depuis le plus longtemps.
+        <div class="tw"><table><tr><th>Page explorée</th><th>Liens trouvés</th><th>Vues non explorées</th><th>Déjà explorées</th></tr>
+          <tr><td>B</td><td>C, E</td><td>C, E</td><td>B</td></tr>
+          <tr><td>C</td><td>F</td><td>E, F</td><td>B, C</td></tr>
+          <tr><td>E</td><td>G, K</td><td>F, G, K</td><td>B, C, E</td></tr>
+          <tr><td>F</td><td>E (explorée), H</td><td>G, K, H</td><td>B, C, E, F</td></tr>
+          <tr><td>G</td><td>A</td><td>K, H, A</td><td>…, G</td></tr>
+          <tr><td>K</td><td>(aucun)</td><td>H, A</td><td>…, K</td></tr>
+          <tr><td>H</td><td>D, I</td><td>A, D, I</td><td>…, H</td></tr>
+          <tr><td>A</td><td>B, C (explorées), D (déjà vue)</td><td>D, I</td><td>…, A</td></tr>
+          <tr><td>D</td><td>F (explorée)</td><td>I</td><td>…, D</td></tr>
+          <tr><td>I</td><td>(aucun)</td><td>(vide) → fin</td><td>…, I</td></tr></table></div>
+        <figure class="fig" style="max-width:560px;margin:10px auto"><div data-graph="wiki" data-order="B,C,E,F,G,K,H,A,D,I"></div><figcaption>Ordre de découverte depuis B (le numéro est le rang d'exploration)</figcaption></figure></div>
+      <span class="qn"><b class="num">c</b>Quelles pages découvertes, dans quel ordre ? Toutes ?</span>
+      <div class="sol">Ordre : <b>B, C, E, F, G, K, H, A, D, I</b> (10 pages). <b>Non</b>, on ne les découvre pas toutes : <b>J</b> n'est jamais atteinte, car <b>aucune page n'a de lien vers J</b> (J ne figure dans aucune liste de liens). On ne peut découvrir que les pages <b>accessibles</b> depuis B.</div>
+      <span class="qn"><b class="num">d</b>Éviter de tourner en rond ? ne pas oublier de page ?</span>
+      <div class="sol"><b>Ne pas tourner en rond :</b> on garde la trace des pages déjà <b>vues</b> et on ne rajoute à la liste « à explorer » que des pages jamais vues (ex. on ne ré-ajoute pas E, C, B quand on explore F ou A). <b>Ne pas oublier de page :</b> on n'arrête que lorsque la liste des pages vues non explorées est <b>vide</b>, et on explore chaque page de cette liste.</div>
+
+      <h3>3. Formaliser et automatiser</h3>
+      <span class="qn"><b class="num">a</b>Exploration depuis E</span>
+      <div class="sol"><div class="tw"><table><tr><th>Page explorée</th><th>Pages vues non explorées</th></tr>
+        <tr><td>E</td><td>G, K</td></tr>
+        <tr><td>G</td><td>K, A</td></tr>
+        <tr><td>K</td><td>A</td></tr>
+        <tr><td>A</td><td>B, C, D</td></tr>
+        <tr><td>B</td><td>C, D</td></tr>
+        <tr><td>C</td><td>D, F</td></tr>
+        <tr><td>D</td><td>F</td></tr>
+        <tr><td>F</td><td>H</td></tr>
+        <tr><td>H</td><td>I</td></tr>
+        <tr><td>I</td><td>(vide)</td></tr></table></div>
+        Ordre : <b>E, G, K, A, B, C, D, F, H, I</b> ; J n'est pas accessible depuis E non plus.</div>
+      <span class="qn"><b class="num">b</b>Comment choisir le prochain sommet à explorer ?</span>
+      <div class="sol">En prenant celle qui est dans la liste depuis le <b>plus longtemps</b> (la première ajoutée) : la liste fonctionne comme une <b>file</b> (premier entré, premier sorti). On obtient un <b>parcours en largeur</b>. Si on prenait la <b>dernière</b> ajoutée (<b>pile</b>), on obtiendrait un <b>parcours en profondeur</b> : tout autre choix ferait aussi explorer toutes les pages accessibles, mais dans un autre ordre.</div>
+      <span class="qn"><b class="num">c</b>Une page vue plusieurs fois mais non explorée doit-elle être ajoutée plusieurs fois ? Comment éviter les doublons ?</span>
+      <div class="sol"><b>Non</b> : une seule fois suffit, sinon on l'explorerait plusieurs fois (travail inutile, voire boucle infinie dans les cycles). Exemple : F est vue depuis C puis depuis D (on ne la rajoute pas la seconde fois). Pour éviter les doublons, on <b>marque chaque page « vue »</b> au moment où on l'ajoute et on teste ce marquage avant tout ajout.</div>
+
+      <h3>4. Structures de données</h3>
+      <div class="sol"><ul>
+        <li><b>Pages vues non explorées :</b> une <b>file</b> (<code>Queue</code>/<code>ArrayDeque</code>) pour la largeur, une <b>pile</b> pour la profondeur.</li>
+        <li><b>Déjà vue ? déjà explorée ?</b> Plusieurs solutions : un <code>boolean[] vu</code> indexé par le numéro de page (accès O(1)) si les pages sont numérotées ; un <code>HashSet</code> de pages vues (<code>vus.add(t)</code> renvoie <code>false</code> si t y est déjà : test et ajout en un seul geste) ; ou un <b>attribut d'état</b> dans l'objet Page (non vue / vue / explorée), qui distingue vu et exploré. Une <code>ArrayList</code> avec <code>contains</code> marcherait mais serait en O(n) à chaque test.</li></ul></div>
+
+      <h3>5. L'algorithme</h3>
+      <div class="sol">
+<pre class="code"><code>Choisir le sommet initial s ← s0
+Marquer s0 « vu » ; ajouter s0 à la file AExplorer
+Faire
+    – s ← retirer le premier sommet de AExplorer
+    – Noter que s a été exploré
+    – Ajouter les successeurs de s à AExplorer, s'ils ne sont pas encore vus
+      (et les marquer « vus »)
+Tant que AExplorer n'est pas vide
+(fin : les sommets explorés sont tous les sommets accessibles depuis s0)</code></pre>
+        Version Java testée (parcours en largeur) :
+<pre class="code"><code>static List&lt;String&gt; largeur(Map&lt;String, List&lt;String&gt;&gt; succ, String s0) {
+    List&lt;String&gt; explores = new ArrayList&lt;&gt;();
+    Set&lt;String&gt; vus = new HashSet&lt;&gt;();
+    Deque&lt;String&gt; aExplorer = new ArrayDeque&lt;&gt;();
+    vus.add(s0);
+    aExplorer.addLast(s0);
+    while (!aExplorer.isEmpty()) {
+        String s = aExplorer.pollFirst();                    // file : le plus ancien d'abord
+        explores.add(s);
+        for (String t : succ.getOrDefault(s, List.of())) {
+            if (vus.add(t)) aExplorer.addLast(t);            // pas de doublon
+        }
+    }
+    return explores;
+}</code></pre>
+        Résultats : depuis B : <code>[B, C, E, F, G, K, H, A, D, I]</code> ; depuis E : <code>[E, G, K, A, B, C, D, F, H, I]</code> ; depuis A : <code>[A, B, C, D, E, F, G, K, H, I]</code> (10 pages, sans J) ; depuis J : toutes les 11 pages. Avec <code>pollLast()</code> (pile) depuis B : <code>[B, E, K, G, A, D, F, H, I, C]</code>, même ensemble de pages, autre ordre.<br>
+        <b>Complexité :</b> chaque sommet est exploré une fois, chaque arc est examiné une fois : <b>O(n + m)</b> avec des listes de successeurs, O(n²) avec une matrice.
+      </div>
+    </div></details>
+  </div> <!-- /pane corrigés -->

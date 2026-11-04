@@ -1,0 +1,42 @@
+
+<!-- ============ ATELIER EXPLORATION ============ -->
+<section class="view" id="view-exploration">
+  <h1>🧭 Atelier d'exploration</h1>
+  <p>Exécute pas à pas l'exploration du mini wiki de l'activité 6 : choisis la page de départ et la structure des pages « à explorer » (<b>file</b> = parcours en largeur, <b>pile</b> = parcours en profondeur). Les pages en <b>jaune</b> sont vues mais pas encore explorées, les pages en <b>bleu</b> sont explorées (le numéro est l'ordre d'exploration), les pages blanches ne sont pas encore vues.</p>
+  <div class="atelier">
+    <div class="panel">
+      <div class="ctl">
+        <label for="ex-start">Départ</label>
+        <select id="ex-start"></select>
+        <label for="ex-mode">Structure</label>
+        <select id="ex-mode">
+          <option value="file">File (largeur)</option>
+          <option value="pile">Pile (profondeur)</option>
+        </select>
+      </div>
+      <div id="ex-svg" style="max-width:640px;margin:0 auto"></div>
+      <div class="ctl" style="justify-content:center">
+        <button class="btn" id="ex-next">Étape suivante ▶</button>
+        <button class="btn ghost" id="ex-all">Tout explorer ⏭</button>
+        <button class="btn ghost" id="ex-reset">↺ Recommencer</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>À explorer</h3>
+      <div class="stat" id="ex-stats"></div>
+      <p id="ex-verdict" style="font-weight:600"></p>
+      <h3>Déroulé</h3>
+      <div class="tw" style="max-height:340px;overflow:auto"><table id="ex-table">
+        <thead><tr><th>#</th><th>Page explorée</th><th>Nouvelles pages vues</th><th>Vues non explorées</th></tr></thead>
+        <tbody></tbody>
+      </table></div>
+      <div class="box comp" style="margin-top:14px"><span class="bt">À essayer</span>
+        <ul style="margin:.3em 0 0">
+          <li>Départ <b>B</b> ou <b>E</b> : la page <b>J</b> n'est jamais découverte (aucun lien n'y mène).</li>
+          <li>Départ <b>J</b> : les 11 pages sont atteintes.</li>
+          <li>Compare l'ordre d'exploration <b>file</b> et <b>pile</b> depuis B : mêmes pages, ordre différent.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

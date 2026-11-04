@@ -1,0 +1,85 @@
+
+  <!-- ---------- FICHE ---------- -->
+  <div class="pane fiche toc-auto" data-pane="fiche">
+    <button class="btn ghost printbtn" onclick="window.print()">🖨️ Imprimer</button>
+    <h2 style="margin-top:0">Fiche « À retenir » — Semaine 2</h2>
+
+    <h3>Algorithmes : exhaustif, glouton, heuristique</h3>
+    <div class="tw"><table>
+      <tr><th>Notion</th><th>À retenir</th></tr>
+      <tr><td><b>Exhaustif (brute force)</b></td><td>teste <b>toutes</b> les combinaisons ; solution <b>optimale garantie</b> ; <b>explosion combinatoire</b> (exponentiel)</td></tr>
+      <tr><td><b>Glouton</b></td><td>meilleur choix <b>local</b> à chaque étape, <b>sans retour en arrière</b> ; rapide, simple ; <b>optimum non garanti</b></td></tr>
+      <tr><td><b>Heuristique</b></td><td>règle de choix (intuition) pour trouver <b>vite</b> une <b>bonne</b> solution, <b>sans garantie</b> d'optimalité ; guide les choix sans changer l'objectif</td></tr>
+    </table></div>
+
+    <h3>Complexité</h3>
+    <ul>
+      <li><b>Complexité temporelle</b> : nombre d'opérations en fonction de la taille n, notée O(f(n)). Familles : O(1), O(log n), O(n), O(n log n), O(n²), O(n³), <b>O(2ⁿ)</b>, <b>O(n!)</b>.</li>
+      <li>Repères : recherche linéaire O(n) ; tri par insertion O(n²) ; tri rapide O(n log n). À n = 1 000 000 : O(n log n) ≈ 20 ms, O(n²) ≈ 17 min, O(n³) ≈ 32 ans ; l'exponentiel est <b>inutilisable</b> dès n = 100.</li>
+      <li><b>Algorithme raisonnable</b> = polynomial. <b>Problème facile</b> = admet un algorithme déterministe raisonnable. <b>Probablement difficile</b> = personne ne sait prouver qu'il est facile (ex. nombre chromatique).</li>
+    </ul>
+    <div class="tw"><table>
+      <tr><th>Traitement</th><th class="c">Matrice d'adjacence</th><th class="c">Liste de successeurs</th></tr>
+      <tr><td>Tester i et j adjacents</td><td class="c">O(1)</td><td class="c">O(deg)</td></tr>
+      <tr><td>Degré d'un sommet</td><td class="c">O(n)</td><td class="c">O(1)</td></tr>
+      <tr><td>Degrés de tous les sommets</td><td class="c">O(n²)</td><td class="c">O(n) ou O(n+m)</td></tr>
+      <tr><td>Trier par degré décroissant</td><td class="c">O(n²)</td><td class="c">O(n log n + m)</td></tr>
+    </table></div>
+
+    <h3>Algorithmes de coloration</h3>
+    <div class="tw"><table>
+      <tr><th>Algorithme</th><th>Idée</th><th>Prochain sommet</th><th>Complexité matrice / listes</th></tr>
+      <tr><td><b>Séquentiel</b></td><td>un sommet à la fois, <b>plus petite couleur libre</b></td><td>ordre initial</td><td>O(n²) / O(n+m)</td></tr>
+      <tr><td><b>Séquentiel ordonné</b></td><td>idem, mais on traite d'abord les sommets de <b>haut degré</b></td><td>plus haut degré (statique)</td><td>O(n²) / O(n log n + m)</td></tr>
+      <tr><td><b>Welsh-Powell</b></td><td><b>une couleur à la fois</b> : on la donne à un maximum de sommets (remplissage maximal) avant de passer à la suivante</td><td>ordre de degré décroissant</td><td>O(n²) / O(n²)</td></tr>
+      <tr><td><b>DSATUR</b></td><td>sommet de plus grande <b>saturation</b>, puis de plus haut degré ; plus petite couleur libre</td><td>dynamique</td><td>O(n²) / O(n²)</td></tr>
+      <tr><td><b>Brute force</b></td><td>teste toutes les colorations</td><td>—</td><td>O(kⁿ)</td></tr>
+    </table></div>
+    <ul>
+      <li><b>Saturation</b> d'un sommet = nombre de couleurs <b>différentes</b> chez ses voisins (⚠ pas le nombre de voisins colorés).</li>
+      <li>Tous sont des <b>heuristiques gloutonnes</b> : toujours une coloration <b>propre</b>, optimum <b>non garanti</b>. Le séquentiel est « très dépendant de l'ordre ».</li>
+      <li><b>Encadrement :</b> <b>ω(G) ≤ χ(G) ≤ 1 + Δ(G)</b> (ω = taille de la plus grande clique, Δ = degré maximum). Déterminer k-colorabilité, χ(G) ou une coloration optimale : problèmes <b>difficiles</b>.</li>
+    </ul>
+    <h3>Résultats à connaître (activité 5)</h3>
+    <div class="tw"><table class="mat">
+      <tr><th>Jeu de données</th><th>χ</th><th>Séq.</th><th>Ordonné</th><th>WP</th><th>DSATUR</th></tr>
+      <tr><th>Activité 4</th><td>4</td><td>5</td><td>4</td><td>4</td><td>4</td></tr>
+      <tr><th>Sans Physique/SVT</th><td>3</td><td>5</td><td>3</td><td>3</td><td>3</td></tr>
+      <tr><th>Produits (ex. 4)</th><td>2</td><td>3</td><td>2</td><td>2</td><td>2</td></tr>
+      <tr><th>Exercice 5</th><td>2</td><td>3</td><td>3</td><td>3</td><td>2</td></tr>
+    </table></div>
+
+    <h3>Améliorer le code Java</h3>
+    <ul>
+      <li>Ne pas <b>recalculer</b> ce qui ne change pas : calculer les <b>degrés une fois</b> (tableau), puis trier avec <code>ordre.sort((a, b) -&gt; deg[b] - deg[a])</code> (tri stable en O(n log n)) au lieu d'un tri à bulles O(n²) qui rappelle <code>getDegre</code>.</li>
+      <li>Trier une <b>liste d'indices</b> (tri indirect) et non la liste d'objets, quand l'indice sert d'identifiant (ligne de la matrice).</li>
+      <li><b>Saturation</b> avec un <code>HashSet&lt;Integer&gt;</code> : un seul passage O(n) au lieu de O(k·n).</li>
+      <li><b>Matrice</b> : O(n²) mémoire, creuse si peu d'incompatibilités ; les sommets ne connaissent pas leurs voisins (peu « objet »). <b>Liste de successeurs</b> : degré O(1), parcours des voisins direct ; mais pas toujours avantageuse (graphe dense, tests d'adjacence).</li>
+    </ul>
+
+    <h3>Explorer un graphe (activité 6)</h3>
+    <ul>
+      <li>Wiki : sommets = pages, arc p → q = lien de p vers q ⇒ graphe <b>orienté</b> (simple si pas de doublons), stocké en <b>listes de successeurs</b>.</li>
+      <li>Trois états : <b>non vue</b>, <b>vue non explorée</b>, <b>explorée</b>. On ne découvre que les pages <b>accessibles</b> (J n'est jamais découverte depuis B ou E).</li>
+      <li>Algorithme : marquer le départ vu et l'ajouter à <b>AExplorer</b> ; tant que non vide : retirer s, l'explorer, ajouter ses successeurs <b>pas encore vus</b> (en les marquant vus).</li>
+      <li><b>File</b> (FIFO) ⇒ parcours en <b>largeur</b> ; <b>pile</b> (LIFO) ⇒ parcours en <b>profondeur</b>. Marquer « vu » à l'ajout évite doublons et boucles. Complexité <b>O(n + m)</b> avec listes de successeurs.</li>
+      <li>Structures : file/pile pour AExplorer ; <code>HashSet</code> (ou <code>boolean[]</code>) pour les pages vues.</li>
+    </ul>
+    <div class="box warn"><span class="bt">Pièges classiques</span>
+      <ul>
+        <li>Saturation = couleurs <b>différentes</b> chez les voisins, pas le nombre de voisins colorés.</li>
+        <li>Welsh-Powell = une <b>couleur</b> à la fois ; séquentiel ordonné et DSATUR = un <b>sommet</b> à la fois.</li>
+        <li>Un résultat obtenu par un algorithme glouton n'est <b>pas</b> prouvé minimal : il faut une borne inférieure (clique) ou le brute force.</li>
+        <li>Brute force : exact mais exponentiel ; « raisonnable » = polynomial.</li>
+        <li>Exploration : une page vue plusieurs fois n'est ajoutée <b>qu'une fois</b> à la liste ; on ne découvre pas les pages non accessibles.</li>
+      </ul>
+    </div>
+  </div> <!-- /pane fiche -->
+
+  <!-- ---------- QCM ---------- -->
+  <div class="pane" data-pane="qcm">
+    <h2 style="margin-top:0">QCM — Semaine 2</h2>
+    <p><span data-qcount="s2">40</span> questions sur le chapitre 3 (partie 2) et l'exploration d'un graphe. Réponds, clique sur <b>Valider</b> pour voir la correction et l'explication. Ta progression est mémorisée dans ce navigateur.</p>
+    <div id="qcm-s2"></div>
+  </div>
+</section>

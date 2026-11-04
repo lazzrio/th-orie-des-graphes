@@ -2,6 +2,7 @@
 window.QCM = {
   s1: {
     titre: "Semaine 1 — Chapitres 1, 2 et 3 (partie 1)",
+    chapitres: { 1: "Chapitre 1", 2: "Chapitre 2", 3: "Chapitre 3" },
     questions: [
       /* ---------- Chapitre 1 ---------- */
       { ch: 1, q: "Qu'est-ce qu'un graphe ?", o: ["Un dessin fait de points et de traits", "Un modèle mathématique représentant des objets et des liens entre ces objets", "Un tableau de nombres", "Une fonction de S dans S"], ok: [1],

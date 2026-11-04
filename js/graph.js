@@ -27,6 +27,8 @@
     (opts.hl || spec.hl || []).forEach(function (p) { hotE[p] = hotE[p.split("-").reverse().join("-")] = true; });
     (opts.hln || spec.hln || []).forEach(function (n) { hotN[n] = true; });
     var colors = opts.colors || spec.colors || {};
+    var badgeTxt = {};
+    if (opts.order) { colors = {}; opts.order.forEach(function (n, i) { colors[n] = 1; badgeTxt[n] = String(i + 1); }); }
     var pos = spec.nodes, directed = !!spec.directed;
 
     // regroupement des arêtes entre une même paire de sommets
@@ -82,7 +84,7 @@
     var nodeEls = {};
     Object.keys(pos).forEach(function (nm) {
       var p = pos[nm];
-      var g = el("g", { "class": "nd" + (colors[nm] != null ? " c" + colors[nm] : "") + (hotN[nm] ? " hot" : ""), "data-id": nm }, svg);
+      var g = el("g", { "class": "nd" + (colors[nm] != null ? " c" + (colors[nm] % 6) : "") + (hotN[nm] ? " hot" : ""), "data-id": nm }, svg);
       el("circle", { cx: p[0], cy: p[1], r: R }, g);
       var t = el("text", { x: p[0], y: p[1] }, g);
       var lab = (spec.labels && spec.labels[nm]) || nm;
@@ -92,6 +94,10 @@
         var ts = el("tspan", { dy: "4", "font-size": "9" }, t); ts.textContent = m[2];
       } else t.textContent = lab;
       if (opts.onNode) { g.classList.add("clk"); g.addEventListener("click", function () { opts.onNode(nm); }); }
+      var bd = el("g", { "class": "bd" + (colors[nm] != null && colors[nm] >= 0 ? "" : " off") }, g);
+      el("circle", { cx: p[0] + R * 0.78, cy: p[1] - R * 0.78, r: 7 }, bd);
+      var bt = el("text", { x: p[0] + R * 0.78, y: p[1] - R * 0.78 }, bd);
+      bt.textContent = badgeTxt[nm] != null ? badgeTxt[nm] : (colors[nm] != null && colors[nm] >= 0 ? String(colors[nm] + 1) : "");
       nodeEls[nm] = g;
     });
     if (spec.caption) { var c = el("text", { x: W / 2, y: H - 4, "class": "cap" }, svg); c.textContent = spec.caption; }
@@ -102,6 +108,15 @@
           var cl = nodeEls[n].classList;
           for (var i = 0; i < 8; i++) cl.remove("c" + i);
           if (map[n] != null && map[n] >= 0) cl.add("c" + (map[n] % 6));
+          var b = nodeEls[n].querySelector(".bd");
+          if (b) { b.classList.toggle("off", !(map[n] != null && map[n] >= 0)); b.querySelector("text").textContent = map[n] != null && map[n] >= 0 ? String(map[n] + 1) : ""; }
+        });
+      },
+      setBadges: function (map) {
+        Object.keys(nodeEls).forEach(function (n) {
+          var b = nodeEls[n].querySelector(".bd"); if (!b) return;
+          b.classList.toggle("off", map[n] == null);
+          b.querySelector("text").textContent = map[n] == null ? "" : String(map[n]);
         });
       },
       setCur: function (n) { Object.keys(nodeEls).forEach(function (k) { nodeEls[k].classList.toggle("cur", k === n); }); }
@@ -203,14 +218,14 @@
     edges: [["s1", "s1"], ["s1", "s2"], ["s2", "s1"], ["s2", "s5"], ["s2", "s5"], ["s3", "s3"], ["s4", "s2"], ["s5", "s3"], ["s6", "s5"], ["s6", "s5"], ["s6", "s5"]] };
   D.gdeg = { w: 340, h: 240, sub: true, nodes: { s1: [165, 35], s2: [285, 85], s3: [80, 95], s4: [195, 150], s5: [120, 205], s6: [30, 190] },
     edges: [["s1", "s4"], ["s2", "s3"], ["s2", "s4"], ["s3", "s4"], ["s4", "s5"]] };
-  D.gsub = { w: 340, h: 210, directed: true, nodes: { "1": [40, 105], "2": [125, 105], "4": [215, 30], "3": [300, 105], "5": [215, 180] },
-    edges: [["2", "1"], ["2", "4"], ["2", "3"], ["4", "3"], ["2", "5"], ["5", "2"], ["5", "3"], ["5", "4", { c: 70 }]] };
-  D.gsub1 = { w: 340, h: 210, directed: true, nodes: { "1": [40, 105], "4": [215, 30], "3": [300, 105], "5": [215, 180] },
-    edges: [["4", "3"], ["5", "3"], ["5", "4", { c: 70 }]] };
-  D.gsub2 = { w: 340, h: 210, directed: true, nodes: { "1": [40, 105], "2": [125, 105], "4": [215, 30], "3": [300, 105], "5": [215, 180] },
-    edges: [["2", "1"], ["2", "5"], ["5", "2"], ["5", "3"], ["5", "4", { c: 70 }]] };
+  D.gsub = { w: 340, h: 210, directed: true, nodes: { "1": [40, 105], "2": [125, 105], "4": [215, 30], "3": [318, 105], "5": [215, 180] },
+    edges: [["2", "1"], ["2", "4"], ["2", "3"], ["4", "3"], ["2", "5"], ["5", "2"], ["5", "3"], ["5", "4", { c: 72 }]] };
+  D.gsub1 = { w: 340, h: 210, directed: true, nodes: { "1": [40, 105], "4": [215, 30], "3": [318, 105], "5": [215, 180] },
+    edges: [["4", "3"], ["5", "3"], ["5", "4", { c: 72 }]] };
+  D.gsub2 = { w: 340, h: 210, directed: true, nodes: { "1": [40, 105], "2": [125, 105], "4": [215, 30], "3": [318, 105], "5": [215, 180] },
+    edges: [["2", "1"], ["2", "5"], ["5", "2"], ["5", "3"], ["5", "4", { c: 72 }]] };
   D.gsub3 = { w: 340, h: 210, directed: true, nodes: { "2": [125, 105], "4": [215, 30], "5": [215, 180] },
-    edges: [["2", "4"], ["2", "5"], ["5", "2"], ["5", "4", { c: 70 }]] };
+    edges: [["2", "4"], ["2", "5"], ["5", "2"], ["5", "4", { c: 72 }]] };
   D.k2 = complete(2); D.k3 = complete(3); D.k4 = complete(4); D.k5 = complete(5);
   D.ex1 = { w: 330, h: 250, directed: true, nodes: { B: [165, 40], A: [50, 100], C: [280, 100], D: [50, 205], E: [165, 205], F: [280, 205] },
     edges: [["A", "B"], ["B", "A"], ["C", "B"], ["B", "D"], ["B", "E"], ["B", "F"], ["C", "F"], ["F", "C"], ["F", "D", { c: -48 }]] };
@@ -239,13 +254,16 @@
     nodes: { a1: [70, 40], b1: [230, 40], a2: [70, 95], b2: [230, 95], a3: [70, 150], b3: [230, 150], a4: [70, 205], b4: [230, 205] },
     edges: (function () { var e = []; for (var i = 1; i <= 4; i++) for (var j = 1; j <= 4; j++) if (i !== j) e.push(["a" + i, "b" + j]); return e; })() };
   D.social = { w: 380, h: 200, directed: true, r: 24, nodes: { Alice: [70, 100], Bob: [200, 40], "Chloé": [200, 160], David: [330, 100] },
-    edges: [["Alice", "Bob"], ["Bob", "Alice"], ["Alice", "Chloé"], ["Chloé", "Bob"], ["David", "Alice", { c: 50 }]] };
+    edges: [["Alice", "Bob"], ["Bob", "Alice"], ["Alice", "Chloé"], ["Chloé", "Bob"], ["David", "Alice"]] };
   D.metro = { w: 540, h: 200, r: 15, nodes: { A: [40, 100], B: [190, 100], C: [340, 100], D: [490, 100], E: [190, 30], F: [190, 170] },
     edges: [["A", "B", { l: "L1 · 2 min" }], ["B", "C", { l: "L1 · 3 min" }], ["C", "D", { l: "L1 · 2 min" }], ["E", "B", { l: "L2 · 4 min" }], ["B", "F", { l: "L2 · 3 min" }]] };
   D.raspail = { w: 320, h: 150, r: 22, nodes: { Raspail: [70, 75], Denfert: [250, 75] },
     edges: [["Raspail", "Denfert", { l: "ligne 4" }], ["Raspail", "Denfert", { l: "ligne 6" }]] };
   D.hero = { w: 330, h: 220, r: 17, nodes: { a: [60, 110], b: [150, 40], c: [150, 180], d: [260, 70], e: [270, 160] },
     edges: [["a", "b"], ["a", "c"], ["b", "c"], ["b", "d"], ["c", "e"], ["d", "e"]], colors: { a: 0, b: 1, c: 2, d: 0, e: 1 } };
+  D.wiki = { w: 540, h: 330, r: 16, directed: true,
+    nodes: { A: [60, 170], B: [150, 60], C: [270, 115], D: [150, 255], E: [410, 60], F: [310, 180], G: [480, 125], H: [310, 262], I: [430, 262], J: [370, 312], K: [490, 28] },
+    edges: [["A", "B"], ["A", "C"], ["A", "D"], ["B", "C"], ["B", "E"], ["C", "F"], ["D", "F"], ["E", "G"], ["E", "K"], ["F", "E"], ["F", "H"], ["G", "A"], ["H", "D"], ["H", "I"], ["J", "F"], ["J", "I"]] };
   D.bipartite = { w: 300, h: 160, r: 15, nodes: { x1: [50, 40], x2: [50, 120], y1: [220, 20], y2: [220, 80], y3: [220, 140] },
     edges: [["x1", "y1"], ["x1", "y2"], ["x2", "y2"], ["x2", "y3"]] };
 
@@ -267,6 +285,15 @@
       { a: "T", b: "S", label: "origine", ma: "*", mb: "1", ly: -4 },
       { a: "T", b: "L", label: "sur", ma: "*", mb: "1", ly: 4 },
       { a: "L", b: "S", label: "terminus", ma: "*", mb: "2", dashed: true, lx: 0, ly: 18, pts: [[85, 120]] }]
+  };
+  UM.planif = { w: 600, h: 250, alt: "Diagramme de classes : planification d'examens", classes: [
+    { id: "U", name: "Universite", x: 20, y: 20, w: 200, attrs: ["- nom : String", "- l_exams : ArrayList<Examen>", "- l_creneaux : ArrayList<Creneau>", "- matriceAdj : int[][]"] },
+    { id: "E", name: "Examen", x: 380, y: 20, w: 200, attrs: ["- id : int", "- intitule : String", "- c : Creneau"] },
+    { id: "C", name: "Creneau", x: 380, y: 160, w: 200, attrs: ["- id : int"] }],
+    rels: [
+      { a: "U", b: "E", da: "comp", mb: "*", label: "l_exams", ly: -4 },
+      { a: "U", b: "C", da: "comp", mb: "*", label: "l_creneaux", pts: [[120, 195]], lx: -10, ly: 14 },
+      { a: "E", b: "C", db: "arrow", ma: "*", mb: "0..1", label: "c", lx: 14 }]
   };
   UM.matrice = { w: 440, h: 130, alt: "Diagramme de classes : matrice d'adjacence", classes: [
     { id: "G", name: "Graphe", x: 20, y: 25, w: 160, attrs: ["- ordre : int", "- matAdj : int[][]"] },
@@ -302,6 +329,7 @@
       if (h.dataset.colors) o.colors = parseMap(h.dataset.colors);
       if (h.dataset.hl) o.hl = h.dataset.hl.split(",");
       if (h.dataset.hln) o.hln = h.dataset.hln.split(",");
+      if (h.dataset.order) o.order = h.dataset.order.split(",");
       render(h, spec, o); h.dataset.done = "1";
     });
     (root || document).querySelectorAll("[data-uml]").forEach(function (h) {

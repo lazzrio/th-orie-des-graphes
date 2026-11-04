@@ -1,0 +1,254 @@
+
+<!-- ============ SEMAINE 2 ============ -->
+<section class="view" id="view-s2">
+  <div class="weekhead"><h1>Semaine 2</h1><span class="tag">Chapitre 3 partie 2 · Exploration d'un graphe</span></div>
+  <p style="color:var(--muted);margin-top:0">Algorithmes de coloration (séquentiel, Welsh-Powell, DSATUR), complexité, puis exploration d'un graphe. Exercice 6, activités 5 et 6.</p>
+  <div class="tabs" role="tablist">
+    <button data-pane="cours" data-go="s2/cours">📘 Cours</button>
+    <button data-pane="corriges" data-go="s2/corriges">✅ Exercices corrigés</button>
+    <button data-pane="fiche" data-go="s2/fiche">📌 À retenir</button>
+    <button data-pane="qcm" data-go="s2/qcm">🎯 QCM</button>
+  </div>
+
+  <!-- ---------- COURS ---------- -->
+  <div class="pane" data-pane="cours">
+    <div class="chnav">
+      <button data-chap="1" data-go="s2/cours/1">Chap. 3 (partie 2) · Algorithmes de coloration</button>
+      <button data-chap="2" data-go="s2/cours/2">Explorer un graphe</button>
+    </div>
+
+    <!-- ===== CHAPITRE 3 PARTIE 2 ===== -->
+    <article class="chap" data-chap="1">
+      <h2 style="margin-top:0">Chapitre 3 (partie 2) — Algorithmes de résolution</h2>
+      <p><b>Objectifs :</b> comprendre la différence entre algorithmes <i>exhaustifs</i> et <i>gloutons</i> ; s'initier à la notion et au choix d'<i>heuristiques</i> ; s'intéresser à la <i>complexité</i> ; connaître les principaux algorithmes de coloration propre.</p>
+
+      <h2>I. Propriétés et comportements des algorithmes</h2>
+      <div class="tw"><table>
+        <tr><th></th><th>Algorithme exhaustif (brute force)</th><th>Algorithme glouton</th></tr>
+        <tr><td><b>Principe</b></td><td>explore <b>toutes</b> les combinaisons et tous les scénarios possibles</td><td>à chaque étape, fait le choix qui semble le meilleur <b>localement</b>, dans l'espoir d'un optimum global ; <b>ne revient pas en arrière</b></td></tr>
+        <tr><td><b>Avantages</b></td><td>trouve toujours la solution exacte et optimale si elle existe</td><td>en général rapide et simple à programmer</td></tr>
+        <tr><td><b>Inconvénients</b></td><td>extrêmement lent quand le nombre de possibilités grandit (<b>explosion combinatoire</b>)</td><td>ne garantit pas toujours la meilleure solution globale</td></tr>
+      </table></div>
+
+      <h3>Heuristique</h3>
+      <div class="box def"><span class="bt">Définition</span>Une <b>heuristique</b> est une règle de choix fondée sur une intuition ou sur une propriété du problème, utilisée pour chercher rapidement une bonne solution, <b>sans garantir qu'elle soit optimale</b>. Elle ne change pas l'objectif de l'algorithme : elle <i>guide ses choix</i> pour augmenter les chances d'obtenir une bonne solution. (Du grec <i>heuriskô</i> : « je trouve ».)</div>
+
+      <h3>Complexité temporelle</h3>
+      <p>L'efficacité d'un algorithme se mesure par la <b>mémoire</b> utilisée et la <b>rapidité d'exécution</b>, c'est-à-dire le nombre d'opérations en fonction de la taille n des données : c'est la <b>complexité temporelle</b>, notée O(f(n)) (ordre de grandeur de l'augmentation du temps quand n augmente). Familles : linéaire O(n), logarithmique O(ln n), polynomiale O(nᵏ), exponentielle O(kⁿ).</p>
+      <div class="tw"><table>
+        <tr><th>Algorithme</th><th>Complexité</th></tr>
+        <tr><td>Recherche linéaire</td><td>O(n)</td></tr>
+        <tr><td>Tri par insertion d'un tableau</td><td>O(n²)</td></tr>
+        <tr><td>Tri rapide (quicksort)</td><td>O(n log n)</td></tr>
+      </table></div>
+      <p><b>Ordres de grandeur</b> en supposant 1 ns par opération élémentaire :</p>
+      <div class="tw"><table class="mat">
+        <tr><th>Taille n</th><th>10</th><th>100</th><th>1 000</th><th>10 000</th><th>100 000</th><th>1 000 000</th></tr>
+        <tr><th>O(1)</th><td>1 ns</td><td>1 ns</td><td>1 ns</td><td>1 ns</td><td>1 ns</td><td>1 ns</td></tr>
+        <tr><th>O(log n)</th><td>&lt;1 µs</td><td>&lt;1 µs</td><td>&lt;1 µs</td><td>&lt;1 µs</td><td>&lt;1 µs</td><td>&lt;1 µs</td></tr>
+        <tr><th>O(n)</th><td>&lt;1 µs</td><td>0,1 µs</td><td>1 µs</td><td>10 µs</td><td>0,1 ms</td><td>1 ms</td></tr>
+        <tr><th>O(n log n)</th><td>&lt;1 µs</td><td>1 µs</td><td>10 µs</td><td>0,1 ms</td><td>1 ms</td><td>20 ms</td></tr>
+        <tr><th>O(n²)</th><td>&lt;1 µs</td><td>0,01 ms</td><td>1 ms</td><td>0,1 s</td><td>10 s</td><td>~17 min</td></tr>
+        <tr><th>O(n³)</th><td>1 µs</td><td>1 ms</td><td>1 s</td><td>17 min</td><td>~12 jours</td><td>32 ans</td></tr>
+        <tr><th>O(2ⁿ)</th><td>1 µs</td><td colspan="5" class="mm">inutilisable</td></tr>
+        <tr><th>O(n!)</th><td>1 ms</td><td colspan="5" class="mm">inutilisable</td></tr>
+      </table></div>
+      <p>Avec une complexité exponentielle, le temps de calcul devient prohibitif dès quelques dizaines de données.</p>
+      <div class="box def"><span class="bt">Problèmes faciles et difficiles</span>
+        <ul>
+          <li>Un algorithme est <b>« raisonnable »</b> si sa complexité est <b>polynomiale</b> (O(nᵏ)).</li>
+          <li>Un problème est <b>« facile »</b> s'il admet un algorithme déterministe raisonnable.</li>
+          <li>Un problème est <b>« probablement difficile »</b> si personne ne sait prouver qu'il est facile et que la communauté scientifique soupçonne fortement qu'il est difficile : il est peu probable qu'on trouve un jour un algorithme polynomial pour le résoudre.</li>
+        </ul>
+      </div>
+      <p>👉 <a data-go="s2/corriges" href="#s2/corriges">Exercice 6</a> : complexité des traitements selon la représentation mémoire.</p>
+
+      <h2>II. Trouver une coloration propre</h2>
+      <p>Rechercher une coloration propre <b>optimale</b> est un problème algorithmique <b>difficile</b>. Une approche exhaustive teste toutes les combinaisons : c'est un algorithme <i>brute force</i> de complexité exponentielle. On utilise donc des algorithmes <b>raisonnables</b> qui ne garantissent pas l'optimum, mais qui, avec des heuristiques bien choisies, donnent en général un résultat satisfaisant en temps raisonnable.</p>
+
+      <h3>1. Algorithme séquentiel « naïf »</h3>
+      <div class="box prop"><span class="bt">Principe</span>Parcourir les sommets les uns après les autres et attribuer à chacun la <b>plus petite couleur non déjà utilisée par un de ses voisins</b>. Il est <b>glouton</b> : il ne remet jamais en cause les choix précédents.</div>
+      <pre class="code"><code>Pour chaque sommet i :
+    c ← 0
+    Faire :
+        test ← vrai
+        Pour chaque sommet j déjà coloré (j &lt; i) :
+            si j est adjacent à i et que la couleur de j est c : test ← faux
+        si (test = faux) c ← c + 1
+    Tant que (test = faux)
+    Attribuer la couleur c à i</code></pre>
+      <div class="box warn"><span class="bt">Limite</span>Il dépend « du hasard » de l'<b>ordre initial</b> des sommets : deux ordres différents peuvent donner des nombres de couleurs différents. Sur l'activité 4, dans l'ordre du fichier (Anglais, Chimie, Chinois…), il utilise <b>5 créneaux</b> alors que χ = 4.</div>
+      <figure class="fig" style="max-width:560px"><div data-graph="exams" data-colors="A:0,Cn:0,P:0,Ch:1,E:2,I:2,M:3,Me:4,S:4"></div><figcaption>Séquentiel dans l'ordre du fichier : 5 créneaux (le nombre sur chaque sommet est son créneau)</figcaption></figure>
+
+      <h3>2. Utiliser une heuristique</h3>
+      <p>L'ordre de traitement a un impact sur le résultat. <b>Quel ordre choisir pour avoir une meilleure chance d'utiliser peu de couleurs ?</b> Commencer par les sommets qui semblent les <b>plus difficiles à colorer</b>. Mais comment les identifier ?</p>
+
+      <h4>Idée 1 — séquentiel ordonné : degrés décroissants</h4>
+      <p>Intuition : les sommets qui ont beaucoup de voisins sont les plus difficiles à colorer. Il n'existe <b>pas de démonstration</b> que cela donne une meilleure coloration, mais on observe que l'on obtient <b>souvent</b> moins de couleurs.</p>
+      <pre class="code"><code>Tant que tous les sommets ne sont pas colorés :
+    Chercher le sommet i non coloré de plus haut degré
+    c ← 0
+    Faire :
+        test ← vrai
+        Pour chaque sommet j déjà coloré :
+            si j est adjacent à i et que la couleur de j est c : test ← faux
+        si (test = faux) c ← c + 1
+    Tant que (test = faux)
+    Attribuer la couleur c à i</code></pre>
+
+      <h4>Idée 2 — Welsh et Powell : remplir une couleur au maximum</h4>
+      <p>Welsh et Powell cherchaient à planifier des examens sans conflit. Leur algorithme a une <b>stratégie centrée sur les couleurs</b> : heuristique de « remplissage maximal ». En maximisant la taille de chaque classe de couleur, on « vide » le graphe de ses sommets les plus faciles à grouper, ce qui retarde au maximum l'apparition de nouvelles couleurs.</p>
+      <pre class="code"><code>Trier les sommets par ordre de degrés décroissants.
+c ← 0
+Tant que tous les sommets ne sont pas colorés :
+    Pour chaque sommet i non coloré (dans l'ordre) :
+        test ← vrai
+        Pour chaque sommet j déjà coloré :
+            si j est adjacent à i et que la couleur de j est c : test ← faux
+        si (test = vrai) : attribuer la couleur c à i
+    c ← c + 1</code></pre>
+      <p>Version Java (testée) :</p>
+      <pre class="code"><code>static int[] welshPowell(boolean[][] adj) {
+    int n = adj.length;
+    int[] deg = new int[n];
+    for (int i = 0; i &lt; n; i++) for (int j = 0; j &lt; n; j++) if (adj[i][j]) deg[i]++;
+    Integer[] ordre = new Integer[n];
+    for (int i = 0; i &lt; n; i++) ordre[i] = i;
+    Arrays.sort(ordre, (a, b) -&gt; deg[b] - deg[a]);            // tri stable par degré décroissant
+    int[] couleur = new int[n];
+    Arrays.fill(couleur, -1);
+    int restants = n, c = 0;
+    while (restants &gt; 0) {
+        for (int i : ordre) {
+            if (couleur[i] != -1) continue;
+            boolean ok = true;
+            for (int j = 0; j &lt; n; j++) if (adj[i][j] &amp;&amp; couleur[j] == c) { ok = false; break; }
+            if (ok) { couleur[i] = c; restants--; }
+        }
+        c++;                                                    // on passe à la couleur suivante
+    }
+    return couleur;
+}</code></pre>
+      <div class="box ex"><span class="bt">Exemple (activité 4)</span>Ordre : Ch(7), Cn, E, M, S (5), I, Me (4), A (3), P (2). <b>Couleur 1</b> : Ch puis Cn (seul non voisin de Ch). <b>Couleur 2</b> : E, puis I. <b>Couleur 3</b> : M, A, P. <b>Couleur 4</b> : S, Me. Total : 4 créneaux.</div>
+      <div class="box comp"><span class="bt">Différence avec le séquentiel ordonné</span>Le séquentiel ordonné traite <b>un sommet à la fois</b> et lui cherche une couleur ; Welsh-Powell traite <b>une couleur à la fois</b> et cherche à l'utiliser pour un maximum de sommets. Les deux utilisent l'ordre des degrés décroissants et peuvent donner des résultats différents.</div>
+
+      <h4>Idée 3 — DSATUR : choisir dynamiquement le prochain sommet</h4>
+      <p><b>Limite du tri par degré :</b> il est <b>statique</b> (fait une fois avant de colorer). Or, dès qu'on colore, la situation change : un sommet de grand degré peut devenir très facile à colorer si tous ses voisins ont déjà la même couleur.</p>
+      <div class="box def"><span class="bt">Définition (Daniel Brélaz)</span>Le <b>degré de saturation</b> (DSAT) d'un sommet est le <b>nombre de couleurs <i>différentes</i></b> déjà utilisées par ses voisins.</div>
+      <pre class="code"><code>Tant que tous les sommets ne sont pas colorés :
+    Chercher le sommet non coloré de degré de saturation maximal
+        (en cas d'égalité : celui de plus haut degré)
+    Lui affecter la plus petite couleur possible</code></pre>
+      <div class="box warn"><span class="bt">Attention</span>On compte les couleurs <b>différentes</b>, pas les voisins colorés : un sommet avec 3 voisins colorés tous de la même couleur a une saturation de 1, pas de 3.</div>
+      <figure class="fig" style="max-width:560px"><div data-graph="exams" data-colors="Ch:0,Cn:0,E:1,Me:1,P:1,M:2,A:2,I:2,S:3"></div><figcaption>DSATUR sur l'activité 4 : 4 créneaux</figcaption></figure>
+      <p>Déroulé sur l'activité 4 (voir le détail dans les corrigés) : Ch (saturation 0, degré 7) → E → M → S → Cn → A → Me → I → P.</p>
+
+      <h2>III. k-colorable ? nombre chromatique ? coloration optimale ?</h2>
+      <ul>
+        <li>Déterminer si un graphe est k-colorable, trouver le nombre chromatique et chercher une coloration optimale sont des problèmes <b>difficiles</b> : aucun algorithme polynomial n'est connu à ce jour. Des méthodes exactes plus élaborées que le brute force réduisent beaucoup la recherche, mais le problème reste difficile dans le cas général.</li>
+        <li><b>En revanche</b>, on peut <b>encadrer</b> χ(G) : <b>ω(G) ≤ χ(G) ≤ 1 + Δ(G)</b>, où Δ(G) est le plus grand degré et ω(G) l'ordre de la plus grande <b>clique</b> (sous-graphe complet).</li>
+        <li>On sait trouver des colorations optimales pour certaines classes particulières de graphes (graphes parfaits…).</li>
+      </ul>
+      <div class="box ex"><span class="bt">Exemple</span>Activité 4 : ω = 4 (clique {Cn, E, M, S}) et Δ = 7 (Chimie), donc 4 ≤ χ ≤ 8 ; on a trouvé χ = 4.</div>
+
+      <h3>Bilan : les algorithmes étudiés</h3>
+      <div class="tw"><table>
+        <tr><th>Algorithme</th><th>Stratégie</th><th>Choix du prochain sommet</th><th>Attribution des couleurs</th><th>Limite</th></tr>
+        <tr><td><b>Séquentiel</b></td><td>un sommet à la fois</td><td>ordre initial</td><td>plus petite couleur disponible</td><td>très dépendant de l'ordre ; optimum non garanti</td></tr>
+        <tr><td><b>Séquentiel ordonné</b></td><td>traiter d'abord les sommets très connectés</td><td>plus haut degré</td><td>plus petite couleur disponible</td><td>stratégie statique ; optimum non garanti</td></tr>
+        <tr><td><b>Welsh-Powell</b></td><td>une couleur à la fois, utilisée pour un maximum de sommets</td><td>plus haut degré</td><td>utiliser au maximum une couleur avant de passer à la suivante</td><td>stratégie statique ; optimum non garanti</td></tr>
+        <tr><td><b>DSATUR</b></td><td>stratégie dynamique : sommets les plus contraints d'après les colorations précédentes</td><td>saturation maximale, puis degré</td><td>plus petite couleur disponible</td><td>optimum non garanti</td></tr>
+        <tr><td><b>Brute force</b></td><td>tester toutes les combinaisons</td><td>—</td><td>—</td><td>optimal, mais temps exponentiel</td></tr>
+      </table></div>
+      <p><b>Complexité</b> selon la représentation (n = ordre, m = taille) ; ordres de grandeur indicatifs pour les implémentations étudiées :</p>
+      <div class="tw"><table>
+        <tr><th>Algorithme</th><th class="c">Matrice d'adjacence</th><th class="c">Liste de successeurs</th></tr>
+        <tr><td><b>Séquentiel</b></td><td class="c">O(n²)</td><td class="c">O(n + m)</td></tr>
+        <tr><td><b>Séquentiel ordonné</b></td><td class="c">O(n²)</td><td class="c">O(n log n + m)</td></tr>
+        <tr><td><b>Welsh-Powell</b></td><td class="c">O(n²)</td><td class="c">O(n²)</td></tr>
+        <tr><td><b>DSATUR</b></td><td class="c">O(n²)</td><td class="c">O(n²)</td></tr>
+        <tr><td><b>Brute force</b></td><td class="c" colspan="2">tester une coloration à k couleurs : O(kⁿ) — exponentiel</td></tr>
+      </table></div>
+      <div class="box ret"><span class="bt">À retenir</span>Un algorithme glouton est rapide mais pas forcément optimal ; le brute force est optimal mais exponentiel. Les heuristiques (degré décroissant, Welsh-Powell, DSATUR) guident le glouton. Pour juger la qualité d'une coloration, on l'encadre : ω(G) ≤ χ(G) ≤ 1 + Δ(G).</div>
+      <p>👉 Teste-les dans l'<a data-go="atelier" href="#atelier">atelier de coloration</a> (nouveau : mode Welsh-Powell). Activité 5 corrigée dans l'onglet <a data-go="s2/corriges" href="#s2/corriges">Exercices corrigés</a>.</p>
+    </article>
+
+    <!-- ===== EXPLORER UN GRAPHE ===== -->
+    <article class="chap" data-chap="2">
+      <h2 style="margin-top:0">Explorer un graphe</h2>
+      <div class="box comp"><span class="bt">Remarque</span>Cette partie est rédigée à partir de l'<b>activité 6</b> (exploration d'un wiki) : le chapitre de cours correspondant n'est pas encore dans les supports. Elle introduit les idées de base du <b>parcours</b> d'un graphe.</div>
+
+      <h2>I. Le problème</h2>
+      <p><b>Objectif :</b> visiter toutes les pages <b>accessibles</b> depuis une page de départ, sans visiter inutilement la même page plusieurs fois et sans en oublier. Un wiki peut avoir des milliers de pages : il faut raisonner comme un ordinateur, <b>sans dessiner le graphe</b>. Quand on consulte une page, on n'a accès qu'à la <b>liste de ses liens</b> ; il faut donc mémoriser d'autres informations au fil de l'exploration.</p>
+      <p><b>Modélisation :</b> sommets = pages ; <b>arc</b> p → q ⇔ la page p contient un lien hypertexte vers q (relation non symétrique : graphe <b>orienté</b>). Les doublons ayant été supprimés, c'est un graphe <b>orienté simple</b> (sans arcs multiples), représenté naturellement par des <b>listes de successeurs</b>.</p>
+      <figure class="fig" style="max-width:560px"><div data-graph="wiki"></div><figcaption>Mini wiki de 11 pages (A → B, C, D ; B → C, E ; C → F ; D → F ; E → G, K ; F → E, H ; G → A ; H → D, I ; J → F, I)</figcaption></figure>
+
+      <h2>II. Trois états pour une page</h2>
+      <ul>
+        <li><b>Non vue</b> : on ne connaît pas encore son existence (aucun lien rencontré vers elle).</li>
+        <li><b>Vue mais non explorée</b> : on l'a rencontrée dans la liste de liens d'une page explorée ; on devra l'explorer plus tard.</li>
+        <li><b>Explorée</b> : on a consulté la liste de ses liens (tous ses successeurs ont été vus).</li>
+      </ul>
+      <p>Pour <b>ne pas tourner en rond</b>, on ne rajoute à la liste des pages à explorer qu'une page <b>pas encore vue</b> (on la marque « vue » dès qu'on l'ajoute). Pour <b>ne pas oublier de page</b>, on continue tant que la liste des pages vues non explorées n'est pas vide.</p>
+
+      <h2>III. L'algorithme</h2>
+      <pre class="code"><code>Choisir le sommet initial s0
+Marquer s0 « vu » ; ajouter s0 à la liste AExplorer
+Tant que AExplorer n'est pas vide :
+    s ← retirer un sommet de AExplorer
+    Noter que s a été exploré
+    Pour chaque successeur t de s :
+        si t n'est pas déjà vu :
+            marquer t « vu »
+            ajouter t à AExplorer</code></pre>
+      <p>La seule liberté est <b>quel sommet retirer</b> de AExplorer :</p>
+      <div class="tw"><table>
+        <tr><th>Structure de AExplorer</th><th>On retire…</th><th>Parcours obtenu</th></tr>
+        <tr><td><b>File</b> (FIFO)</td><td>le sommet vu <b>le plus anciennement</b></td><td><b>en largeur</b> : on explore par « cercles » de plus en plus éloignés du départ</td></tr>
+        <tr><td><b>Pile</b> (LIFO)</td><td>le sommet vu <b>le plus récemment</b></td><td><b>en profondeur</b> : on s'enfonce dans un chemin avant de revenir en arrière</td></tr>
+      </table></div>
+      <div class="box ex"><span class="bt">Exemple : depuis E, avec une file</span>
+        <div class="tw" style="margin:8px 0"><table>
+          <tr><th>Page explorée</th><th>Pages vues non explorées (file)</th></tr>
+          <tr><td>E</td><td>G, K</td></tr>
+          <tr><td>G</td><td>K, A</td></tr>
+          <tr><td>K</td><td>A</td></tr>
+          <tr><td>A</td><td>B, C, D</td></tr>
+          <tr><td>B</td><td>C, D <span style="color:var(--muted)">(C déjà vue, E déjà explorée)</span></td></tr>
+          <tr><td>C</td><td>D, F</td></tr>
+          <tr><td>D</td><td>F <span style="color:var(--muted)">(F déjà vue)</span></td></tr>
+          <tr><td>F</td><td>H</td></tr>
+          <tr><td>H</td><td>I</td></tr>
+          <tr><td>I</td><td>(vide) → fin</td></tr>
+        </table></div>
+        Ordre d'exploration : <b>E, G, K, A, B, C, D, F, H, I</b>. La page <b>J</b> n'est jamais découverte : aucun lien ne mène à J, elle n'est donc pas <b>accessible</b> depuis E.
+      </div>
+      <figure class="fig" style="max-width:560px"><div data-graph="wiki" data-order="E,G,K,A,B,C,D,F,H,I"></div><figcaption>Ordre d'exploration depuis E (parcours en largeur)</figcaption></figure>
+
+      <h2>IV. Structures de données</h2>
+      <ul>
+        <li><b>Pages vues non explorées</b> : une <b>file</b> (<code>Queue</code>, <code>ArrayDeque</code>) pour la largeur, une <b>pile</b> (<code>Deque</code> utilisée en pile) pour la profondeur — pas une simple liste dans laquelle on chercherait à chaque fois.</li>
+        <li><b>Page déjà vue ?</b> un <code>boolean[]</code> indexé par le numéro de la page, un <code>Set</code> (<code>HashSet</code>) de pages vues, ou un <b>attribut d'état</b> dans l'objet Sommet (non vu, vu, exploré). Un <code>HashSet</code> évite les doublons tout seul : <code>vus.add(t)</code> renvoie <code>false</code> si t y était déjà.</li>
+        <li><b>Graphe</b> : listes de successeurs (<code>Map&lt;Page, List&lt;Page&gt;&gt;</code>), puisqu'on parcourt les successeurs d'un sommet.</li>
+      </ul>
+      <pre class="code"><code>static List&lt;String&gt; largeur(Map&lt;String, List&lt;String&gt;&gt; succ, String s0) {
+    List&lt;String&gt; explores = new ArrayList&lt;&gt;();
+    Set&lt;String&gt; vus = new HashSet&lt;&gt;();
+    Deque&lt;String&gt; aExplorer = new ArrayDeque&lt;&gt;();
+    vus.add(s0);
+    aExplorer.addLast(s0);
+    while (!aExplorer.isEmpty()) {
+        String s = aExplorer.pollFirst();                    // file : le plus ancien d'abord
+        explores.add(s);
+        for (String t : succ.getOrDefault(s, List.of())) {
+            if (vus.add(t)) aExplorer.addLast(t);            // add renvoie false si t déjà vu : pas de doublon
+        }
+    }
+    return explores;
+}</code></pre>
+      <p>Pour le parcours en profondeur, la seule ligne qui change est <code>aExplorer.pollLast()</code> (on retire le dernier ajouté : pile).</p>
+      <div class="box comp"><span class="bt">Complexité</span>Chaque sommet est exploré une fois et chaque arc examiné une fois : <b>O(n + m)</b> avec des listes de successeurs, <b>O(n²)</b> avec une matrice d'adjacence (il faut parcourir une ligne entière pour trouver les successeurs).</div>
+      <div class="box ret"><span class="bt">À retenir</span>Explorer un graphe, c'est maintenir trois ensembles : pages <b>non vues</b>, <b>vues non explorées</b>, <b>explorées</b>. On ne découvre que les sommets <b>accessibles</b> depuis le départ. Le choix « file ou pile » détermine l'ordre de parcours.</div>
+      <p>👉 Essaie-le dans l'<a data-go="exploration" href="#exploration">atelier d'exploration</a>. Activité 6 corrigée dans l'onglet <a data-go="s2/corriges" href="#s2/corriges">Exercices corrigés</a>.</p>
+    </article>
+  </div> <!-- /pane cours -->
