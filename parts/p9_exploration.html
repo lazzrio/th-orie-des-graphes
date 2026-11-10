@@ -2,17 +2,20 @@
 <!-- ============ ATELIER EXPLORATION ============ -->
 <section class="view" id="view-exploration">
   <h1>🧭 Atelier d'exploration</h1>
-  <p>Exécute pas à pas l'exploration du mini wiki de l'activité 6 : choisis la page de départ et la structure des pages « à explorer » (<b>file</b> = parcours en largeur, <b>pile</b> = parcours en profondeur). Les pages en <b>jaune</b> sont vues mais pas encore explorées, les pages en <b>bleu</b> sont explorées (le numéro est l'ordre d'exploration), les pages blanches ne sont pas encore vues.</p>
+  <p>Exécute pas à pas une exploration : choisis le graphe, le sommet de départ et la collection des sommets en attente (<b>file</b> = parcours en largeur, <b>pile</b> = parcours en profondeur). Les successeurs sont parcourus dans l'ordre alphabétique et chaque sommet est marqué dès sa découverte. Les sommets en <b>jaune</b> sont découverts mais pas encore explorés, ceux en <b>bleu</b> sont explorés (le numéro est l'ordre d'exploration), les blancs ne sont pas encore découverts. Les arcs en orange forment l'<b>arborescence de parcours</b> (chaque sommet relié à son parent).</p>
   <div class="atelier">
     <div class="panel">
       <div class="ctl">
+        <label for="ex-graph">Graphe</label>
+        <select id="ex-graph"></select>
         <label for="ex-start">Départ</label>
         <select id="ex-start"></select>
-        <label for="ex-mode">Structure</label>
+        <label for="ex-mode">Collection</label>
         <select id="ex-mode">
           <option value="file">File (largeur)</option>
           <option value="pile">Pile (profondeur)</option>
         </select>
+        <label><input type="checkbox" id="ex-arbo" checked> Arborescence</label>
       </div>
       <div id="ex-svg" style="max-width:640px;margin:0 auto"></div>
       <div class="ctl" style="justify-content:center">
@@ -22,19 +25,22 @@
       </div>
     </div>
     <div class="panel">
-      <h3>À explorer</h3>
+      <h3>État</h3>
       <div class="stat" id="ex-stats"></div>
       <p id="ex-verdict" style="font-weight:600"></p>
+      <div class="ctl"><label for="ex-cible">Chemin vers</label><select id="ex-cible"></select></div>
+      <p id="ex-chemin"></p>
+      <div class="tw"><table class="mat" id="ex-parents"></table></div>
       <h3>Déroulé</h3>
       <div class="tw" style="max-height:340px;overflow:auto"><table id="ex-table">
-        <thead><tr><th>#</th><th>Page explorée</th><th>Nouvelles pages vues</th><th>Vues non explorées</th></tr></thead>
+        <thead><tr><th>#</th><th>Sommet exploré</th><th>Nouveaux découverts</th><th>En attente après l'étape</th></tr></thead>
         <tbody></tbody>
       </table></div>
       <div class="box comp" style="margin-top:14px"><span class="bt">À essayer</span>
         <ul style="margin:.3em 0 0">
-          <li>Départ <b>B</b> ou <b>E</b> : la page <b>J</b> n'est jamais découverte (aucun lien n'y mène).</li>
-          <li>Départ <b>J</b> : les 11 pages sont atteintes.</li>
-          <li>Compare l'ordre d'exploration <b>file</b> et <b>pile</b> depuis B : mêmes pages, ordre différent.</li>
+          <li><b>Exercice 7</b>, départ C : compare file et pile (ordres, arborescences), puis le chemin vers <b>A</b> : 2 arcs avec la file, 4 avec la pile. <b>F</b> n'est jamais découvert.</li>
+          <li><b>connexite.txt</b> : depuis A on ne découvre que {A, B, C, D}. Relance depuis E, puis G : trois explorations, trois composantes connexes.</li>
+          <li><b>Mini wiki</b>, départ B ou E : la page <b>J</b> n'est jamais découverte ; départ J : les 11 pages sont atteintes.</li>
         </ul>
       </div>
     </div>

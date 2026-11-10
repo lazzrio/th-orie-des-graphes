@@ -26,6 +26,7 @@
       <button data-view="accueil" data-go="accueil">Accueil</button>
       <button data-view="s1" data-go="s1/cours" title="Semaine 1 — présentation, modélisation, coloration">Semaine 1</button>
       <button data-view="s2" data-go="s2/cours" title="Semaine 2 — algorithmes de coloration, complexité, exploration d'un graphe">Semaine 2</button>
+      <button data-view="s3" data-go="s3/cours" title="Semaine 3 — chemins, parcours en largeur et en profondeur, connexité">Semaine 3</button>
       <button data-view="atelier" data-go="atelier" title="Exécuter les algorithmes de coloration pas à pas">🎨 Atelier coloration</button>
       <button data-view="exploration" data-go="exploration" title="Explorer un graphe pas à pas (file, pile)">🧭 Exploration</button>
     </nav>
@@ -65,6 +66,15 @@
     <a class="card" data-go="s2/fiche" href="#s2/fiche"><span class="ico">📌</span><h3>À retenir</h3><p>Complexités, comparaison des algorithmes, pièges et résultats à connaître.</p></a>
     <a class="card" data-go="s2/qcm" href="#s2/qcm"><span class="ico">🎯</span><h3>QCM de la semaine</h3><p>Questions corrigées sur les algorithmes, le code Java et l'exploration.</p></a>
     <a class="card" data-go="exploration" href="#exploration"><span class="ico">🧭</span><h3>Atelier exploration</h3><p>File ou pile : observe l'ordre de découverte des pages d'un wiki, étape par étape.</p></a>
+  </div>
+  <h2>Semaine 3</h2>
+  <p>Exploration des graphes : chemins, circuits, arborescences, parcours en largeur (BFS) et en profondeur (DFS), reconstruction des chemins, faible connexité. Exercices 7 et 8, activités 7 et 8.</p>
+  <div class="cards">
+    <a class="card" data-go="s3/cours/1" href="#s3/cours/1"><span class="ico">📘</span><h3>Cours</h3><p>Chapitre 4 : stratégies d'exploration, recherche de chemins avec les parents, composantes connexes.</p></a>
+    <a class="card" data-go="s3/corriges" href="#s3/corriges"><span class="ico">✅</span><h3>Exercices corrigés</h3><p>Exercice 7 (tableaux file et pile pas à pas), activité 7, exercice 8, activité 8 (code Java testé sur les 3 fichiers fournis).</p></a>
+    <a class="card" data-go="s3/fiche" href="#s3/fiche"><span class="ico">📌</span><h3>À retenir</h3><p>Vocabulaire, BFS contre DFS, arborescence de parcours, connexité.</p></a>
+    <a class="card" data-go="s3/qcm" href="#s3/qcm"><span class="ico">🎯</span><h3>QCM de la semaine</h3><p><span data-qcount="s3">40</span> questions corrigées avec explication sur le chapitre 4 et l'activité 8.</p></a>
+    <a class="card" data-go="exploration" href="#exploration"><span class="ico">🧭</span><h3>Atelier exploration</h3><p>Nouveau : graphes de l'exercice 7 et de connexite.txt, arborescence des parents et chemin reconstruit.</p></a>
   </div>
   <h2>Semaines suivantes</h2>
   <p style="color:var(--muted)">Les prochaines semaines seront ajoutées au fur et à mesure du cours, avec le même format : cours, corrigés, fiche et QCM.</p>
@@ -1403,6 +1413,553 @@ Tant que AExplorer n'est pas vide
   </div>
 </section>
 
+
+<!-- ============ SEMAINE 3 ============ -->
+<section class="view" id="view-s3">
+  <div class="weekhead"><h1>Semaine 3</h1><span class="tag">Chapitre 4 · Exploration des graphes</span></div>
+  <p style="color:var(--muted);margin-top:0">Chemins, descendants, circuits et arborescences ; parcours en largeur (BFS) et en profondeur (DFS) ; reconstruction des chemins ; faible connexité. Exercices 7 et 8, activités 7 et 8.</p>
+  <div class="tabs" role="tablist">
+    <button data-pane="cours" data-go="s3/cours">📘 Cours</button>
+    <button data-pane="corriges" data-go="s3/corriges">✅ Exercices corrigés</button>
+    <button data-pane="fiche" data-go="s3/fiche">📌 À retenir</button>
+    <button data-pane="qcm" data-go="s3/qcm">🎯 QCM</button>
+  </div>
+
+  <!-- ---------- COURS ---------- -->
+  <div class="pane" data-pane="cours">
+    <div class="chnav">
+      <button data-chap="1" data-go="s3/cours/1">Partie 1 · Stratégies d'exploration</button>
+      <button data-chap="2" data-go="s3/cours/2">Partie 2 · Recherche de chemins</button>
+      <button data-chap="3" data-go="s3/cours/3">Partie 3 · Faible connexité</button>
+    </div>
+
+    <!-- ===== PARTIE 1 ===== -->
+    <article class="chap" data-chap="1">
+      <h2 style="margin-top:0">Chapitre 4 (partie 1) — Stratégies d'exploration</h2>
+      <p><b>Objectifs :</b> comprendre et appliquer les différentes stratégies d'exploration d'un graphe ; distinguer une exploration <b>en largeur</b> d'une exploration <b>en profondeur</b>.</p>
+
+      <h2>I. Définitions et propriétés</h2>
+      <h3>1. Chaînes et chemins</h3>
+      <div class="box def"><span class="bt">Définition</span>Soit G = (S, A) un graphe <b>orienté</b>. Un <b>chemin</b> de u à v est une suite ordonnée d'arcs <b>contigus</b> : u est l'extrémité initiale du premier arc, v l'extrémité finale du dernier, et quand deux arcs se suivent, l'extrémité initiale du second est l'extrémité finale du premier.
+        <ul style="margin:.4em 0 0">
+          <li>La <b>longueur</b> d'un chemin est son <b>nombre d'arcs</b>.</li>
+          <li>Il peut exister <b>zéro, un ou plusieurs</b> chemins d'un sommet à un autre.</li>
+          <li>Dans un graphe <b>non orienté</b>, on parle de <b>chaîne</b> (suite d'arêtes).</li>
+        </ul></div>
+      <figure class="fig" style="max-width:360px"><div data-graph="ch4a" data-hl="1-2,2-5,5-6,6-4"></div><figcaption>S = {1,…,6}, A = {(1,2), (2,3), (2,4), (2,5), (4,3), (5,3), (5,6), (6,4)} : en orange le chemin c₂</figcaption></figure>
+      <div class="box ex"><span class="bt">Exemple</span>c₁ = &lt;(1,2), (2,4)&gt; et c₂ = &lt;(1,2), (2,5), (5,6), (6,4)&gt; sont deux chemins différents de 1 à 4 : c₁ est de longueur <b>2</b>, c₂ de longueur <b>4</b>. Il n'existe <b>aucun</b> chemin de 4 à 5 (le seul arc qui sort de 4 mène à 3, d'où ne sort aucun arc).</div>
+      <div class="box def"><span class="bt">Chemin simple, chemin élémentaire</span>
+        <ul style="margin:.2em 0 0">
+          <li>Un chemin est <b>simple</b> s'il ne passe pas deux fois par le même <b>arc</b>.</li>
+          <li>Un chemin est <b>élémentaire</b> s'il ne passe pas deux fois par le même <b>sommet</b>.</li>
+        </ul></div>
+      <figure class="fig" style="max-width:360px"><div data-graph="ch4b"></div><figcaption>A = {(1,2), (2,4), (2,7), (3,5), (4,5), (5,2), (5,6), (6,3), (6,1)}</figcaption></figure>
+      <div class="tw"><table>
+        <tr><th>Chemin</th><th>Simple ?</th><th>Élémentaire ?</th></tr>
+        <tr><td>&lt;(1,2), (2,4), (4,5), (5,6)&gt;</td><td class="c">oui</td><td class="c">oui</td></tr>
+        <tr><td>&lt;(1,2), (2,4), (4,5), (5,2), (2,7)&gt;</td><td class="c">oui</td><td class="c">non (passe deux fois par 2)</td></tr>
+        <tr><td>&lt;(1,2), (2,4), (4,5), (5,6), (6,1), (1,2), (2,7)&gt;</td><td class="c">non (l'arc (1,2) deux fois)</td><td class="c">non</td></tr>
+      </table></div>
+      <p style="color:var(--muted);font-size:.92rem">Remarque : la liste A de la diapositive écrit (5,3), mais la figure et les exemples utilisent l'arc <b>(5,2)</b> ; c'est la figure qui est reprise ici.</p>
+      <div class="box prop"><span class="bt">Question du cours : élémentaire ⇒ simple ?</span><b>Oui</b> : si un arc (x, y) apparaissait deux fois, le chemin passerait deux fois par x. <b>La réciproque est fausse</b> : un chemin simple peut repasser par un sommet en empruntant un autre arc (deuxième ligne du tableau).</div>
+
+      <h3>2. Descendants et ascendants</h3>
+      <div class="box def"><span class="bt">Définition</span>v est <b>atteignable</b> depuis u s'il existe un chemin de u à v. On dit alors que u est un <b>ascendant</b> de v et que v est un <b>descendant</b> de u.
+        <ul style="margin:.4em 0 0">
+          <li><b>Desc(x)</b> : les sommets atteignables <b>depuis</b> x.</li>
+          <li><b>Asc(x)</b> : les sommets depuis lesquels on peut <b>atteindre</b> x.</li>
+        </ul></div>
+      <div class="box ex"><span class="bt">Exemple (graphe ci-dessus, d'ordre 6)</span>Desc(2) = {3, 4, 5, 6} ; Desc(4) = {3} ; Desc(3) = ∅. Asc(4) = {1, 2, 5, 6} ; Asc(1) = ∅.</div>
+
+      <h3>3. Cycles et circuits</h3>
+      <div class="box def"><span class="bt">Définition</span>Un <b>circuit</b> est un chemin dont l'extrémité finale est égale à l'extrémité initiale. Dans un graphe non orienté, on parle de <b>cycle</b>. Un graphe est <b>acyclique</b> s'il ne possède aucun circuit (aucun cycle s'il est non orienté).</div>
+      <figure class="fig" style="max-width:380px"><div data-graph="circ" data-hl="A-C,C-D,D-G,G-A"></div><figcaption>En orange, le circuit C₁ = &lt;(A,C), (C,D), (D,G), (G,A)&gt;</figcaption></figure>
+      <p>C₁ = &lt;(A,C), (C,D), (D,G), (G,A)&gt; et C₂ = &lt;(C,D), (D,E), (E,F), (F,A), (A,C)&gt; sont des circuits <b>simples et élémentaires</b>.</p>
+      <div class="box prop"><span class="bt">Questions du cours</span>
+        <ul style="margin:.2em 0 0">
+          <li>Graphe <b>orienté simple sans boucle</b> : un circuit simple contient au minimum <b>2 arcs</b> (u → v puis v → u).</li>
+          <li>Graphe <b>simple non orienté</b> : un cycle simple contient au minimum <b>3 arêtes</b> (un triangle) ; on ne peut pas réutiliser la même arête pour revenir.</li>
+          <li><b>Multigraphe</b> : <b>2 arêtes</b> suffisent (deux arêtes parallèles entre u et v) ; et même 1 si les boucles sont autorisées.</li>
+        </ul></div>
+      <div class="box prop"><span class="bt">Propriétés (graphes simples non orientés)</span>
+        <ul style="margin:.2em 0 0">
+          <li>Si le graphe a au moins 3 sommets et que <b>tous les sommets sont de degré ≥ 2</b>, il contient au moins un cycle.</li>
+          <li>Donc un graphe <b>acyclique</b> possède au moins un sommet de degré 0 ou 1.</li>
+          <li>Un graphe simple acyclique d'ordre n comporte <b>au plus n − 1 arêtes</b>.</li>
+        </ul></div>
+
+      <h3>4. Arborescences</h3>
+      <div class="box def"><span class="bt">Définitions</span>Dans un graphe orienté, une <b>source</b> est un sommet sans prédécesseur, un <b>puits</b> un sommet sans successeur. Une <b>arborescence</b> est un graphe orienté qui possède <b>une seule source</b> s₀, appelée <b>racine</b>, et tel que pour tout sommet s ≠ s₀ il existe <b>un unique chemin</b> de s₀ à s. Une <b>feuille</b> est un sommet sans successeur.</div>
+      <figure class="fig" style="max-width:400px"><div data-graph="arbo" data-colors="C:1,A:2,D:2,F:2,G:2"></div><figcaption>Arborescence de racine C ; les feuilles sont A, D, F et G</figcaption></figure>
+      <p>Dans une arborescence, il existe un <b>unique chemin</b> de la racine vers tout autre sommet, et <b>chaque sommet a un et un seul prédécesseur</b>, sauf la racine qui n'en a pas.</p>
+
+      <h2>II. Exploration d'un graphe à partir d'un sommet initial</h2>
+      <p><b>Problèmes :</b> comment explorer les sommets et leur voisinage ? Comment savoir s'il existe au moins un chemin d'un sommet à un autre ? On travaille d'abord sur des graphes <b>simples</b> : un successeur s′ de s correspond à un et un seul arc sortant de s.</p>
+      <div class="box def"><span class="bt">Vocabulaire</span><b>Découvrir</b> un sommet : le rencontrer pour la première fois (« on voit qu'on peut l'atteindre »). <b>Explorer</b> un sommet : il a été découvert, et on parcourt son voisinage, c'est-à-dire ses successeurs.</div>
+
+      <h3>1. Les stratégies d'observation</h3>
+      <ul>
+        <li>Un graphe peut contenir des <b>circuits</b> : pour ne pas tourner en rond, on <b>marque</b> les sommets déjà découverts. Un sommet est marqué <b>dès sa découverte</b>, au moment où on l'ajoute à la collection, <b>et non quand on l'en retire</b> : ainsi il n'est jamais ajouté deux fois.</li>
+        <li>Un sommet a souvent plusieurs successeurs mais on n'en explore qu'un à la fois : les sommets découverts <b>en attente d'exploration</b> sont rangés dans une <b>collection</b>. Le type de collection décide du prochain sommet exploré.</li>
+      </ul>
+      <pre class="code"><code>Marquer le sommet initial
+Ajouter le sommet initial à la collection des sommets en attente
+Tant que la collection n'est pas vide :
+    Retirer un sommet s de la collection
+    Pour chaque successeur s' de s :
+        Si s' n'est pas marqué :
+            Marquer s'
+            Ajouter s' à la collection</code></pre>
+      <p>Dans les tableaux d'exploration du cours, chaque sommet a un état : <b>0</b> non marqué (non découvert), <b>1</b> marqué (découvert), <b>2</b> exploré.</p>
+
+      <h3>2. Parcours en largeur d'abord (BFS, <i>Breadth-First Search</i>)</h3>
+      <div class="box def"><span class="bt">Principe</span>Les sommets en attente sont dans une <b>file</b> (FIFO : premier entré, premier sorti). On explore tous les chemins « au même rythme » : d'abord ceux de longueur 1 (les successeurs du sommet initial), puis de longueur 2, puis 3…</div>
+
+      <h3>3. Parcours en profondeur d'abord (DFS, <i>Depth-First Search</i>)</h3>
+      <div class="box def"><span class="bt">Principe</span>On explore un chemin « jusqu'au bout » (cul-de-sac ou sommet déjà visité) avant d'en explorer un autre ; on revient alors au dernier sommet d'où partait un chemin non exploré. Les sommets en attente sont gérés en <b>LIFO</b> (dernier entré, premier sorti) :
+        <ul style="margin:.4em 0 0">
+          <li><b>solution 1</b> : une <b>pile</b>, avec exactement le même algorithme que pour la largeur ;</li>
+          <li><b>solution 2</b> : la <b>récursivité</b> (le LIFO est assuré par la pile des appels).</li>
+        </ul></div>
+      <figure class="fig" style="max-width:400px"><div data-graph="ex7"></div><figcaption>Graphe de l'exercice 7 (successeurs parcourus dans l'ordre alphabétique)</figcaption></figure>
+      <div class="tw"><table>
+        <tr><th>Exercice 7, départ C</th><th>Ordre de découverte</th></tr>
+        <tr><td>File (BFS)</td><td>C, B, D, G, H, A, E, J, I</td></tr>
+        <tr><td>Pile (DFS itératif)</td><td>C, B, D, G, H, J, I, A, E</td></tr>
+        <tr><td>Récursivité (DFS récursif)</td><td>C, B, A, D, E, I, G, H, J</td></tr>
+      </table></div>
+      <div class="box warn"><span class="bt">Attention : pile ≠ récursivité dans l'ordre</span>Avec la pile, on marque <b>tous</b> les successeurs de C (B, D, G, H) avant d'en explorer un : l'ordre de <b>découverte</b> commence comme en largeur. Les deux versions sont bien en profondeur (on explore d'abord H, le dernier empilé, puis J, I, A…), mais elles ne produisent pas le même ordre. La version récursive découvre et explore B, puis A, avant de revenir à D.</div>
+      <p>Le détail pas à pas (tableaux 0/1/2) est dans l'onglet <a data-go="s3/corriges" href="#s3/corriges">Exercices corrigés</a>.</p>
+
+      <h3>4. Bilan</h3>
+      <div class="box ret"><span class="bt">À retenir</span>Une exploration à partir d'un sommet initial découvre <b>tous les sommets atteignables</b> depuis ce sommet, et seulement eux (dans l'exercice 7, F n'est jamais découvert : aucun arc n'entre dans F). On marque les sommets <b>dès leur découverte</b> ; les sommets découverts non explorés attendent dans une collection.
+        <ul style="margin:.4em 0 0">
+          <li><b>BFS</b> : <b>file</b> (FIFO) ; explore d'abord les sommets les plus proches ; découvre les sommets par <b>distance croissante</b> en nombre d'arcs.</li>
+          <li><b>DFS</b> : <b>pile</b> (LIFO) explicite ou <b>récursivité</b> ; va aussi loin que possible avant de revenir en arrière ; termine une branche avant de passer aux autres.</li>
+        </ul>
+        Les deux parcours trouvent le <b>même ensemble</b> de sommets, mais dans un <b>ordre</b> généralement différent. Avec des listes de successeurs, chaque sommet et chaque arc sont traités une fois : <b>O(n + m)</b>.</div>
+    </article>
+
+    <!-- ===== PARTIE 2 ===== -->
+    <article class="chap" data-chap="2">
+      <h2 style="margin-top:0">Chapitre 4 (partie 2) — Recherche de chemins dans les graphes simples</h2>
+      <p><b>Objectifs :</b> mémoriser pendant l'exploration ce qu'il faut pour reconstruire les chemins ; construire et exploiter une <b>arborescence de parcours</b> ; retrouver un chemin entre deux sommets à partir des parents ; comparer BFS et DFS.</p>
+
+      <h2>I. Le problème</h2>
+      <p>À la fin d'une exploration, le tableau de marquage dit seulement <b>quels</b> sommets ont été atteints, et l'ordre de découverte ne dit pas <b>par où</b> on est passé. L'information minimale à conserver : pour chaque sommet x découvert, le sommet y <b>depuis lequel</b> on l'a découvert. y est le <b>parent</b> de x dans le parcours.</p>
+      <pre class="code"><code>Marquer s0 ; parent[s0] ← aucun ; ajouter s0 à la collection
+Tant que la collection n'est pas vide :
+    Retirer un sommet s
+    Pour chaque successeur s' de s :
+        Si s' n'est pas marqué :
+            Marquer s' ; parent[s'] ← s ; ajouter s' à la collection</code></pre>
+
+      <h2>II. Exemple : exercice 7 en largeur depuis C</h2>
+      <div class="tw"><table>
+        <tr><th>Sommet</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr>
+        <tr><td><b>Parent (BFS)</b></td><td class="c">B</td><td class="c">C</td><td class="c">aucun</td><td class="c">C</td><td class="c">D</td><td class="c">—</td><td class="c">C</td><td class="c">C</td><td class="c">E</td><td class="c">H</td></tr>
+      </table></div>
+      <p>F n'est pas découvert : il n'a pas de parent. Chemin de C à I : on <b>remonte</b> les parents depuis I : I ← E ← D ← C, donc <b>C → D → E → I</b> (3 arcs).</p>
+      <figure class="fig" style="max-width:400px"><div data-graph="ex7" data-hl="C-B,C-D,C-G,C-H,B-A,D-E,H-J,E-I"></div><figcaption>En orange, l'arborescence du parcours en largeur depuis C (chaque sommet est relié à son parent)</figcaption></figure>
+
+      <h2>III. Arborescence de parcours</h2>
+      <div class="box def"><span class="bt">Définition</span>Les arcs parent → enfant obtenus pendant l'exploration forment une <b>arborescence de parcours</b> enracinée au sommet de départ : chaque sommet découvert a un seul parent, sauf la racine.</div>
+      <ul>
+        <li>Pour trouver le chemin du départ à un sommet x : <b>remonter les parents</b> de x jusqu'à la racine, puis <b>inverser</b> la suite obtenue.</li>
+        <li>BFS et DFS donnent en général des <b>arborescences différentes</b>, donc des chemins différents. Avec une pile, depuis C : parent(J) = H, parent(I) = J, parent(A) = I, d'où C → H → J → I → A (<b>4 arcs</b>), alors que BFS donne C → B → A (<b>2 arcs</b>).</li>
+      </ul>
+      <div class="box ret"><span class="bt">À retenir</span>On mémorise le <b>parent</b> de chaque sommet au moment de sa découverte. Les relations parent-enfant forment une <b>arborescence de parcours</b> enracinée au départ ; on retrouve un chemin en remontant les parents. Le <b>parcours en largeur (BFS)</b> garantit un chemin avec un <b>nombre minimal d'arcs</b> ; le DFS ne le garantit pas.</div>
+    </article>
+
+    <!-- ===== PARTIE 3 ===== -->
+    <article class="chap" data-chap="3">
+      <h2 style="margin-top:0">Chapitre 4 (partie 3) — Étude de la faible connexité</h2>
+      <p><b>Objectifs :</b> faire le lien entre exploration et connexité ; savoir si un graphe est connexe à l'aide d'un parcours ; identifier ses composantes connexes.</p>
+
+      <h2>I. Définitions</h2>
+      <div class="box def"><span class="bt">Définitions</span>
+        <ul style="margin:.2em 0 0">
+          <li>Deux sommets sont <b>connectés</b> (relation de <b>faible connexité</b>) s'il existe une <b>chaîne</b> de l'un à l'autre.</li>
+          <li>Cette relation est une <b>relation d'équivalence</b> : réflexive, symétrique et transitive.</li>
+          <li>Un graphe est <b>faiblement connexe</b> si deux sommets quelconques sont toujours reliés par une chaîne.</li>
+          <li>La faible connexité <b>ne tient pas compte de l'orientation</b> : tous les liens sont considérés comme symétriques. Un graphe orienté est faiblement connexe si le graphe non orienté obtenu en oubliant le sens des arcs est connexe.</li>
+        </ul></div>
+      <div class="box def"><span class="bt">Composantes connexes</span>Les <b>composantes connexes</b> sont les classes d'équivalence de la relation de connexité : elles forment une <b>partition</b> du graphe en <b>sous-graphes connexes maximaux</b>. Un graphe connexe a une seule composante connexe. On note <b>CC(s)</b> la composante de s.</div>
+      <figure class="fig" style="max-width:460px"><div data-graph="connexite" data-colors="A:0,B:0,C:0,D:0,E:1,F:1,G:2,H:2,I:2,J:2"></div><figcaption>Graphe du fichier connexite.txt : trois composantes connexes {A, B, C, D}, {E, F}, {G, H, I, J}</figcaption></figure>
+
+      <h2>II. Algorithmes (exercice 8)</h2>
+      <h3>1. Le graphe est-il connexe ?</h3>
+      <p>Dans un graphe non orienté, une exploration depuis s₀ découvre <b>exactement CC(s₀)</b>. D'où l'algorithme : <b>explorer depuis n'importe quel sommet</b> ; le graphe est connexe si et seulement si <b>tous les sommets</b> ont été découverts.</p>
+      <h3>2. Trouver toutes les composantes connexes</h3>
+      <pre class="code"><code>Tous les sommets sont non marqués ; liste des composantes ← vide
+Pour chaque sommet s du graphe :
+    Si s n'est pas marqué :
+        explorer depuis s (BFS ou DFS), en marquant les sommets découverts
+        les sommets découverts par cette exploration forment une nouvelle composante
+        ajouter cette composante à la liste</code></pre>
+      <p>Il faut <b>une exploration par composante connexe</b> : le nombre d'explorations lancées est égal au nombre de composantes. Les marques sont <b>partagées</b> entre les explorations, donc chaque sommet n'est traité qu'une fois : le tout reste en <b>O(n + m)</b>.</p>
+      <div class="box ret"><span class="bt">À retenir</span>Graphe non orienté : une exploration depuis s découvre exactement la composante de s. Le graphe est connexe ⇔ un parcours depuis n'importe quel sommet découvre tous les sommets. S'il reste des sommets non découverts, il y a plusieurs composantes : on relance une exploration depuis un sommet non visité, jusqu'à ce que tous soient découverts. Chaque exploration identifie une nouvelle composante.</div>
+      <p>👉 Visualise les arborescences et les composantes dans l'<a data-go="exploration" href="#exploration">atelier d'exploration</a> (graphes de l'exercice 7 et de connexite.txt).</p>
+    </article>
+  </div> <!-- /pane cours -->
+
+  <!-- ---------- CORRIGÉS ---------- -->
+  <div class="pane" data-pane="corriges">
+    <div class="box"><span class="bt">Comment s'en servir</span>Cherche d'abord seul : chaque corrigé est replié. Le code Java de l'activité 8 complète le squelette fourni (<code>Graphe</code>, <code>Sommet</code>, <code>Main</code>) ; il a été compilé et exécuté sur les trois fichiers fournis (<code>exercice7.txt</code>, <code>activite6_wiki.txt</code>, <code>connexite.txt</code>). Les résultats annoncés sont ceux de ces exécutions. Le code complet est dans <code>code/activite8/</code>.</div>
+    <div class="cxbar"><button data-cx="open">Tout ouvrir</button><button data-cx="close">Tout fermer</button><button class="printbtn" onclick="window.print()">🖨️ Imprimer</button></div>
+
+    <!-- ===== QUESTIONS DU COURS ===== -->
+    <details class="cx"><summary>Questions du cours (partie 1) <span class="tag">Chap. 4 (1)</span></summary><div class="cxb">
+      <span class="qn"><b class="num">1</b>Un chemin élémentaire est-il forcément simple ? Et l'inverse ?</span>
+      <div class="sol"><b>Élémentaire ⇒ simple : oui.</b> Si un même arc (x, y) apparaissait deux fois, le chemin passerait deux fois par x : il ne serait pas élémentaire. <b>Simple ⇒ élémentaire : non.</b> Contre-exemple du cours : &lt;(1,2), (2,4), (4,5), (5,2), (2,7)&gt; n'utilise jamais deux fois le même arc, mais passe deux fois par le sommet 2.</div>
+      <span class="qn"><b class="num">2</b>Graphe orienté simple sans boucle : nombre minimal d'arcs d'un circuit simple ?</span>
+      <div class="sol"><b>2 arcs</b> : u → v puis v → u (deux arcs distincts, de sens opposés). Un seul arc ne peut pas revenir à son origine sans être une boucle.</div>
+      <span class="qn"><b class="num">3</b>Graphe simple non orienté : nombre minimal d'arêtes d'un cycle simple ? Et dans un multigraphe ?</span>
+      <div class="sol">Graphe simple : <b>3 arêtes</b> (un triangle). Avec 2 sommets, il n'y a qu'une arête entre eux, et un cycle simple ne peut pas l'emprunter deux fois. Multigraphe : <b>2 arêtes</b> suffisent (deux arêtes parallèles entre u et v), et 1 seule si on autorise les boucles.</div>
+    </div></details>
+
+    <!-- ===== EXERCICE 7 ===== -->
+    <details class="cx" open><summary>Exercice 7 — Explorer avec une file, puis avec une pile <span class="tag">Chap. 4 (1)</span></summary><div class="cxb">
+      <p>Sommet initial : <b>C</b> ; successeurs parcourus dans l'ordre alphabétique. États : <b>0</b> non découvert, <b>1</b> découvert (marqué), <b>2</b> exploré. Les cases surlignées sont celles qui changent à l'étape.</p>
+      <figure class="fig" style="max-width:380px;margin:10px auto"><div data-graph="ex7"></div><figcaption>Successeurs : A → C ; B → A ; C → B, D, G, H ; D → E ; E → I ; F → D ; G → H ; H → J ; I → A ; J → I</figcaption></figure>
+      <h3>1. Avec une file d'attente (largeur)</h3>
+      <p>On retire toujours le sommet <b>le plus ancien</b> (à gauche de la file) et on ajoute les nouveaux à droite.</p>
+      <div class="tw"><table class="mat"><tr><th>Étape</th><th>Sommet exploré</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th><th>File</th></tr><tr><th>0</th><td class="c">—</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>C</td></tr><tr><th>1</th><td class="c">C</td><td>0</td><td class="one">1</td><td class="one">2</td><td class="one">1</td><td>0</td><td>0</td><td class="one">1</td><td class="one">1</td><td>0</td><td>0</td><td>B D G H</td></tr><tr><th>2</th><td class="c">B</td><td class="one">1</td><td class="one">2</td><td>2</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>D G H A</td></tr><tr><th>3</th><td class="c">D</td><td>1</td><td>2</td><td>2</td><td class="one">2</td><td class="one">1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>G H A E</td></tr><tr><th>4</th><td class="c">G</td><td>1</td><td>2</td><td>2</td><td>2</td><td>1</td><td>0</td><td class="one">2</td><td>1</td><td>0</td><td>0</td><td>H A E</td></tr><tr><th>5</th><td class="c">H</td><td>1</td><td>2</td><td>2</td><td>2</td><td>1</td><td>0</td><td>2</td><td class="one">2</td><td>0</td><td class="one">1</td><td>A E J</td></tr><tr><th>6</th><td class="c">A</td><td class="one">2</td><td>2</td><td>2</td><td>2</td><td>1</td><td>0</td><td>2</td><td>2</td><td>0</td><td>1</td><td>E J</td></tr><tr><th>7</th><td class="c">E</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="one">2</td><td>0</td><td>2</td><td>2</td><td class="one">1</td><td>1</td><td>J I</td></tr><tr><th>8</th><td class="c">J</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>0</td><td>2</td><td>2</td><td>1</td><td class="one">2</td><td>I</td></tr><tr><th>9</th><td class="c">I</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>0</td><td>2</td><td>2</td><td class="one">2</td><td>2</td><td>(vide)</td></tr></table></div>
+      <p>Ordre de découverte : <b>C, B, D, G, H, A, E, J, I</b>. Ordre d'exploration : le même (une file restitue les sommets dans l'ordre où ils sont entrés).</p>
+      <h3>2. Avec une pile (profondeur)</h3>
+      <p>On empile les successeurs dans l'ordre alphabétique et on retire toujours le sommet <b>du dessus</b> (le dernier empilé, écrit à droite).</p>
+      <div class="tw"><table class="mat"><tr><th>Étape</th><th>Sommet exploré</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th><th>Pile (sommet à droite)</th></tr><tr><th>0</th><td class="c">—</td><td>0</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>C</td></tr><tr><th>1</th><td class="c">C</td><td>0</td><td class="one">1</td><td class="one">2</td><td class="one">1</td><td>0</td><td>0</td><td class="one">1</td><td class="one">1</td><td>0</td><td>0</td><td>B D G H</td></tr><tr><th>2</th><td class="c">H</td><td>0</td><td>1</td><td>2</td><td>1</td><td>0</td><td>0</td><td>1</td><td class="one">2</td><td>0</td><td class="one">1</td><td>B D G J</td></tr><tr><th>3</th><td class="c">J</td><td>0</td><td>1</td><td>2</td><td>1</td><td>0</td><td>0</td><td>1</td><td>2</td><td class="one">1</td><td class="one">2</td><td>B D G I</td></tr><tr><th>4</th><td class="c">I</td><td class="one">1</td><td>1</td><td>2</td><td>1</td><td>0</td><td>0</td><td>1</td><td>2</td><td class="one">2</td><td>2</td><td>B D G A</td></tr><tr><th>5</th><td class="c">A</td><td class="one">2</td><td>1</td><td>2</td><td>1</td><td>0</td><td>0</td><td>1</td><td>2</td><td>2</td><td>2</td><td>B D G</td></tr><tr><th>6</th><td class="c">G</td><td>2</td><td>1</td><td>2</td><td>1</td><td>0</td><td>0</td><td class="one">2</td><td>2</td><td>2</td><td>2</td><td>B D</td></tr><tr><th>7</th><td class="c">D</td><td>2</td><td>1</td><td>2</td><td class="one">2</td><td class="one">1</td><td>0</td><td>2</td><td>2</td><td>2</td><td>2</td><td>B E</td></tr><tr><th>8</th><td class="c">E</td><td>2</td><td>1</td><td>2</td><td>2</td><td class="one">2</td><td>0</td><td>2</td><td>2</td><td>2</td><td>2</td><td>B</td></tr><tr><th>9</th><td class="c">B</td><td>2</td><td class="one">2</td><td>2</td><td>2</td><td>2</td><td>0</td><td>2</td><td>2</td><td>2</td><td>2</td><td>(vide)</td></tr></table></div>
+      <p>Ordre de découverte : <b>C, B, D, G, H, J, I, A, E</b>. Ordre d'exploration : <b>C, H, J, I, A, G, D, E, B</b>.</p>
+      <h3>3. Questions</h3>
+      <div class="sol">
+        <ul>
+          <li><b>Même ordre de découverte ?</b> Non : C, B, D, G, H, <b>A, E, J, I</b> avec la file ; C, B, D, G, H, <b>J, I, A, E</b> avec la pile. Les cinq premiers sont identiques parce que, dans les deux cas, on marque tous les successeurs de C en l'explorant.</li>
+          <li><b>Tous les sommets découverts ?</b> Non : <b>F</b> ne l'est jamais. Aucun arc n'entre dans F (F → D est son seul arc) : F n'est pas atteignable depuis C.</li>
+          <li><b>Conclusion :</b> une exploration depuis s₀ découvre <b>exactement les sommets atteignables depuis s₀</b> (s₀ et ses descendants), quelle que soit la collection utilisée. La collection ne change que l'<b>ordre</b>.</li>
+        </ul>
+      </div>
+    </div></details>
+
+    <!-- ===== ACTIVITÉ 7 ===== -->
+    <details class="cx"><summary>Activité 7 — Rechercher des chemins <span class="tag">Chap. 4 (2)</span> <span class="tag warm">à présenter</span></summary><div class="cxb">
+      <span class="qn"><b class="num">1</b>Le tableau de marquage permet-il de savoir par quel chemin I a été atteint depuis C ? L'ordre de découverte suffit-il ?</span>
+      <div class="sol"><b>Non, dans les deux cas.</b> Le marquage dit seulement qu'I a été découvert. L'ordre de découverte (C, B, D, G, H, A, E, J, I) ne dit pas <b>depuis quel sommet</b> chacun a été découvert : I aurait pu venir de E ou de J.</div>
+      <span class="qn"><b class="num">2</b>Information minimale à conserver ?</span>
+      <div class="sol">Pour chaque sommet x, le sommet y <b>depuis lequel x a été découvert</b> : son <b>parent</b> dans le parcours. Un seul sommet par case suffit, car un sommet n'est découvert qu'une fois (il est marqué aussitôt).</div>
+      <span class="qn"><b class="num">3</b>Exploration en largeur depuis C : tableau des parents</span>
+      <div class="tw"><table class="mat">
+        <tr><th>Sommet</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr>
+        <tr><th>Parent (file)</th><td>B</td><td>C</td><td>aucun</td><td>C</td><td>D</td><td>—</td><td>C</td><td>C</td><td>E</td><td>H</td></tr>
+        <tr><th>Parent (pile)</th><td>I</td><td>C</td><td>aucun</td><td>C</td><td>D</td><td>—</td><td>C</td><td>C</td><td>J</td><td>H</td></tr>
+      </table></div>
+      <p style="color:var(--muted);font-size:.92rem">« — » : F n'est pas découvert. Le tableau de l'énoncé prévoit une colonne K, qui n'existe pas dans ce graphe (10 sommets, de A à J).</p>
+      <span class="qn"><b class="num">4</b>Chemin de C à I à partir du tableau des parents</span>
+      <div class="sol">On part de I et on remonte : parent(I) = E, parent(E) = D, parent(D) = C, la racine. On lit la suite à l'envers : <b>C → D → E → I</b> (3 arcs).</div>
+      <span class="qn"><b class="num">5</b>Graphe formé des arcs parent → sommet : qu'obtient-on ?</span>
+      <div class="sol">Une <b>arborescence</b> de racine C : C est la seule source, chaque autre sommet découvert a exactement un prédécesseur (son parent), et il existe un unique chemin de C à chacun. Elle a 9 sommets (F n'en fait pas partie) et 8 arcs.</div>
+      <figure class="fig" style="max-width:380px;margin:10px auto"><div data-graph="ex7" data-hl="C-B,C-D,C-G,C-H,B-A,D-E,H-J,E-I"></div><figcaption>Arborescence du parcours en largeur (arcs en orange)</figcaption></figure>
+      <figure class="fig" style="max-width:380px;margin:10px auto"><div data-graph="ex7" data-hl="C-B,C-D,C-G,C-H,H-J,J-I,I-A,D-E"></div><figcaption>Arborescence du parcours avec une pile (arcs en orange)</figcaption></figure>
+      <span class="qn"><b class="num">6</b>File et pile donnent-elles la même arborescence ? Des chemins de même longueur ?</span>
+      <div class="sol"><b>Non</b> : avec la pile, A est découvert depuis I et I depuis J. Les chemins reconstruits n'ont donc <b>pas forcément la même longueur</b>. C → I fait 3 arcs dans les deux cas (C-D-E-I avec la file, C-H-J-I avec la pile), mais pour aller à A : <b>C → B → A (2 arcs)</b> avec la file contre <b>C → H → J → I → A (4 arcs)</b> avec la pile.</div>
+      <span class="qn"><b class="num">7</b>Quel parcours garantit un nombre minimal d'arcs ?</span>
+      <div class="sol">Le <b>parcours en largeur (BFS)</b> : il découvre les sommets par distance croissante (tous ceux à 1 arc, puis à 2 arcs…). Le premier chemin par lequel il atteint un sommet est donc un plus court chemin en nombre d'arcs.</div>
+    </div></details>
+
+    <!-- ===== EXERCICE 8 ===== -->
+    <details class="cx"><summary>Exercice 8 — Connexité et composantes connexes <span class="tag">Chap. 4 (3)</span></summary><div class="cxb">
+      <span class="qn"><b class="num">1</b>Graphe non orienté : sommets découverts par une exploration depuis s₀ ?</span>
+      <div class="sol">Exactement les sommets reliés à s₀ par une chaîne, c'est-à-dire <b>la composante connexe CC(s₀)</b>. En non orienté, « atteignable » et « connecté » sont la même chose.</div>
+      <span class="qn"><b class="num">2</b>Algorithme : le graphe est-il connexe ?</span>
+      <pre class="code"><code>Choisir un sommet quelconque s0
+Explorer depuis s0 (BFS ou DFS) en comptant les sommets découverts
+Si nombre de sommets découverts = ordre du graphe : connexe
+Sinon : non connexe</code></pre>
+      <span class="qn"><b class="num">3</b>Algorithme : toutes les composantes connexes</span>
+      <pre class="code"><code>Marquer tous les sommets « non découverts » ; composantes ← liste vide
+Pour chaque sommet s :
+    Si s n'est pas découvert :
+        nouvelle ← liste vide
+        Explorer depuis s : chaque sommet découvert est marqué et ajouté à nouvelle
+        Ajouter nouvelle à composantes
+Retourner composantes</code></pre>
+      <div class="sol">Le marquage est <b>commun</b> à toutes les explorations : un sommet déjà rangé dans une composante n'est jamais exploré à nouveau. On fait <b>une exploration par composante</b>, et le coût total reste O(n + m) avec des listes de successeurs.</div>
+    </div></details>
+
+    <!-- ===== ACTIVITÉ 8 ===== -->
+    <details class="cx" open><summary>Activité 8 — Parcours en Java, chemins et connexité <span class="tag">Chap. 4</span> <span class="tag warm">à présenter</span></summary><div class="cxb">
+
+      <h3>I. Algorithmes d'exploration</h3>
+      <span class="qn"><b class="num">1</b>Attributs et méthodes déduits de la méthode <code>charger</code></span>
+      <div class="sol"><code>charger</code> utilise <code>orient</code>, <code>l_sommets</code>, le constructeur <code>new Sommet(id, nom)</code> et <code>ajouterSuccesseur</code>. On en déduit :</div>
+      <figure class="fig" style="max-width:560px;margin:10px auto"><div data-uml="explo"></div></figure>
+      <pre class="code"><code>public class Sommet {
+    private int id;
+    private String nom;
+    private ArrayList&lt;Sommet&gt; successeurs;
+
+    public Sommet(int id, String nom) {
+        this.id = id;
+        this.nom = nom;
+        this.successeurs = new ArrayList&lt;Sommet&gt;();
+    }
+    public void ajouterSuccesseur(Sommet s) { successeurs.add(s); }
+    public ArrayList&lt;Sommet&gt; getSuccesseurs() { return successeurs; }
+    public int getId() { return id; }
+    public String getName() { return nom; }
+}
+
+public class Graphe {
+    private int orient;                  // 0 : non orienté, 1 : orienté
+    private ArrayList&lt;Sommet&gt; l_sommets;
+    ...
+}</code></pre>
+      <div class="box warn"><span class="bt">Piège du squelette</span>La boucle <code>while (sc.hasNextLine())</code> de <code>charger</code> plante (<code>NoSuchElementException</code>) si le fichier se termine par une ligne vide, ce qui est le cas de <code>connexite.txt</code>. Remplacer la condition par <code>sc.hasNextInt()</code> et protéger le <code>nextLine()</code> final par <code>if (sc.hasNextLine())</code>.</div>
+
+      <span class="qn"><b class="num">2</b><code>explorerLargeur</code> : file (<code>Queue</code> / <code>ArrayDeque</code>)</span>
+      <pre class="code"><code>public ArrayList&lt;Sommet&gt; explorerLargeur(Sommet s) {
+    ArrayList&lt;Sommet&gt; l_decouverts = new ArrayList&lt;Sommet&gt;();
+    Queue&lt;Sommet&gt; file = new ArrayDeque&lt;Sommet&gt;();
+    boolean[] marque = new boolean[l_sommets.size()];
+    marque[s.getId()] = true;               // marqué dès la découverte
+    file.add(s);
+    l_decouverts.add(s);
+    while (!file.isEmpty()) {
+        Sommet x = file.poll();             // le plus ancien sommet en attente
+        for (Sommet succ : x.getSuccesseurs()) {
+            if (!marque[succ.getId()]) {
+                marque[succ.getId()] = true;
+                file.add(succ);
+                l_decouverts.add(succ);     // ajouté à la découverte
+            }
+        }
+    }
+    return l_decouverts;
+}</code></pre>
+      <p>Les numéros de sommets vont de 0 à n − 1 : on peut les utiliser comme indices du tableau de marquage.</p>
+
+      <span class="qn"><b class="num">3</b>Profondeur récursive</span>
+      <pre class="code"><code>public ArrayList&lt;Sommet&gt; explorerProfondeur_rec(Sommet s) {
+    ArrayList&lt;Sommet&gt; l_decouverts = new ArrayList&lt;Sommet&gt;();
+    ArrayList&lt;Boolean&gt; marque = new ArrayList&lt;Boolean&gt;(l_sommets.size());
+    for (int i = 0; i &lt; l_sommets.size(); i++) marque.add(false);
+    marque.set(s.getId(), true);
+    l_decouverts.add(s);
+    parcoursProfondeur_rec(s, l_decouverts, marque);   // premier appel
+    return l_decouverts;
+}
+
+public void parcoursProfondeur_rec(Sommet s, ArrayList&lt;Sommet&gt; l_decouverts, ArrayList&lt;Boolean&gt; marque) {
+    for (Sommet succ : s.getSuccesseurs()) {
+        if (!marque.get(succ.getId())) {
+            marque.set(succ.getId(), true);
+            l_decouverts.add(succ);
+            parcoursProfondeur_rec(succ, l_decouverts, marque);   // on s'enfonce avant de passer au successeur suivant
+        }
+    }
+}</code></pre>
+
+      <span class="qn"><b class="num">4</b>Résultats du <code>main()</code> (ordres de découverte)</span>
+      <div class="tw"><table>
+        <tr><th>Fichier (départ)</th><th>BFS (file)</th><th>DFS itératif (pile)</th><th>DFS récursif</th></tr>
+        <tr><td><code>exercice7.txt</code> (C)</td><td>C B D G H A E J I</td><td>C B D G H J I A E</td><td>C B A D E I G H J</td></tr>
+        <tr><td><code>activite6_wiki.txt</code> (A)</td><td>A B C D E F G K H I</td><td>A B C D F E H I G K</td><td>A B C F E G K H D I</td></tr>
+        <tr><td><code>connexite.txt</code> (A)</td><td>A B C D</td><td>A B C D</td><td>A B C D</td></tr>
+      </table></div>
+      <div class="sol"><b>Constat.</b> Les trois méthodes découvrent le <b>même ensemble</b> de sommets mais dans des ordres différents. F (exercice 7) et J (wiki) ne sont jamais découverts : rien n'y mène. Le DFS itératif de la pile fournie ajoute un sommet à la liste <b>dès qu'il est empilé</b>, donc son ordre de découverte diffère de celui du DFS récursif. Sur <code>connexite.txt</code>, on ne découvre que 4 sommets : le graphe n'est pas connexe.</div>
+
+      <h3>II. Retrouver les chemins</h3>
+      <span class="qn"><b class="num">5</b><code>BFS_Parents</code>, <code>DFS_Parents</code>, <code>retrouverChemin</code></span>
+      <pre class="code"><code>public ArrayList&lt;Sommet&gt; BFS_Parents(Sommet s) {
+    ArrayList&lt;Sommet&gt; l_parents = new ArrayList&lt;Sommet&gt;();
+    for (int i = 0; i &lt; l_sommets.size(); i++) l_parents.add(null);   // null : pas de parent
+    boolean[] marque = new boolean[l_sommets.size()];
+    Queue&lt;Sommet&gt; file = new ArrayDeque&lt;Sommet&gt;();
+    marque[s.getId()] = true;
+    file.add(s);
+    while (!file.isEmpty()) {
+        Sommet x = file.poll();
+        for (Sommet succ : x.getSuccesseurs()) {
+            if (!marque[succ.getId()]) {
+                marque[succ.getId()] = true;
+                l_parents.set(succ.getId(), x);     // succ découvert depuis x
+                file.add(succ);
+            }
+        }
+    }
+    return l_parents;
+}
+
+public ArrayList&lt;Sommet&gt; DFS_Parents(Sommet s) {
+    ArrayList&lt;Sommet&gt; l_parents = new ArrayList&lt;Sommet&gt;();
+    for (int i = 0; i &lt; l_sommets.size(); i++) l_parents.add(null);
+    boolean[] marque = new boolean[l_sommets.size()];
+    marque[s.getId()] = true;
+    dfsParents(s, marque, l_parents);
+    return l_parents;
+}
+private void dfsParents(Sommet x, boolean[] marque, ArrayList&lt;Sommet&gt; l_parents) {
+    for (Sommet succ : x.getSuccesseurs()) {
+        if (!marque[succ.getId()]) {
+            marque[succ.getId()] = true;
+            l_parents.set(succ.getId(), x);
+            dfsParents(succ, marque, l_parents);
+        }
+    }
+}
+
+public ArrayList&lt;Sommet&gt; retrouverChemin(Sommet s1, Sommet s2, ArrayList&lt;Sommet&gt; l_parents) {
+    ArrayList&lt;Sommet&gt; chemin = new ArrayList&lt;Sommet&gt;();
+    Sommet x = s2;
+    while (x != null &amp;&amp; x != s1) {
+        chemin.add(0, x);                   // on remonte de s2 vers s1 : insertion en tête
+        x = l_parents.get(x.getId());
+    }
+    if (x == null) return new ArrayList&lt;Sommet&gt;();   // s1 jamais atteint : s2 non atteignable
+    chemin.add(0, s1);
+    return chemin;
+}</code></pre>
+      <p>Les parents doivent avoir été calculés <b>depuis s1</b> : un tableau de parents ne sert qu'à reconstruire des chemins qui partent de sa racine.</p>
+      <span class="qn"><b class="num">6</b>Comparaison des chemins obtenus</span>
+      <div class="tw"><table>
+        <tr><th>Wiki, depuis A</th><th>Chemin BFS</th><th>Chemin DFS (récursif)</th></tr>
+        <tr><td>A → D</td><td>A-D (<b>1</b> arc)</td><td>A-B-C-F-H-D (<b>5</b> arcs)</td></tr>
+        <tr><td>A → G</td><td>A-B-E-G (<b>3</b>)</td><td>A-B-C-F-E-G (<b>5</b>)</td></tr>
+        <tr><td>A → I</td><td>A-C-F-H-I (<b>4</b>)</td><td>A-B-C-F-H-I (<b>5</b>)</td></tr>
+        <tr><td>A → K</td><td>A-B-E-K (<b>3</b>)</td><td>A-B-C-F-E-K (<b>5</b>)</td></tr>
+        <tr><td>A → J</td><td colspan="2">liste vide : J n'est pas atteignable depuis A</td></tr>
+      </table></div>
+      <div class="sol"><b>Constat.</b> Les chemins BFS ne sont <b>jamais plus longs</b> que les chemins DFS, et sont souvent beaucoup plus courts (A → D : 1 arc contre 5). C'est la propriété du cours : le BFS donne un chemin avec un <b>nombre minimal d'arcs</b>. Sur l'exercice 7 depuis C, les deux méthodes ne diffèrent que pour H (C-H contre C-G-H) et J (C-H-J contre C-G-H-J).</div>
+
+      <h3>III. Étude de la faible connexité</h3>
+      <span class="qn"><b class="num">7</b><code>testerConnexite</code> et <code>chercherCC</code></span>
+      <div class="sol">Pour un graphe <b>orienté</b>, on ignore le sens des arcs : on explore avec les <b>voisins</b> de chaque sommet (successeurs <b>et</b> prédécesseurs). Sinon, un graphe comme l'exercice 7 paraîtrait non connexe depuis C (F n'y est pas atteignable), alors qu'il est faiblement connexe.</div>
+      <pre class="code"><code>// voisins sans tenir compte de l'orientation : successeurs + prédécesseurs
+private ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; voisinsNonOrientes() {
+    ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; v = new ArrayList&lt;ArrayList&lt;Sommet&gt;&gt;();
+    for (int i = 0; i &lt; l_sommets.size(); i++) v.add(new ArrayList&lt;Sommet&gt;());
+    for (Sommet s : l_sommets)
+        for (Sommet t : s.getSuccesseurs()) {
+            if (!v.get(s.getId()).contains(t)) v.get(s.getId()).add(t);
+            if (!v.get(t.getId()).contains(s)) v.get(t.getId()).add(s);
+        }
+    return v;
+}
+
+// BFS sur ces voisins ; le tableau marque est partagé entre les explorations
+private ArrayList&lt;Sommet&gt; explorerNonOriente(Sommet s, boolean[] marque, ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; v) {
+    ArrayList&lt;Sommet&gt; cc = new ArrayList&lt;Sommet&gt;();
+    Queue&lt;Sommet&gt; file = new ArrayDeque&lt;Sommet&gt;();
+    marque[s.getId()] = true; file.add(s); cc.add(s);
+    while (!file.isEmpty()) {
+        Sommet x = file.poll();
+        for (Sommet y : v.get(x.getId()))
+            if (!marque[y.getId()]) { marque[y.getId()] = true; file.add(y); cc.add(y); }
+    }
+    return cc;
+}
+
+public boolean testerConnexite() {
+    boolean[] marque = new boolean[l_sommets.size()];
+    return explorerNonOriente(l_sommets.get(0), marque, voisinsNonOrientes()).size() == l_sommets.size();
+}
+
+public ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; chercherCC() {
+    ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; lcc = new ArrayList&lt;ArrayList&lt;Sommet&gt;&gt;();
+    ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; v = voisinsNonOrientes();
+    boolean[] marque = new boolean[l_sommets.size()];
+    for (Sommet s : l_sommets)
+        if (!marque[s.getId()]) lcc.add(explorerNonOriente(s, marque, v));   // une exploration = une composante
+    return lcc;
+}</code></pre>
+      <span class="qn"><b class="num">8</b>Résultats et questions</span>
+      <div class="tw"><table>
+        <tr><th>Fichier</th><th>Faiblement connexe ?</th><th>Composantes</th></tr>
+        <tr><td><code>exercice7.txt</code></td><td class="c">oui</td><td>1 composante (F est relié à D par l'arc F → D)</td></tr>
+        <tr><td><code>activite6_wiki.txt</code></td><td class="c">oui</td><td>1 composante (J est relié à F et I)</td></tr>
+        <tr><td><code>connexite.txt</code></td><td class="c">non</td><td><b>3 composantes</b> : {A, B, C, D}, {E, F}, {G, H, I, J}</td></tr>
+      </table></div>
+      <figure class="fig" style="max-width:440px;margin:10px auto"><div data-graph="connexite" data-colors="A:0,B:0,C:0,D:0,E:1,F:1,G:2,H:2,I:2,J:2"></div><figcaption>connexite.txt : une couleur par composante connexe</figcaption></figure>
+      <div class="sol">Il faut <b>autant d'explorations que de composantes connexes</b> : ici 3 (lancées depuis A, puis E, puis G, les premiers sommets encore non marqués).</div>
+
+      <h3>IV. Réflexion et amélioration des représentations</h3>
+      <span class="qn"><b class="num">9</b>Difficultés liées à l'identification des sommets</span>
+      <div class="sol">Le code suppose que les identifiants sont <b>exactement 0, 1, …, n − 1</b> et dans l'ordre du fichier : <code>l_sommets.get(id)</code> et les tableaux <code>marque[id]</code> en dépendent. Avec des identifiants quelconques (numéros non contigus, noms de pages, codes de stations), il faut une table de correspondance, par exemple une <code>HashMap&lt;String, Sommet&gt;</code> du nom vers le sommet, ou un indice interne distinct de l'identifiant « métier ». Il faut aussi refuser les doublons d'identifiant.</div>
+      <span class="qn"><b class="num">10</b>Pourquoi le modèle n'est-il pas adapté aux multigraphes ? Comment décrire un chemin ?</span>
+      <div class="sol">Une liste de successeurs ne stocke que des <b>sommets</b> : deux arcs parallèles de a vers b donnent deux fois b dans la liste, sans qu'on puisse les distinguer (ligne de métro, durée…). Les parcours restent corrects pour l'atteignabilité, mais un chemin décrit comme une suite de sommets est <b>ambigu</b>. Dans un multigraphe, un chemin doit être décrit comme une <b>suite d'arcs</b> : a –(arc 3)→ x –(arc 7)→ b.</div>
+      <span class="qn"><b class="num">11</b>Modèle pour les multigraphes et les itinéraires</span>
+      <div class="sol">
+        <ul>
+          <li><b>Graphe</b> : <code>orient</code>, <code>l_sommets : ArrayList&lt;Sommet&gt;</code>, <code>l_arcs : ArrayList&lt;Arc&gt;</code> ; méthodes <code>charger</code>, <code>explorerLargeur</code>, <code>BFS_Parents</code>, <code>retrouverItineraire</code>, <code>chercherCC</code>.</li>
+          <li><b>Sommet</b> : <code>id</code>, <code>nom</code>, <code>arcsSortants : ArrayList&lt;Arc&gt;</code> (au lieu d'une liste de sommets) ; méthode <code>ajouterArcSortant(Arc a)</code>.</li>
+          <li><b>Arc</b> : <code>id</code>, <code>depart : Sommet</code>, <code>arrivee : Sommet</code>, informations éventuelles (ligne, durée) ; deux arcs parallèles sont deux objets distincts.</li>
+          <li><b>Itineraire</b> : <code>depart : Sommet</code>, <code>arrivee : Sommet</code>, <code>arcs : ArrayList&lt;Arc&gt;</code> ; méthodes <code>getLongueur()</code> (nombre d'arcs) et <code>afficher()</code>.</li>
+          <li>Associations : Graphe ◆— * Sommet, Graphe ◆— * Arc, Arc → 1 Sommet (départ) et → 1 Sommet (arrivée), Itineraire → * Arc (ordonnés). Pour reconstruire un itinéraire, on mémorise l'<b>arc parent</b> de chaque sommet (l'arc par lequel il a été découvert) au lieu du sommet parent.</li>
+        </ul>
+      </div>
+      <span class="qn"><b class="num">12</b>Tenir compte de pondérations sur les arcs</span>
+      <div class="sol">Ajouter un attribut <code>poids</code> (durée, distance, coût) dans la classe <b>Arc</b> ; la longueur d'un itinéraire devient la <b>somme des poids</b> de ses arcs. Attention : le BFS minimise le <b>nombre d'arcs</b>, pas la somme des poids. Un chemin de 3 arcs courts peut être meilleur qu'un chemin d'un seul arc très long : il faudra d'autres algorithmes de plus court chemin pondéré.</div>
+    </div></details>
+  </div> <!-- /pane corriges -->
+
+  <!-- ---------- FICHE ---------- -->
+  <div class="pane fiche toc-auto" data-pane="fiche">
+    <button class="btn ghost printbtn" onclick="window.print()">🖨️ Imprimer</button>
+    <h2 style="margin-top:0">Fiche « À retenir » — Semaine 3</h2>
+
+    <h3>Vocabulaire</h3>
+    <div class="tw"><table>
+      <tr><th>Notion</th><th>À retenir</th></tr>
+      <tr><td><b>Chemin</b> (orienté) / <b>chaîne</b> (non orienté)</td><td>suite d'arcs contigus de u à v ; <b>longueur</b> = nombre d'arcs ; il peut y en avoir 0, 1 ou plusieurs</td></tr>
+      <tr><td><b>Simple</b> / <b>élémentaire</b></td><td>simple : pas deux fois le même <b>arc</b> ; élémentaire : pas deux fois le même <b>sommet</b>. Élémentaire ⇒ simple, pas l'inverse</td></tr>
+      <tr><td><b>Desc(x)</b> / <b>Asc(x)</b></td><td>sommets atteignables <b>depuis</b> x / sommets <b>depuis lesquels</b> on atteint x</td></tr>
+      <tr><td><b>Circuit</b> / <b>cycle</b></td><td>chemin (chaîne) qui revient à son point de départ ; <b>acyclique</b> = sans circuit (cycle)</td></tr>
+      <tr><td>Taille minimale</td><td>circuit simple en orienté simple sans boucle : <b>2 arcs</b> ; cycle simple en non orienté simple : <b>3 arêtes</b> ; multigraphe : <b>2</b></td></tr>
+      <tr><td>Propriétés (simple non orienté)</td><td>n ≥ 3 et tous les degrés ≥ 2 ⇒ il existe un cycle ; acyclique ⇒ un sommet de degré 0 ou 1 ; acyclique d'ordre n ⇒ <b>au plus n − 1 arêtes</b></td></tr>
+      <tr><td><b>Source</b> / <b>puits</b> / <b>feuille</b></td><td>sans prédécesseur / sans successeur / sommet d'une arborescence sans successeur</td></tr>
+      <tr><td><b>Arborescence</b></td><td>une seule source (la <b>racine</b>) et un <b>unique chemin</b> de la racine vers chaque sommet ; chaque sommet a <b>un seul prédécesseur</b> (sauf la racine)</td></tr>
+    </table></div>
+
+    <h3>Explorer depuis un sommet initial</h3>
+    <ul>
+      <li><b>Découvrir</b> = rencontrer pour la première fois ; <b>explorer</b> = parcourir ses successeurs. États : 0 non découvert, 1 découvert, 2 exploré.</li>
+      <li>Marquer un sommet <b>dès sa découverte</b> (quand il entre dans la collection), sinon il peut y entrer plusieurs fois.</li>
+      <li>On découvre <b>exactement les sommets atteignables</b> depuis le départ, quelle que soit la stratégie ; seul l'<b>ordre</b> change.</li>
+    </ul>
+    <div class="tw"><table>
+      <tr><th></th><th>BFS (largeur)</th><th>DFS (profondeur)</th></tr>
+      <tr><td><b>Collection</b></td><td><b>file</b> (FIFO) : <code>Queue</code> / <code>ArrayDeque</code>, <code>add</code> / <code>poll</code></td><td><b>pile</b> (LIFO) : <code>Stack</code>, <code>push</code> / <code>pop</code>, ou la <b>récursivité</b></td></tr>
+      <tr><td><b>Comportement</b></td><td>explore tous les chemins au même rythme : distance 1, puis 2, puis 3…</td><td>va au bout d'un chemin, puis revient au dernier embranchement</td></tr>
+      <tr><td><b>Chemins obtenus</b></td><td><b>nombre minimal d'arcs</b> garanti</td><td>pas de garantie (souvent plus longs)</td></tr>
+      <tr><td><b>Complexité</b></td><td colspan="2">O(n + m) avec des listes de successeurs ; O(n²) avec une matrice d'adjacence</td></tr>
+    </table></div>
+    <div class="box warn"><span class="bt">Piège</span>DFS avec une pile et DFS récursif ne donnent pas le même ordre de découverte : la pile marque tous les successeurs d'un coup. Exercice 7 depuis C : pile → C B D G H J I A E ; récursif → C B A D E I G H J.</div>
+
+    <h3>Chemins et arborescence de parcours</h3>
+    <ul>
+      <li>À la découverte de x depuis y : <b>parent[x] ← y</b> (la racine n'a pas de parent, un sommet non découvert non plus).</li>
+      <li>Les arcs parent → enfant forment une <b>arborescence de parcours</b> enracinée au départ.</li>
+      <li>Chemin départ → x : <b>remonter les parents</b> depuis x jusqu'à la racine, puis <b>inverser</b>. Si on n'atteint jamais la racine, x n'est pas atteignable (liste vide).</li>
+      <li>BFS et DFS donnent des arborescences, donc des chemins, en général <b>différents</b>.</li>
+    </ul>
+
+    <h3>Faible connexité</h3>
+    <ul>
+      <li>Connectés = reliés par une <b>chaîne</b> (on ignore l'orientation). C'est une relation d'<b>équivalence</b>.</li>
+      <li><b>Composantes connexes</b> = classes d'équivalence = sous-graphes connexes <b>maximaux</b> ; elles forment une <b>partition</b>. CC(s) = composante de s.</li>
+      <li>Non orienté : une exploration depuis s découvre exactement <b>CC(s)</b>. Connexe ⇔ une exploration découvre <b>tous</b> les sommets.</li>
+      <li>Toutes les composantes : relancer une exploration depuis chaque sommet <b>non encore marqué</b> (marques partagées) ; <b>une exploration par composante</b>.</li>
+      <li>Graphe orienté : explorer avec successeurs <b>et</b> prédécesseurs pour la faible connexité.</li>
+    </ul>
+  </div> <!-- /pane fiche -->
+
+  <!-- ---------- QCM ---------- -->
+  <div class="pane" data-pane="qcm">
+    <h2 style="margin-top:0">QCM — Semaine 3</h2>
+    <p><span data-qcount="s3">40</span> questions sur le chapitre 4 (exploration, chemins, connexité) et l'activité 8. Réponds, clique sur <b>Valider</b> pour voir la correction et l'explication. Ta progression est mémorisée dans ce navigateur.</p>
+    <div id="qcm-s3"></div>
+  </div>
+</section>
+
 <!-- ============ ATELIER ============ -->
 <section class="view" id="view-atelier">
   <h1>🎨 Atelier de coloration</h1>
@@ -1459,17 +2016,20 @@ Tant que AExplorer n'est pas vide
 <!-- ============ ATELIER EXPLORATION ============ -->
 <section class="view" id="view-exploration">
   <h1>🧭 Atelier d'exploration</h1>
-  <p>Exécute pas à pas l'exploration du mini wiki de l'activité 6 : choisis la page de départ et la structure des pages « à explorer » (<b>file</b> = parcours en largeur, <b>pile</b> = parcours en profondeur). Les pages en <b>jaune</b> sont vues mais pas encore explorées, les pages en <b>bleu</b> sont explorées (le numéro est l'ordre d'exploration), les pages blanches ne sont pas encore vues.</p>
+  <p>Exécute pas à pas une exploration : choisis le graphe, le sommet de départ et la collection des sommets en attente (<b>file</b> = parcours en largeur, <b>pile</b> = parcours en profondeur). Les successeurs sont parcourus dans l'ordre alphabétique et chaque sommet est marqué dès sa découverte. Les sommets en <b>jaune</b> sont découverts mais pas encore explorés, ceux en <b>bleu</b> sont explorés (le numéro est l'ordre d'exploration), les blancs ne sont pas encore découverts. Les arcs en orange forment l'<b>arborescence de parcours</b> (chaque sommet relié à son parent).</p>
   <div class="atelier">
     <div class="panel">
       <div class="ctl">
+        <label for="ex-graph">Graphe</label>
+        <select id="ex-graph"></select>
         <label for="ex-start">Départ</label>
         <select id="ex-start"></select>
-        <label for="ex-mode">Structure</label>
+        <label for="ex-mode">Collection</label>
         <select id="ex-mode">
           <option value="file">File (largeur)</option>
           <option value="pile">Pile (profondeur)</option>
         </select>
+        <label><input type="checkbox" id="ex-arbo" checked> Arborescence</label>
       </div>
       <div id="ex-svg" style="max-width:640px;margin:0 auto"></div>
       <div class="ctl" style="justify-content:center">
@@ -1479,19 +2039,22 @@ Tant que AExplorer n'est pas vide
       </div>
     </div>
     <div class="panel">
-      <h3>À explorer</h3>
+      <h3>État</h3>
       <div class="stat" id="ex-stats"></div>
       <p id="ex-verdict" style="font-weight:600"></p>
+      <div class="ctl"><label for="ex-cible">Chemin vers</label><select id="ex-cible"></select></div>
+      <p id="ex-chemin"></p>
+      <div class="tw"><table class="mat" id="ex-parents"></table></div>
       <h3>Déroulé</h3>
       <div class="tw" style="max-height:340px;overflow:auto"><table id="ex-table">
-        <thead><tr><th>#</th><th>Page explorée</th><th>Nouvelles pages vues</th><th>Vues non explorées</th></tr></thead>
+        <thead><tr><th>#</th><th>Sommet exploré</th><th>Nouveaux découverts</th><th>En attente après l'étape</th></tr></thead>
         <tbody></tbody>
       </table></div>
       <div class="box comp" style="margin-top:14px"><span class="bt">À essayer</span>
         <ul style="margin:.3em 0 0">
-          <li>Départ <b>B</b> ou <b>E</b> : la page <b>J</b> n'est jamais découverte (aucun lien n'y mène).</li>
-          <li>Départ <b>J</b> : les 11 pages sont atteintes.</li>
-          <li>Compare l'ordre d'exploration <b>file</b> et <b>pile</b> depuis B : mêmes pages, ordre différent.</li>
+          <li><b>Exercice 7</b>, départ C : compare file et pile (ordres, arborescences), puis le chemin vers <b>A</b> : 2 arcs avec la file, 4 avec la pile. <b>F</b> n'est jamais découvert.</li>
+          <li><b>connexite.txt</b> : depuis A on ne découvre que {A, B, C, D}. Relance depuis E, puis G : trois explorations, trois composantes connexes.</li>
+          <li><b>Mini wiki</b>, départ B ou E : la page <b>J</b> n'est jamais découverte ; départ J : les 11 pages sont atteintes.</li>
         </ul>
       </div>
     </div>
@@ -1499,11 +2062,12 @@ Tant que AExplorer n'est pas vide
 </section>
 
 </main>
-<footer>Cours de théorie des graphes — ECE Ing2. Contenu rédigé à partir des supports du cours et des activités ; les exemples de code Java sont dans <code>code/Graphes.java</code> et <code>code/Semaine2.java</code>.</footer>
+<footer>Cours de théorie des graphes — ECE Ing2. Contenu rédigé à partir des supports du cours et des activités ; les exemples de code Java sont dans <code>code/Graphes.java</code>, <code>code/Semaine2.java</code> et <code>code/activite8/</code>.</footer>
 
 <script src="js/graph.js"></script>
 <script src="js/qcm-data.js"></script>
 <script src="js/qcm-data2.js"></script>
+<script src="js/qcm-data3.js"></script>
 <script src="js/app.js"></script>
 <script src="js/atelier.js"></script>
 <script src="js/exploration.js"></script>

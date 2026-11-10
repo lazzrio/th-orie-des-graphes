@@ -264,6 +264,25 @@
   D.wiki = { w: 540, h: 330, r: 16, directed: true,
     nodes: { A: [60, 170], B: [150, 60], C: [270, 115], D: [150, 255], E: [410, 60], F: [310, 180], G: [480, 125], H: [310, 262], I: [430, 262], J: [370, 312], K: [490, 28] },
     edges: [["A", "B"], ["A", "C"], ["A", "D"], ["B", "C"], ["B", "E"], ["C", "F"], ["D", "F"], ["E", "G"], ["E", "K"], ["F", "E"], ["F", "H"], ["G", "A"], ["H", "D"], ["H", "I"], ["J", "F"], ["J", "I"]] };
+  /* semaine 3 (chapitre 4) */
+  D.ch4a = { w: 350, h: 180, r: 15, directed: true, alt: "Graphe orienté d'ordre 6 et de taille 8",
+    nodes: { 1: [30, 90], 2: [120, 90], 4: [200, 30], 3: [240, 90], 5: [200, 150], 6: [320, 90] },
+    edges: [["1", "2"], ["2", "3"], ["2", "4"], ["2", "5"], ["4", "3"], ["5", "3"], ["5", "6"], ["6", "4"]] };
+  D.ch4b = { w: 340, h: 300, r: 15, directed: true, alt: "Graphe orienté d'ordre 7 et de taille 9",
+    nodes: { 7: [150, 22], 2: [150, 110], 4: [285, 120], 1: [55, 170], 5: [185, 205], 6: [285, 240], 3: [85, 262] },
+    edges: [["1", "2"], ["2", "4"], ["2", "7"], ["3", "5"], ["4", "5"], ["5", "6"], ["5", "2"], ["6", "3"], ["6", "1", { c: -35 }]] };
+  D.circ = { w: 370, h: 200, r: 16, directed: true, alt: "Graphe orienté d'ordre 7 et de taille 10",
+    nodes: { B: [40, 70], A: [130, 70], C: [230, 70], F: [330, 70], G: [40, 160], D: [230, 160], E: [330, 160] },
+    edges: [["A", "C"], ["B", "A"], ["B", "G"], ["C", "D"], ["D", "E"], ["D", "G"], ["E", "F"], ["F", "A", { c: 22 }], ["G", "A"], ["G", "D"]] };
+  D.arbo = { w: 400, h: 180, r: 16, directed: true, alt: "Arborescence de racine C",
+    nodes: { C: [200, 120], B: [110, 60], E: [290, 40], F: [285, 145], A: [30, 60], D: [110, 150], G: [365, 90] },
+    edges: [["C", "B"], ["C", "E"], ["C", "F"], ["B", "A"], ["B", "D"], ["E", "G"]] };
+  D.ex7 = { w: 380, h: 260, r: 17, directed: true, alt: "Graphe de l'exercice 7",
+    nodes: { E: [150, 30], I: [260, 30], D: [150, 95], F: [260, 95], J: [350, 95], A: [45, 95], B: [60, 200], C: [150, 165], G: [260, 165], H: [260, 230] },
+    edges: [["A", "C"], ["B", "A"], ["C", "B"], ["C", "D"], ["C", "G"], ["C", "H"], ["D", "E"], ["E", "I"], ["F", "D"], ["G", "H"], ["H", "J"], ["I", "A"], ["J", "I"]] };
+  D.connexite = { w: 440, h: 190, r: 16, alt: "Graphe non orienté du fichier connexite.txt",
+    nodes: { A: [60, 45], B: [30, 150], C: [110, 150], D: [150, 65], E: [225, 60], F: [225, 150], G: [300, 45], H: [390, 45], I: [405, 150], J: [315, 150] },
+    edges: [["A", "B"], ["A", "C"], ["A", "D"], ["C", "D"], ["E", "F"], ["G", "H"], ["G", "J"], ["H", "I"], ["H", "J"], ["I", "J"]] };
   D.bipartite = { w: 300, h: 160, r: 15, nodes: { x1: [50, 40], x2: [50, 120], y1: [220, 20], y2: [220, 80], y3: [220, 140] },
     edges: [["x1", "y1"], ["x1", "y2"], ["x2", "y2"], ["x2", "y3"]] };
 
@@ -312,6 +331,12 @@
   UM.succ = { w: 420, h: 150, alt: "Diagramme de classes : liste de successeurs", classes: [
     { id: "G", name: "Graphe", x: 20, y: 25, w: 120 },
     { id: "S", name: "Sommet", x: 260, y: 25, w: 120, attrs: ["- id"] }],
+    rels: [{ a: "G", b: "S", da: "comp", mb: "*" }, { a: "S", b: "S", db: "arrow", mb: "* succ" }]
+  };
+
+  UM.explo = { w: 560, h: 170, alt: "Diagramme de classes de l'activité 8", classes: [
+    { id: "G", name: "Graphe", x: 20, y: 25, w: 210, attrs: ["- orient : int", "- l_sommets : ArrayList<Sommet>"] },
+    { id: "S", name: "Sommet", x: 330, y: 25, w: 200, attrs: ["- id : int", "- nom : String", "- successeurs : ArrayList<Sommet>"] }],
     rels: [{ a: "G", b: "S", da: "comp", mb: "*" }, { a: "S", b: "S", db: "arrow", mb: "* succ" }]
   };
 

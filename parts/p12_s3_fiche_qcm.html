@@ -1,0 +1,59 @@
+
+  <!-- ---------- FICHE ---------- -->
+  <div class="pane fiche toc-auto" data-pane="fiche">
+    <button class="btn ghost printbtn" onclick="window.print()">🖨️ Imprimer</button>
+    <h2 style="margin-top:0">Fiche « À retenir » — Semaine 3</h2>
+
+    <h3>Vocabulaire</h3>
+    <div class="tw"><table>
+      <tr><th>Notion</th><th>À retenir</th></tr>
+      <tr><td><b>Chemin</b> (orienté) / <b>chaîne</b> (non orienté)</td><td>suite d'arcs contigus de u à v ; <b>longueur</b> = nombre d'arcs ; il peut y en avoir 0, 1 ou plusieurs</td></tr>
+      <tr><td><b>Simple</b> / <b>élémentaire</b></td><td>simple : pas deux fois le même <b>arc</b> ; élémentaire : pas deux fois le même <b>sommet</b>. Élémentaire ⇒ simple, pas l'inverse</td></tr>
+      <tr><td><b>Desc(x)</b> / <b>Asc(x)</b></td><td>sommets atteignables <b>depuis</b> x / sommets <b>depuis lesquels</b> on atteint x</td></tr>
+      <tr><td><b>Circuit</b> / <b>cycle</b></td><td>chemin (chaîne) qui revient à son point de départ ; <b>acyclique</b> = sans circuit (cycle)</td></tr>
+      <tr><td>Taille minimale</td><td>circuit simple en orienté simple sans boucle : <b>2 arcs</b> ; cycle simple en non orienté simple : <b>3 arêtes</b> ; multigraphe : <b>2</b></td></tr>
+      <tr><td>Propriétés (simple non orienté)</td><td>n ≥ 3 et tous les degrés ≥ 2 ⇒ il existe un cycle ; acyclique ⇒ un sommet de degré 0 ou 1 ; acyclique d'ordre n ⇒ <b>au plus n − 1 arêtes</b></td></tr>
+      <tr><td><b>Source</b> / <b>puits</b> / <b>feuille</b></td><td>sans prédécesseur / sans successeur / sommet d'une arborescence sans successeur</td></tr>
+      <tr><td><b>Arborescence</b></td><td>une seule source (la <b>racine</b>) et un <b>unique chemin</b> de la racine vers chaque sommet ; chaque sommet a <b>un seul prédécesseur</b> (sauf la racine)</td></tr>
+    </table></div>
+
+    <h3>Explorer depuis un sommet initial</h3>
+    <ul>
+      <li><b>Découvrir</b> = rencontrer pour la première fois ; <b>explorer</b> = parcourir ses successeurs. États : 0 non découvert, 1 découvert, 2 exploré.</li>
+      <li>Marquer un sommet <b>dès sa découverte</b> (quand il entre dans la collection), sinon il peut y entrer plusieurs fois.</li>
+      <li>On découvre <b>exactement les sommets atteignables</b> depuis le départ, quelle que soit la stratégie ; seul l'<b>ordre</b> change.</li>
+    </ul>
+    <div class="tw"><table>
+      <tr><th></th><th>BFS (largeur)</th><th>DFS (profondeur)</th></tr>
+      <tr><td><b>Collection</b></td><td><b>file</b> (FIFO) : <code>Queue</code> / <code>ArrayDeque</code>, <code>add</code> / <code>poll</code></td><td><b>pile</b> (LIFO) : <code>Stack</code>, <code>push</code> / <code>pop</code>, ou la <b>récursivité</b></td></tr>
+      <tr><td><b>Comportement</b></td><td>explore tous les chemins au même rythme : distance 1, puis 2, puis 3…</td><td>va au bout d'un chemin, puis revient au dernier embranchement</td></tr>
+      <tr><td><b>Chemins obtenus</b></td><td><b>nombre minimal d'arcs</b> garanti</td><td>pas de garantie (souvent plus longs)</td></tr>
+      <tr><td><b>Complexité</b></td><td colspan="2">O(n + m) avec des listes de successeurs ; O(n²) avec une matrice d'adjacence</td></tr>
+    </table></div>
+    <div class="box warn"><span class="bt">Piège</span>DFS avec une pile et DFS récursif ne donnent pas le même ordre de découverte : la pile marque tous les successeurs d'un coup. Exercice 7 depuis C : pile → C B D G H J I A E ; récursif → C B A D E I G H J.</div>
+
+    <h3>Chemins et arborescence de parcours</h3>
+    <ul>
+      <li>À la découverte de x depuis y : <b>parent[x] ← y</b> (la racine n'a pas de parent, un sommet non découvert non plus).</li>
+      <li>Les arcs parent → enfant forment une <b>arborescence de parcours</b> enracinée au départ.</li>
+      <li>Chemin départ → x : <b>remonter les parents</b> depuis x jusqu'à la racine, puis <b>inverser</b>. Si on n'atteint jamais la racine, x n'est pas atteignable (liste vide).</li>
+      <li>BFS et DFS donnent des arborescences, donc des chemins, en général <b>différents</b>.</li>
+    </ul>
+
+    <h3>Faible connexité</h3>
+    <ul>
+      <li>Connectés = reliés par une <b>chaîne</b> (on ignore l'orientation). C'est une relation d'<b>équivalence</b>.</li>
+      <li><b>Composantes connexes</b> = classes d'équivalence = sous-graphes connexes <b>maximaux</b> ; elles forment une <b>partition</b>. CC(s) = composante de s.</li>
+      <li>Non orienté : une exploration depuis s découvre exactement <b>CC(s)</b>. Connexe ⇔ une exploration découvre <b>tous</b> les sommets.</li>
+      <li>Toutes les composantes : relancer une exploration depuis chaque sommet <b>non encore marqué</b> (marques partagées) ; <b>une exploration par composante</b>.</li>
+      <li>Graphe orienté : explorer avec successeurs <b>et</b> prédécesseurs pour la faible connexité.</li>
+    </ul>
+  </div> <!-- /pane fiche -->
+
+  <!-- ---------- QCM ---------- -->
+  <div class="pane" data-pane="qcm">
+    <h2 style="margin-top:0">QCM — Semaine 3</h2>
+    <p><span data-qcount="s3">40</span> questions sur le chapitre 4 (exploration, chemins, connexité) et l'activité 8. Réponds, clique sur <b>Valider</b> pour voir la correction et l'explication. Ta progression est mémorisée dans ce navigateur.</p>
+    <div id="qcm-s3"></div>
+  </div>
+</section>

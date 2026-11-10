@@ -17,6 +17,12 @@ Site de révision statique : cours semaine par semaine, exercices et activités 
 - Fiche « À retenir » et QCM de 57 questions.
 - Atelier de coloration (nouveau mode Welsh-Powell) et atelier d'exploration (file / pile).
 
+**Semaine 3** (chapitre 4 : exploration des graphes)
+- Cours : chemins et chaînes (simples, élémentaires), descendants et ascendants, circuits, arborescences ; parcours en largeur (file) et en profondeur (pile, récursivité) ; reconstruction des chemins par les parents (arborescence de parcours) ; faible connexité et composantes connexes.
+- Corrigés : questions du cours, exercice 7 (tableaux pas à pas file et pile), activité 7, exercice 8, activité 8 (code Java complété, compilé et exécuté sur `exercice7.txt`, `activite6_wiki.txt` et `connexite.txt`).
+- Fiche « À retenir » et QCM de 43 questions.
+- Atelier d'exploration enrichi : choix du graphe (wiki, exercice 7, connexite.txt), arborescence des parents, chemin reconstruit.
+
 ## Utilisation
 
 Ouvrir `index.html` dans un navigateur, ou servir le dossier :
@@ -30,7 +36,7 @@ python -m http.server 8000
 - `index.html` : page unique, générée par `outils/build.py` à partir de `parts/`
 - `parts/` : fragments HTML (cours, corrigés, fiche, QCM, atelier)
 - `css/style.css`, `js/graph.js` (rendu SVG des graphes et diagrammes de classes), `js/app.js`, `js/atelier.js`, `js/qcm-data.js`
-- `code/Graphes.java` (semaine 1) et `code/Semaine2.java` (Welsh-Powell, parcours en largeur et en profondeur) : implémentations Java compilées et exécutées pour vérifier les corrigés
+- `code/Graphes.java` (semaine 1), `code/Semaine2.java` (Welsh-Powell, parcours en largeur et en profondeur) et `code/activite8/` (semaine 3 : `Graphe`, `Sommet`, `Main` avec BFS, DFS itératif et récursif, parents, chemins, composantes connexes) : implémentations Java compilées et exécutées pour vérifier les corrigés
 
 Pour modifier le contenu : éditer les fichiers de `parts/` puis lancer `python outils/build.py`.
 Pour ajouter une semaine : nouveaux fragments dans `parts/`, une entrée dans `PARTS` de `build.py`, un bouton dans la barre de navigation (`p0_head.html`) et un bloc dans `js/qcm-data.js`.

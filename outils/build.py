@@ -45,7 +45,8 @@ def inclure(m):
         return f.read()
 
 
-html = re.sub(r"\{\{PART:([\w.]+)\}\}", inclure, html)
+while "{{PART:" in html:  # inclusions imbriquées (un fragment peut en inclure un autre)
+    html = re.sub(r"\{\{PART:([\w.]+)\}\}", inclure, html)
 html = re.sub(r"\{\{MAT:(\w+)\}\}", lambda m: MATS[m.group(1)], html)
 with open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8", newline="\n") as f:
     f.write(html)

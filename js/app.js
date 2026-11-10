@@ -154,6 +154,7 @@
   }
   initQcm("s1");
   initQcm("s2");
+  initQcm("s3");
 
   show();
 })();
