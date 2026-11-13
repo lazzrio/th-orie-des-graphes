@@ -139,13 +139,14 @@ Tant que la collection n'est pas vide :
         Si s' n'est pas marqué :
             Marquer s' ; parent[s'] ← s ; ajouter s' à la collection</code></pre>
 
-      <h2>II. Exemple : exercice 7 en largeur depuis C</h2>
+      <h2>II. Exemple : le graphe de l'activité 7, en largeur depuis C</h2>
+      <p style="color:var(--muted);font-size:.92rem">C'est le graphe de l'exercice 7 sans l'arc A → C (C n'a aucun prédécesseur) ; l'exploration depuis C donne les mêmes résultats.</p>
       <div class="tw"><table>
         <tr><th>Sommet</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr>
         <tr><td><b>Parent (BFS)</b></td><td class="c">B</td><td class="c">C</td><td class="c">aucun</td><td class="c">C</td><td class="c">D</td><td class="c">—</td><td class="c">C</td><td class="c">C</td><td class="c">E</td><td class="c">H</td></tr>
       </table></div>
       <p>F n'est pas découvert : il n'a pas de parent. Chemin de C à I : on <b>remonte</b> les parents depuis I : I ← E ← D ← C, donc <b>C → D → E → I</b> (3 arcs).</p>
-      <figure class="fig" style="max-width:400px"><div data-graph="ex7" data-hl="C-B,C-D,C-G,C-H,B-A,D-E,H-J,E-I"></div><figcaption>En orange, l'arborescence du parcours en largeur depuis C (chaque sommet est relié à son parent)</figcaption></figure>
+      <figure class="fig" style="max-width:400px"><div data-graph="act7" data-hl="C-B,C-D,C-G,C-H,B-A,D-E,H-J,E-I"></div><figcaption>En orange, l'arborescence du parcours en largeur depuis C (chaque sommet est relié à son parent)</figcaption></figure>
 
       <h2>III. Arborescence de parcours</h2>
       <div class="box def"><span class="bt">Définition</span>Les arcs parent → enfant obtenus pendant l'exploration forment une <b>arborescence de parcours</b> enracinée au sommet de départ : chaque sommet découvert a un seul parent, sauf la racine.</div>

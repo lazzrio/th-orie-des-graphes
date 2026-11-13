@@ -38,6 +38,7 @@
 
     <!-- ===== ACTIVITÉ 7 ===== -->
     <details class="cx"><summary>Activité 7 — Rechercher des chemins <span class="tag">Chap. 4 (2)</span> <span class="tag warm">à présenter</span></summary><div class="cxb">
+      <p>Le graphe de l'activité 7 est celui de l'exercice 7 <b>sans l'arc A → C</b> : C n'a aucun prédécesseur. Cela ne change pas l'exploration depuis C (l'arc A → C menait à C, déjà exploré) : les ordres, les parents et les chemins sont les mêmes.</p>
       <span class="qn"><b class="num">1</b>Le tableau de marquage permet-il de savoir par quel chemin I a été atteint depuis C ? L'ordre de découverte suffit-il ?</span>
       <div class="sol"><b>Non, dans les deux cas.</b> Le marquage dit seulement qu'I a été découvert. L'ordre de découverte (C, B, D, G, H, A, E, J, I) ne dit pas <b>depuis quel sommet</b> chacun a été découvert : I aurait pu venir de E ou de J.</div>
       <span class="qn"><b class="num">2</b>Information minimale à conserver ?</span>
@@ -53,8 +54,8 @@
       <div class="sol">On part de I et on remonte : parent(I) = E, parent(E) = D, parent(D) = C, la racine. On lit la suite à l'envers : <b>C → D → E → I</b> (3 arcs).</div>
       <span class="qn"><b class="num">5</b>Graphe formé des arcs parent → sommet : qu'obtient-on ?</span>
       <div class="sol">Une <b>arborescence</b> de racine C : C est la seule source, chaque autre sommet découvert a exactement un prédécesseur (son parent), et il existe un unique chemin de C à chacun. Elle a 9 sommets (F n'en fait pas partie) et 8 arcs.</div>
-      <figure class="fig" style="max-width:380px;margin:10px auto"><div data-graph="ex7" data-hl="C-B,C-D,C-G,C-H,B-A,D-E,H-J,E-I"></div><figcaption>Arborescence du parcours en largeur (arcs en orange)</figcaption></figure>
-      <figure class="fig" style="max-width:380px;margin:10px auto"><div data-graph="ex7" data-hl="C-B,C-D,C-G,C-H,H-J,J-I,I-A,D-E"></div><figcaption>Arborescence du parcours avec une pile (arcs en orange)</figcaption></figure>
+      <figure class="fig" style="max-width:380px;margin:10px auto"><div data-graph="act7" data-hl="C-B,C-D,C-G,C-H,B-A,D-E,H-J,E-I"></div><figcaption>Arborescence du parcours en largeur (arcs en orange)</figcaption></figure>
+      <figure class="fig" style="max-width:380px;margin:10px auto"><div data-graph="act7" data-hl="C-B,C-D,C-G,C-H,H-J,J-I,I-A,D-E"></div><figcaption>Arborescence du parcours avec une pile (arcs en orange)</figcaption></figure>
       <span class="qn"><b class="num">6</b>File et pile donnent-elles la même arborescence ? Des chemins de même longueur ?</span>
       <div class="sol"><b>Non</b> : avec la pile, A est découvert depuis I et I depuis J. Les chemins reconstruits n'ont donc <b>pas forcément la même longueur</b>. C → I fait 3 arcs dans les deux cas (C-D-E-I avec la file, C-H-J-I avec la pile), mais pour aller à A : <b>C → B → A (2 arcs)</b> avec la file contre <b>C → H → J → I → A (4 arcs)</b> avec la pile.</div>
       <span class="qn"><b class="num">7</b>Quel parcours garantit un nombre minimal d'arcs ?</span>

@@ -280,6 +280,10 @@
   D.ex7 = { w: 380, h: 260, r: 17, directed: true, alt: "Graphe de l'exercice 7",
     nodes: { E: [150, 30], I: [260, 30], D: [150, 95], F: [260, 95], J: [350, 95], A: [45, 95], B: [60, 200], C: [150, 165], G: [260, 165], H: [260, 230] },
     edges: [["A", "C"], ["B", "A"], ["C", "B"], ["C", "D"], ["C", "G"], ["C", "H"], ["D", "E"], ["E", "I"], ["F", "D"], ["G", "H"], ["H", "J"], ["I", "A"], ["J", "I"]] };
+  /* activité 7 (chapitre 4, partie 2) : même graphe que l'exercice 7 mais sans l'arc A -> C (C n'a pas de prédécesseur) */
+  D.act7 = { w: 380, h: 260, r: 17, directed: true, alt: "Graphe de l'activité 7",
+    nodes: { E: [150, 30], I: [260, 30], D: [150, 95], F: [260, 95], J: [350, 95], A: [45, 95], B: [60, 200], C: [150, 165], G: [260, 165], H: [260, 230] },
+    edges: [["B", "A"], ["C", "B"], ["C", "D"], ["C", "G"], ["C", "H"], ["D", "E"], ["E", "I"], ["F", "D"], ["G", "H"], ["H", "J"], ["I", "A"], ["J", "I"]] };
   D.connexite = { w: 440, h: 190, r: 16, alt: "Graphe non orienté du fichier connexite.txt",
     nodes: { A: [60, 45], B: [30, 150], C: [110, 150], D: [150, 65], E: [225, 60], F: [225, 150], G: [300, 45], H: [390, 45], I: [405, 150], J: [315, 150] },
     edges: [["A", "B"], ["A", "C"], ["A", "D"], ["C", "D"], ["E", "F"], ["G", "H"], ["G", "J"], ["H", "I"], ["H", "J"], ["I", "J"]] };
