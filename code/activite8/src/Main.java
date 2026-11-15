@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.util.ArrayList;
 
-/** Activité 8 : tests sur les trois fichiers fournis (exercice7.txt, activite6_wiki.txt, connexite.txt). */
 public class Main {
     public static void main(String[] args) throws IOException {
         String dossier = args.length > 0 ? args[0] : ".";

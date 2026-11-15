@@ -1,22 +1,24 @@
 import java.util.ArrayList;
 
-/** Activité 8 : un sommet identifié par un numéro (0 à n-1) et un nom, avec sa liste de successeurs. */
 public class Sommet {
+    /* attributs */
     private int id;
     private String nom;
     private ArrayList<Sommet> successeurs;
 
+    /* constructeur */
     public Sommet(int id, String nom) {
         this.id = id;
         this.nom = nom;
         this.successeurs = new ArrayList<Sommet>();
     }
 
-    /** Ajoute s à la liste des successeurs (appelée par Graphe.charger). */
+    /* méthode d'ajout d'un successeur */
     public void ajouterSuccesseur(Sommet s) {
         successeurs.add(s);
     }
 
+    /* accesseurs */
     public ArrayList<Sommet> getSuccesseurs() {
         return successeurs;
     }

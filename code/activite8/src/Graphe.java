@@ -2,12 +2,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-/** Activité 8 : explorations (BFS, DFS itératif et récursif), chemins par les parents, faible connexité. */
 public class Graphe {
-    private int orient;                 // 0 : non orienté, 1 : orienté
+    /* attributs */
+    private int orient;                       // 0 : non orienté, 1 : orienté
     private ArrayList<Sommet> l_sommets;
 
-    /* chargement du graphe (méthode fournie) */
+    /* chargement du graphe (fourni, avec hasNextInt à la place de hasNextLine) */
     public void charger(String ficName) throws IOException {
         Scanner sc = new Scanner(new File(ficName));
         orient = sc.nextInt();
@@ -24,7 +24,7 @@ public class Graphe {
             l_sommets.add(new Sommet(id, nom));
         }
         int id1, id2;
-        while (sc.hasNextInt()) {        // (fourni : hasNextLine, qui plante s'il reste une ligne vide en fin de fichier)
+        while (sc.hasNextInt()) {             // hasNextLine plantait sur une ligne vide en fin de fichier
             id1 = sc.nextInt();
             id2 = sc.nextInt();
             l_sommets.get(id1).ajouterSuccesseur(l_sommets.get(id2));
@@ -45,21 +45,25 @@ public class Graphe {
         return l_sommets.size();
     }
 
-    /* ================= I. Explorations ================= */
+    /* ---------- I. Explorations ---------- */
 
-    /** Exploration en largeur (file FIFO) : liste des sommets dans l'ordre de découverte. */
+    /* exploration en largeur à partir d'un sommet s : on utilise une file
+       retour : liste des sommets découverts, dans l'ordre */
     public ArrayList<Sommet> explorerLargeur(Sommet s) {
         ArrayList<Sommet> l_decouverts = new ArrayList<Sommet>();
         Queue<Sommet> file = new ArrayDeque<Sommet>();
-        boolean[] marque = new boolean[l_sommets.size()];
-        marque[s.getId()] = true;              // on marque dès la découverte
+        ArrayList<Boolean> marque = new ArrayList<Boolean>(l_sommets.size());
+        for (int i = 0; i < l_sommets.size(); i++) {
+            marque.add(i, false);
+        }
         file.add(s);
+        marque.set(s.getId(), true);
         l_decouverts.add(s);
         while (!file.isEmpty()) {
-            Sommet x = file.poll();            // le plus ancien sommet en attente
-            for (Sommet succ : x.getSuccesseurs()) {
-                if (!marque[succ.getId()]) {
-                    marque[succ.getId()] = true;
+            s = file.poll();                  // le plus ancien sommet en attente
+            for (Sommet succ : s.getSuccesseurs()) {
+                if (!(marque.get(succ.getId()))) {
+                    marque.set(succ.getId(), true);
                     file.add(succ);
                     l_decouverts.add(succ);
                 }
@@ -68,7 +72,7 @@ public class Graphe {
         return l_decouverts;
     }
 
-    /** Exploration en profondeur itérative avec pile (méthode fournie). */
+    /* exploration en profondeur à partir d'un sommet s : version itérative avec pile (fournie) */
     public ArrayList<Sommet> explorerProfondeur_it(Sommet s) {
         ArrayList<Sommet> l_decouverts = new ArrayList<Sommet>();
         Stack<Sommet> pile = new Stack<Sommet>();
@@ -92,44 +96,49 @@ public class Graphe {
         return l_decouverts;
     }
 
-    /** Exploration en profondeur récursive : crée et initialise les structures puis lance la récursion. */
+    /* exploration en profondeur : version récursive */
     public ArrayList<Sommet> explorerProfondeur_rec(Sommet s) {
         ArrayList<Sommet> l_decouverts = new ArrayList<Sommet>();
         ArrayList<Boolean> marque = new ArrayList<Boolean>(l_sommets.size());
-        for (int i = 0; i < l_sommets.size(); i++) marque.add(false);
+        for (int i = 0; i < l_sommets.size(); i++) {
+            marque.add(i, false);
+        }
         marque.set(s.getId(), true);
         l_decouverts.add(s);
         parcoursProfondeur_rec(s, l_decouverts, marque);
         return l_decouverts;
     }
 
-    /** Méthode récursive : se rappelle sur chaque successeur non marqué (la pile d'appels joue le rôle de la pile). */
     public void parcoursProfondeur_rec(Sommet s, ArrayList<Sommet> l_decouverts, ArrayList<Boolean> marque) {
         for (Sommet succ : s.getSuccesseurs()) {
-            if (!marque.get(succ.getId())) {
+            if (!(marque.get(succ.getId()))) {
                 marque.set(succ.getId(), true);
                 l_decouverts.add(succ);
-                parcoursProfondeur_rec(succ, l_decouverts, marque);
+                parcoursProfondeur_rec(succ, l_decouverts, marque);    // on s'enfonce avant de passer au successeur suivant
             }
         }
     }
 
-    /* ================= II. Retrouver les chemins ================= */
+    /* ---------- II. Retrouver les chemins ---------- */
 
-    /** BFS en mémorisant le parent de chaque sommet découvert (case = null : pas de parent). */
+    /* exploration en largeur qui mémorise le parent de chaque sommet découvert
+       retour : liste des parents, indexée par l'id (null = pas de parent) */
     public ArrayList<Sommet> BFS_Parents(Sommet s) {
-        ArrayList<Sommet> l_parents = new ArrayList<Sommet>();
-        for (int i = 0; i < l_sommets.size(); i++) l_parents.add(null);
-        boolean[] marque = new boolean[l_sommets.size()];
+        ArrayList<Sommet> l_parents = new ArrayList<Sommet>(l_sommets.size());
+        ArrayList<Boolean> marque = new ArrayList<Boolean>(l_sommets.size());
+        for (int i = 0; i < l_sommets.size(); i++) {
+            l_parents.add(i, null);
+            marque.add(i, false);
+        }
         Queue<Sommet> file = new ArrayDeque<Sommet>();
-        marque[s.getId()] = true;
         file.add(s);
+        marque.set(s.getId(), true);
         while (!file.isEmpty()) {
-            Sommet x = file.poll();
-            for (Sommet succ : x.getSuccesseurs()) {
-                if (!marque[succ.getId()]) {
-                    marque[succ.getId()] = true;
-                    l_parents.set(succ.getId(), x);   // succ a été découvert par x
+            s = file.poll();
+            for (Sommet succ : s.getSuccesseurs()) {
+                if (!(marque.get(succ.getId()))) {
+                    marque.set(succ.getId(), true);
+                    l_parents.set(succ.getId(), s);       // succ a été découvert depuis s
                     file.add(succ);
                 }
             }
@@ -137,92 +146,110 @@ public class Graphe {
         return l_parents;
     }
 
-    /** DFS récursif en mémorisant les parents. */
+    /* même chose en profondeur (version récursive) */
     public ArrayList<Sommet> DFS_Parents(Sommet s) {
-        ArrayList<Sommet> l_parents = new ArrayList<Sommet>();
-        for (int i = 0; i < l_sommets.size(); i++) l_parents.add(null);
-        boolean[] marque = new boolean[l_sommets.size()];
-        marque[s.getId()] = true;
-        dfsParents(s, marque, l_parents);
+        ArrayList<Sommet> l_parents = new ArrayList<Sommet>(l_sommets.size());
+        ArrayList<Boolean> marque = new ArrayList<Boolean>(l_sommets.size());
+        for (int i = 0; i < l_sommets.size(); i++) {
+            l_parents.add(i, null);
+            marque.add(i, false);
+        }
+        marque.set(s.getId(), true);
+        parcoursProfondeur_parents(s, marque, l_parents);
         return l_parents;
     }
 
-    private void dfsParents(Sommet x, boolean[] marque, ArrayList<Sommet> l_parents) {
-        for (Sommet succ : x.getSuccesseurs()) {
-            if (!marque[succ.getId()]) {
-                marque[succ.getId()] = true;
-                l_parents.set(succ.getId(), x);
-                dfsParents(succ, marque, l_parents);
+    public void parcoursProfondeur_parents(Sommet s, ArrayList<Boolean> marque, ArrayList<Sommet> l_parents) {
+        for (Sommet succ : s.getSuccesseurs()) {
+            if (!(marque.get(succ.getId()))) {
+                marque.set(succ.getId(), true);
+                l_parents.set(succ.getId(), s);
+                parcoursProfondeur_parents(succ, marque, l_parents);
             }
         }
     }
 
-    /** Chemin de s1 à s2 en remontant les parents depuis s2 ; liste vide si s2 n'est pas atteignable. */
+    /* chemin de s1 à s2 : on remonte les parents depuis s2
+       retour : liste vide si s2 n'est pas atteignable depuis s1 */
     public ArrayList<Sommet> retrouverChemin(Sommet s1, Sommet s2, ArrayList<Sommet> l_parents) {
         ArrayList<Sommet> chemin = new ArrayList<Sommet>();
-        Sommet x = s2;
-        while (x != null && x != s1) {
-            chemin.add(0, x);                 // on insère en tête : on remonte de s2 vers s1
-            x = l_parents.get(x.getId());
+        Sommet courant = s2;
+        while (courant != null && courant != s1) {
+            chemin.add(0, courant);                       // on ajoute en tête : on remonte de s2 vers s1
+            courant = l_parents.get(courant.getId());
         }
-        if (x == null) return new ArrayList<Sommet>();   // on n'est jamais arrivé à s1 : pas de chemin
+        if (courant == null) {
+            return new ArrayList<Sommet>();               // on n'est jamais arrivé à s1
+        }
         chemin.add(0, s1);
         return chemin;
     }
 
-    /* ================= III. Faible connexité ================= */
+    /* ---------- III. Faible connexité ---------- */
 
-    /** Voisins sans tenir compte de l'orientation : successeurs + prédécesseurs. */
-    private ArrayList<ArrayList<Sommet>> voisinsNonOrientes() {
-        ArrayList<ArrayList<Sommet>> v = new ArrayList<ArrayList<Sommet>>();
-        for (int i = 0; i < l_sommets.size(); i++) v.add(new ArrayList<Sommet>());
+    /* liste des voisins de chaque sommet sans tenir compte de l'orientation : successeurs + prédécesseurs */
+    private ArrayList<ArrayList<Sommet>> calculerVoisins() {
+        ArrayList<ArrayList<Sommet>> voisins = new ArrayList<ArrayList<Sommet>>();
+        for (int i = 0; i < l_sommets.size(); i++) {
+            voisins.add(new ArrayList<Sommet>());
+        }
         for (Sommet s : l_sommets) {
-            for (Sommet t : s.getSuccesseurs()) {
-                if (!v.get(s.getId()).contains(t)) v.get(s.getId()).add(t);
-                if (!v.get(t.getId()).contains(s)) v.get(t.getId()).add(s);
+            for (Sommet succ : s.getSuccesseurs()) {
+                voisins.get(s.getId()).add(succ);
+                voisins.get(succ.getId()).add(s);         // le lien compte aussi dans l'autre sens
             }
         }
-        return v;
+        return voisins;
     }
 
-    /** BFS sur le graphe non orienté associé, en marquant les sommets découverts. */
-    private ArrayList<Sommet> explorerNonOriente(Sommet s, boolean[] marque, ArrayList<ArrayList<Sommet>> v) {
-        ArrayList<Sommet> cc = new ArrayList<Sommet>();
+    /* exploration en largeur à partir de s sur les voisins ; marque est commun à toutes les explorations
+       retour : les sommets découverts = la composante connexe de s */
+    private ArrayList<Sommet> explorerComposante(Sommet s, ArrayList<Boolean> marque, ArrayList<ArrayList<Sommet>> voisins) {
+        ArrayList<Sommet> composante = new ArrayList<Sommet>();
         Queue<Sommet> file = new ArrayDeque<Sommet>();
-        marque[s.getId()] = true;
         file.add(s);
-        cc.add(s);
+        marque.set(s.getId(), true);
+        composante.add(s);
         while (!file.isEmpty()) {
-            Sommet x = file.poll();
-            for (Sommet y : v.get(x.getId())) {
-                if (!marque[y.getId()]) {
-                    marque[y.getId()] = true;
-                    file.add(y);
-                    cc.add(y);
+            s = file.poll();
+            for (Sommet v : voisins.get(s.getId())) {
+                if (!(marque.get(v.getId()))) {
+                    marque.set(v.getId(), true);
+                    file.add(v);
+                    composante.add(v);
                 }
             }
         }
-        return cc;
+        return composante;
     }
 
-    /** Vrai si une seule exploration (orientation ignorée) découvre tous les sommets. */
+    /* vrai si une seule exploration découvre tous les sommets */
     public boolean testerConnexite() {
-        if (l_sommets.isEmpty()) return true;
-        boolean[] marque = new boolean[l_sommets.size()];
-        return explorerNonOriente(l_sommets.get(0), marque, voisinsNonOrientes()).size() == l_sommets.size();
-    }
-
-    /** Toutes les composantes connexes : une exploration par sommet encore non marqué. */
-    public ArrayList<ArrayList<Sommet>> chercherCC() {
-        ArrayList<ArrayList<Sommet>> lcc = new ArrayList<ArrayList<Sommet>>();
-        ArrayList<ArrayList<Sommet>> v = voisinsNonOrientes();
-        boolean[] marque = new boolean[l_sommets.size()];
-        for (Sommet s : l_sommets) {
-            if (!marque[s.getId()]) lcc.add(explorerNonOriente(s, marque, v));
+        ArrayList<Boolean> marque = new ArrayList<Boolean>(l_sommets.size());
+        for (int i = 0; i < l_sommets.size(); i++) {
+            marque.add(i, false);
         }
-        return lcc;
+        ArrayList<Sommet> decouverts = explorerComposante(l_sommets.get(0), marque, calculerVoisins());
+        return decouverts.size() == l_sommets.size();
     }
 
+    /* une exploration par composante connexe */
+    public ArrayList<ArrayList<Sommet>> chercherCC() {
+        ArrayList<ArrayList<Sommet>> l_composantes = new ArrayList<ArrayList<Sommet>>();
+        ArrayList<ArrayList<Sommet>> voisins = calculerVoisins();
+        ArrayList<Boolean> marque = new ArrayList<Boolean>(l_sommets.size());
+        for (int i = 0; i < l_sommets.size(); i++) {
+            marque.add(i, false);
+        }
+        for (Sommet s : l_sommets) {
+            if (!(marque.get(s.getId()))) {
+                l_composantes.add(explorerComposante(s, marque, voisins));
+            }
+        }
+        return l_composantes;
+    }
+
+    /* Affichage des listes de successeurs */
     public void afficherListeSucc() {
         for (Sommet s : l_sommets) {
             System.out.print(s.getId() + ":");
