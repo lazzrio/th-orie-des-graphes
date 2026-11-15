@@ -92,7 +92,7 @@ window.QCM.s3 = {
     /* ---------- 5. Activité 8 ---------- */
     { ch: 5, q: "Dans <code>explorerLargeur</code>, quelle structure Java joue le rôle de la file ?", o: ["<code>Stack&lt;Sommet&gt;</code>", "<code>Queue&lt;Sommet&gt; file = new ArrayDeque&lt;&gt;()</code>", "<code>HashMap&lt;Integer, Sommet&gt;</code>", "<code>int[]</code>"], ok: [1],
       e: "Queue (interface) + ArrayDeque (classe) : add pour enfiler, poll pour retirer le plus ancien." },
-    { ch: 5, q: "Pourquoi peut-on écrire <code>marque[succ.getId()]</code> pour le marquage ?", o: ["Parce que les identifiants vont de 0 à n − 1", "Parce que Java trie les sommets", "Parce que le graphe est non orienté", "Parce que getId renvoie un booléen"], ok: [0],
+    { ch: 5, q: "Pourquoi peut-on écrire <code>marque.get(succ.getId())</code> pour tester le marquage ?", o: ["Parce que les identifiants vont de 0 à n − 1", "Parce que Java trie les sommets", "Parce que le graphe est non orienté", "Parce que getId renvoie un booléen"], ok: [0],
       e: "L'activité numérote les sommets de 0 à n − 1 : l'identifiant sert d'indice. Avec des identifiants quelconques, il faudrait une table de correspondance (HashMap)." },
     { ch: 5, q: "Que doit renvoyer <code>retrouverChemin(s1, s2, l_parents)</code> si s2 n'est pas atteignable depuis s1 ?", o: ["null", "une liste vide", "la liste [s1, s2]", "elle lève une exception"], ok: [1],
       e: "C'est demandé par l'énoncé : en remontant les parents de s2 on tombe sur null avant d'atteindre s1, on renvoie alors une liste vide." },

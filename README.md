@@ -36,7 +36,7 @@ python -m http.server 8000
 - `index.html` : page unique, générée par `outils/build.py` à partir de `parts/`
 - `parts/` : fragments HTML (cours, corrigés, fiche, QCM, atelier)
 - `css/style.css`, `js/graph.js` (rendu SVG des graphes et diagrammes de classes), `js/app.js`, `js/atelier.js`, `js/qcm-data.js`
-- `code/Graphes.java` (semaine 1), `code/Semaine2.java` (Welsh-Powell, parcours en largeur et en profondeur) et `code/activite8/` (semaine 3 : `Graphe`, `Sommet`, `Main` avec BFS, DFS itératif et récursif, parents, chemins, composantes connexes) : implémentations Java compilées et exécutées pour vérifier les corrigés
+- `code/Graphes.java` (semaine 1), `code/Semaine2.java` (Welsh-Powell, parcours en largeur et en profondeur) et `code/activite8/` (semaine 3 : `Graphe`, `Sommet`, `Main` ; uniquement les méthodes demandées par l'énoncé : BFS, DFS itératif et récursif, parents BFS et DFS, chemins, composantes connexes) : implémentations Java compilées et exécutées pour vérifier les corrigés
 
 Pour modifier le contenu : éditer les fichiers de `parts/` puis lancer `python outils/build.py`.
 Pour ajouter une semaine : nouveaux fragments dans `parts/`, une entrée dans `PARTS` de `build.py`, un bouton dans la barre de navigation (`p0_head.html`) et un bloc dans `js/qcm-data.js`.

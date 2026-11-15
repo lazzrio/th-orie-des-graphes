@@ -1715,47 +1715,52 @@ public class Graphe {
     private ArrayList&lt;Sommet&gt; l_sommets;
     ...
 }</code></pre>
-      <div class="box warn"><span class="bt">Piège du squelette</span>La boucle <code>while (sc.hasNextLine())</code> de <code>charger</code> plante (<code>NoSuchElementException</code>) si le fichier se termine par une ligne vide, ce qui est le cas de <code>connexite.txt</code>. Remplacer la condition par <code>sc.hasNextInt()</code> et protéger le <code>nextLine()</code> final par <code>if (sc.hasNextLine())</code>.</div>
+      <div class="box warn"><span class="bt">Piège sur les données</span>La boucle <code>while (sc.hasNextLine())</code> de <code>charger</code> lit deux entiers puis une ligne tant qu'il reste une ligne : elle plante (<code>NoSuchElementException</code>) si le fichier se termine par une ligne <b>vide</b>, ce qui est le cas de <code>connexite.txt</code>. On ne modifie pas le code fourni : on supprime cette ligne vide, pour que le fichier se termine par un <b>seul</b> saut de ligne.</div>
 
       <span class="qn"><b class="num">2</b><code>explorerLargeur</code> : file (<code>Queue</code> / <code>ArrayDeque</code>)</span>
-      <pre class="code"><code>public ArrayList&lt;Sommet&gt; explorerLargeur(Sommet s) {
-    ArrayList&lt;Sommet&gt; l_decouverts = new ArrayList&lt;Sommet&gt;();
-    Queue&lt;Sommet&gt; file = new ArrayDeque&lt;Sommet&gt;();
-    boolean[] marque = new boolean[l_sommets.size()];
-    marque[s.getId()] = true;               // marqué dès la découverte
+      <pre class="code"><code>public ArrayList&lt;Sommet&gt; explorerLargeur(Sommet s){
+    ArrayList&lt;Sommet&gt; l_decouverts=new ArrayList&lt;Sommet&gt;();
+    Queue&lt;Sommet&gt; file=new ArrayDeque&lt;Sommet&gt;();
+    ArrayList&lt;Boolean&gt; marque=new ArrayList&lt;Boolean&gt;(l_sommets.size());
+    for(int i=0;i&lt;l_sommets.size();i++){
+        marque.add(i,false);
+    }
     file.add(s);
+    marque.set(s.getId(),true);
     l_decouverts.add(s);
-    while (!file.isEmpty()) {
-        Sommet x = file.poll();             // le plus ancien sommet en attente
-        for (Sommet succ : x.getSuccesseurs()) {
-            if (!marque[succ.getId()]) {
-                marque[succ.getId()] = true;
+    while(!file.isEmpty()){
+        s=file.poll();
+        for(Sommet succ:s.getSuccesseurs()){
+            if(!(marque.get(succ.getId()))){
+                marque.set(succ.getId(),true);
                 file.add(succ);
-                l_decouverts.add(succ);     // ajouté à la découverte
+                l_decouverts.add(succ);
             }
         }
     }
     return l_decouverts;
 }</code></pre>
-      <p>Les numéros de sommets vont de 0 à n − 1 : on peut les utiliser comme indices du tableau de marquage.</p>
+      <p>Les numéros de sommets vont de 0 à n − 1 : on peut les utiliser comme indices de la liste de marquage (<code>ArrayList&lt;Boolean&gt;</code>, comme dans <code>explorerProfondeur_it</code> fourni).</p>
 
       <span class="qn"><b class="num">3</b>Profondeur récursive</span>
-      <pre class="code"><code>public ArrayList&lt;Sommet&gt; explorerProfondeur_rec(Sommet s) {
-    ArrayList&lt;Sommet&gt; l_decouverts = new ArrayList&lt;Sommet&gt;();
-    ArrayList&lt;Boolean&gt; marque = new ArrayList&lt;Boolean&gt;(l_sommets.size());
-    for (int i = 0; i &lt; l_sommets.size(); i++) marque.add(false);
-    marque.set(s.getId(), true);
+      <pre class="code"><code>public ArrayList&lt;Sommet&gt; explorerProfondeur_rec(Sommet s){
+    ArrayList&lt;Sommet&gt; l_decouverts=new ArrayList&lt;Sommet&gt;();
+    ArrayList&lt;Boolean&gt; marque=new ArrayList&lt;Boolean&gt;(l_sommets.size());
+    for(int i=0;i&lt;l_sommets.size();i++){
+        marque.add(i,false);
+    }
+    marque.set(s.getId(),true);
     l_decouverts.add(s);
-    parcoursProfondeur_rec(s, l_decouverts, marque);   // premier appel
+    parcoursProfondeur_rec(s,l_decouverts,marque);
     return l_decouverts;
 }
 
-public void parcoursProfondeur_rec(Sommet s, ArrayList&lt;Sommet&gt; l_decouverts, ArrayList&lt;Boolean&gt; marque) {
-    for (Sommet succ : s.getSuccesseurs()) {
-        if (!marque.get(succ.getId())) {
-            marque.set(succ.getId(), true);
+public void parcoursProfondeur_rec(Sommet s,ArrayList&lt;Sommet&gt; l_decouverts,ArrayList&lt;Boolean&gt; marque){
+    for(Sommet succ:s.getSuccesseurs()){
+        if(!(marque.get(succ.getId()))){
+            marque.set(succ.getId(),true);
             l_decouverts.add(succ);
-            parcoursProfondeur_rec(succ, l_decouverts, marque);   // on s'enfonce avant de passer au successeur suivant
+            parcoursProfondeur_rec(succ,l_decouverts,marque);
         }
     }
 }</code></pre>
@@ -1771,19 +1776,22 @@ public void parcoursProfondeur_rec(Sommet s, ArrayList&lt;Sommet&gt; l_decouvert
 
       <h3>II. Retrouver les chemins</h3>
       <span class="qn"><b class="num">5</b><code>BFS_Parents</code>, <code>DFS_Parents</code>, <code>retrouverChemin</code></span>
-      <pre class="code"><code>public ArrayList&lt;Sommet&gt; BFS_Parents(Sommet s) {
-    ArrayList&lt;Sommet&gt; l_parents = new ArrayList&lt;Sommet&gt;();
-    for (int i = 0; i &lt; l_sommets.size(); i++) l_parents.add(null);   // null : pas de parent
-    boolean[] marque = new boolean[l_sommets.size()];
-    Queue&lt;Sommet&gt; file = new ArrayDeque&lt;Sommet&gt;();
-    marque[s.getId()] = true;
+      <pre class="code"><code>public ArrayList&lt;Sommet&gt; BFS_Parents(Sommet s){
+    ArrayList&lt;Sommet&gt; l_parents=new ArrayList&lt;Sommet&gt;(l_sommets.size());
+    Queue&lt;Sommet&gt; file=new ArrayDeque&lt;Sommet&gt;();
+    ArrayList&lt;Boolean&gt; marque=new ArrayList&lt;Boolean&gt;(l_sommets.size());
+    for(int i=0;i&lt;l_sommets.size();i++){
+        marque.add(i,false);
+        l_parents.add(i,null);
+    }
     file.add(s);
-    while (!file.isEmpty()) {
-        Sommet x = file.poll();
-        for (Sommet succ : x.getSuccesseurs()) {
-            if (!marque[succ.getId()]) {
-                marque[succ.getId()] = true;
-                l_parents.set(succ.getId(), x);     // succ découvert depuis x
+    marque.set(s.getId(),true);
+    while(!file.isEmpty()){
+        s=file.poll();
+        for(Sommet succ:s.getSuccesseurs()){
+            if(!(marque.get(succ.getId()))){
+                marque.set(succ.getId(),true);
+                l_parents.set(succ.getId(),s);
                 file.add(succ);
             }
         }
@@ -1791,87 +1799,90 @@ public void parcoursProfondeur_rec(Sommet s, ArrayList&lt;Sommet&gt; l_decouvert
     return l_parents;
 }
 
-public ArrayList&lt;Sommet&gt; DFS_Parents(Sommet s) {
-    ArrayList&lt;Sommet&gt; l_parents = new ArrayList&lt;Sommet&gt;();
-    for (int i = 0; i &lt; l_sommets.size(); i++) l_parents.add(null);
-    boolean[] marque = new boolean[l_sommets.size()];
-    marque[s.getId()] = true;
-    dfsParents(s, marque, l_parents);
-    return l_parents;
-}
-private void dfsParents(Sommet x, boolean[] marque, ArrayList&lt;Sommet&gt; l_parents) {
-    for (Sommet succ : x.getSuccesseurs()) {
-        if (!marque[succ.getId()]) {
-            marque[succ.getId()] = true;
-            l_parents.set(succ.getId(), x);
-            dfsParents(succ, marque, l_parents);
+public ArrayList&lt;Sommet&gt; DFS_Parents(Sommet s){
+    ArrayList&lt;Sommet&gt; l_parents=new ArrayList&lt;Sommet&gt;(l_sommets.size());
+    Stack&lt;Sommet&gt; pile=new Stack&lt;Sommet&gt;();
+    ArrayList&lt;Boolean&gt; marque=new ArrayList&lt;Boolean&gt;(l_sommets.size());
+    for(int i=0;i&lt;l_sommets.size();i++){
+        marque.add(i,false);
+        l_parents.add(i,null);
+    }
+    pile.push(s);
+    marque.set(s.getId(),true);
+    while(!pile.isEmpty()){
+        s=pile.pop();
+        for(Sommet succ:s.getSuccesseurs()){
+            if(!(marque.get(succ.getId()))){
+                marque.set(succ.getId(),true);
+                l_parents.set(succ.getId(),s);
+                pile.push(succ);
+            }
         }
     }
+    return l_parents;
 }
 
-public ArrayList&lt;Sommet&gt; retrouverChemin(Sommet s1, Sommet s2, ArrayList&lt;Sommet&gt; l_parents) {
-    ArrayList&lt;Sommet&gt; chemin = new ArrayList&lt;Sommet&gt;();
-    Sommet x = s2;
-    while (x != null &amp;&amp; x != s1) {
-        chemin.add(0, x);                   // on remonte de s2 vers s1 : insertion en tête
-        x = l_parents.get(x.getId());
+public ArrayList&lt;Sommet&gt; retrouverChemin(Sommet s1,Sommet s2,ArrayList&lt;Sommet&gt; l_parents){
+    ArrayList&lt;Sommet&gt; chemin=new ArrayList&lt;Sommet&gt;();
+    Sommet courant=s2;
+    while(courant!=null &amp;&amp; courant!=s1){
+        chemin.add(0,courant);
+        courant=l_parents.get(courant.getId());
     }
-    if (x == null) return new ArrayList&lt;Sommet&gt;();   // s1 jamais atteint : s2 non atteignable
-    chemin.add(0, s1);
+    if(courant==null){
+        return new ArrayList&lt;Sommet&gt;();
+    }
+    chemin.add(0,s1);
     return chemin;
 }</code></pre>
-      <p>Les parents doivent avoir été calculés <b>depuis s1</b> : un tableau de parents ne sert qu'à reconstruire des chemins qui partent de sa racine.</p>
+      <p><code>DFS_Parents</code> reprend <code>explorerProfondeur_it</code> (avec une pile) avec une seule ligne en plus : <code>l_parents.set(succ.getId(), s)</code>. Les parents doivent avoir été calculés <b>depuis s1</b> : un tableau de parents ne sert qu'à reconstruire des chemins qui partent de sa racine.</p>
       <span class="qn"><b class="num">6</b>Comparaison des chemins obtenus</span>
       <div class="tw"><table>
-        <tr><th>Wiki, depuis A</th><th>Chemin BFS</th><th>Chemin DFS (récursif)</th></tr>
-        <tr><td>A → D</td><td>A-D (<b>1</b> arc)</td><td>A-B-C-F-H-D (<b>5</b> arcs)</td></tr>
-        <tr><td>A → G</td><td>A-B-E-G (<b>3</b>)</td><td>A-B-C-F-E-G (<b>5</b>)</td></tr>
-        <tr><td>A → I</td><td>A-C-F-H-I (<b>4</b>)</td><td>A-B-C-F-H-I (<b>5</b>)</td></tr>
-        <tr><td>A → K</td><td>A-B-E-K (<b>3</b>)</td><td>A-B-C-F-E-K (<b>5</b>)</td></tr>
+        <tr><th>Wiki, depuis A</th><th>Chemin BFS</th><th>Chemin DFS (pile)</th></tr>
+        <tr><td>A → D</td><td>A-D (<b>1</b> arc)</td><td>A-D (<b>1</b>)</td></tr>
+        <tr><td>A → E</td><td>A-B-E (<b>2</b>)</td><td>A-D-F-E (<b>3</b>)</td></tr>
+        <tr><td>A → G</td><td>A-B-E-G (<b>3</b>)</td><td>A-D-F-E-G (<b>4</b>)</td></tr>
+        <tr><td>A → I</td><td>A-C-F-H-I (<b>4</b>)</td><td>A-D-F-H-I (<b>4</b>)</td></tr>
+        <tr><td>A → K</td><td>A-B-E-K (<b>3</b>)</td><td>A-D-F-E-K (<b>4</b>)</td></tr>
         <tr><td>A → J</td><td colspan="2">liste vide : J n'est pas atteignable depuis A</td></tr>
       </table></div>
-      <div class="sol"><b>Constat.</b> Les chemins BFS ne sont <b>jamais plus longs</b> que les chemins DFS, et sont souvent beaucoup plus courts (A → D : 1 arc contre 5). C'est la propriété du cours : le BFS donne un chemin avec un <b>nombre minimal d'arcs</b>. Sur l'exercice 7 depuis C, les deux méthodes ne diffèrent que pour H (C-H contre C-G-H) et J (C-H-J contre C-G-H-J).</div>
+      <div class="sol"><b>Constat.</b> Les chemins BFS ne sont <b>jamais plus longs</b> que les chemins DFS, et sont parfois plus courts (A → E : 2 arcs contre 3). C'est la propriété du cours : le BFS donne un chemin avec un <b>nombre minimal d'arcs</b>. Sur l'exercice 7 depuis C, la différence se voit pour A : C-B-A (2 arcs) avec la file, C-H-J-I-A (4 arcs) avec la pile ; vers I, les deux chemins ont 3 arcs mais ne sont pas les mêmes (C-D-E-I et C-H-J-I).</div>
 
       <h3>III. Étude de la faible connexité</h3>
       <span class="qn"><b class="num">7</b><code>testerConnexite</code> et <code>chercherCC</code></span>
-      <div class="sol">Pour un graphe <b>orienté</b>, on ignore le sens des arcs : on explore avec les <b>voisins</b> de chaque sommet (successeurs <b>et</b> prédécesseurs). Sinon, un graphe comme l'exercice 7 paraîtrait non connexe depuis C (F n'y est pas atteignable), alors qu'il est faiblement connexe.</div>
-      <pre class="code"><code>// voisins sans tenir compte de l'orientation : successeurs + prédécesseurs
-private ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; voisinsNonOrientes() {
-    ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; v = new ArrayList&lt;ArrayList&lt;Sommet&gt;&gt;();
-    for (int i = 0; i &lt; l_sommets.size(); i++) v.add(new ArrayList&lt;Sommet&gt;());
-    for (Sommet s : l_sommets)
-        for (Sommet t : s.getSuccesseurs()) {
-            if (!v.get(s.getId()).contains(t)) v.get(s.getId()).add(t);
-            if (!v.get(t.getId()).contains(s)) v.get(t.getId()).add(s);
-        }
-    return v;
+      <div class="sol">Pour un graphe <b>orienté</b>, on ignore le sens des arcs : un sommet <code>t</code> est <b>voisin</b> de <code>s</code> si <code>t</code> est un successeur de <code>s</code> <b>ou</b> si <code>s</code> est un successeur de <code>t</code>. Sinon, un graphe comme l'exercice 7 paraîtrait non connexe depuis C (F n'y est pas atteignable), alors qu'il est faiblement connexe. <code>testerConnexite</code> se contente de demander les composantes à <code>chercherCC</code> : le graphe est connexe s'il n'y en a qu'une.</div>
+      <pre class="code"><code>public boolean testerConnexite(){
+    return chercherCC().size()==1;
 }
 
-// BFS sur ces voisins ; le tableau marque est partagé entre les explorations
-private ArrayList&lt;Sommet&gt; explorerNonOriente(Sommet s, boolean[] marque, ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; v) {
-    ArrayList&lt;Sommet&gt; cc = new ArrayList&lt;Sommet&gt;();
-    Queue&lt;Sommet&gt; file = new ArrayDeque&lt;Sommet&gt;();
-    marque[s.getId()] = true; file.add(s); cc.add(s);
-    while (!file.isEmpty()) {
-        Sommet x = file.poll();
-        for (Sommet y : v.get(x.getId()))
-            if (!marque[y.getId()]) { marque[y.getId()] = true; file.add(y); cc.add(y); }
+public ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; chercherCC(){
+    ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; l_composantes=new ArrayList&lt;ArrayList&lt;Sommet&gt;&gt;();
+    ArrayList&lt;Boolean&gt; marque=new ArrayList&lt;Boolean&gt;(l_sommets.size());
+    for(int i=0;i&lt;l_sommets.size();i++){
+        marque.add(i,false);
     }
-    return cc;
-}
-
-public boolean testerConnexite() {
-    boolean[] marque = new boolean[l_sommets.size()];
-    return explorerNonOriente(l_sommets.get(0), marque, voisinsNonOrientes()).size() == l_sommets.size();
-}
-
-public ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; chercherCC() {
-    ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; lcc = new ArrayList&lt;ArrayList&lt;Sommet&gt;&gt;();
-    ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; v = voisinsNonOrientes();
-    boolean[] marque = new boolean[l_sommets.size()];
-    for (Sommet s : l_sommets)
-        if (!marque[s.getId()]) lcc.add(explorerNonOriente(s, marque, v));   // une exploration = une composante
-    return lcc;
+    for(Sommet depart:l_sommets){
+        if(!(marque.get(depart.getId()))){
+            ArrayList&lt;Sommet&gt; composante=new ArrayList&lt;Sommet&gt;();
+            Queue&lt;Sommet&gt; file=new ArrayDeque&lt;Sommet&gt;();
+            file.add(depart);
+            marque.set(depart.getId(),true);
+            composante.add(depart);
+            while(!file.isEmpty()){
+                Sommet s=file.poll();
+                for(Sommet t:l_sommets){
+                    // t est voisin de s si t est un successeur de s ou si s est un successeur de t
+                    if(!(marque.get(t.getId())) &amp;&amp; (s.getSuccesseurs().contains(t) || t.getSuccesseurs().contains(s))){
+                        marque.set(t.getId(),true);
+                        file.add(t);
+                        composante.add(t);
+                    }
+                }
+            }
+            l_composantes.add(composante);
+        }
+    }
+    return l_composantes;
 }</code></pre>
       <span class="qn"><b class="num">8</b>Résultats et questions</span>
       <div class="tw"><table>
@@ -1885,7 +1896,7 @@ public ArrayList&lt;ArrayList&lt;Sommet&gt;&gt; chercherCC() {
 
       <h3>IV. Réflexion et amélioration des représentations</h3>
       <span class="qn"><b class="num">9</b>Difficultés liées à l'identification des sommets</span>
-      <div class="sol">Le code suppose que les identifiants sont <b>exactement 0, 1, …, n − 1</b> et dans l'ordre du fichier : <code>l_sommets.get(id)</code> et les tableaux <code>marque[id]</code> en dépendent. Avec des identifiants quelconques (numéros non contigus, noms de pages, codes de stations), il faut une table de correspondance, par exemple une <code>HashMap&lt;String, Sommet&gt;</code> du nom vers le sommet, ou un indice interne distinct de l'identifiant « métier ». Il faut aussi refuser les doublons d'identifiant.</div>
+      <div class="sol">Le code suppose que les identifiants sont <b>exactement 0, 1, …, n − 1</b> et dans l'ordre du fichier : <code>l_sommets.get(id)</code> et la liste <code>marque</code> en dépend. Avec des identifiants quelconques (numéros non contigus, noms de pages, codes de stations), il faut une table de correspondance, par exemple une <code>HashMap&lt;String, Sommet&gt;</code> du nom vers le sommet, ou un indice interne distinct de l'identifiant « métier ». Il faut aussi refuser les doublons d'identifiant.</div>
       <span class="qn"><b class="num">10</b>Pourquoi le modèle n'est-il pas adapté aux multigraphes ? Comment décrire un chemin ?</span>
       <div class="sol">Une liste de successeurs ne stocke que des <b>sommets</b> : deux arcs parallèles de a vers b donnent deux fois b dans la liste, sans qu'on puisse les distinguer (ligne de métro, durée…). Les parcours restent corrects pour l'atteignabilité, mais un chemin décrit comme une suite de sommets est <b>ambigu</b>. Dans un multigraphe, un chemin doit être décrit comme une <b>suite d'arcs</b> : a –(arc 3)→ x –(arc 7)→ b.</div>
       <span class="qn"><b class="num">11</b>Modèle pour les multigraphes et les itinéraires</span>
