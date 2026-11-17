@@ -155,6 +155,18 @@
   initQcm("s1");
   initQcm("s2");
   initQcm("s3");
+  initQcm("s4");
+
+  /* ---------- diaporamas : agrandir une diapositive ---------- */
+  var lb = document.createElement("div");
+  lb.className = "lightbox"; lb.innerHTML = "<img alt=''>";
+  document.body.appendChild(lb);
+  lb.addEventListener("click", function () { lb.classList.remove("on"); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") lb.classList.remove("on"); });
+  document.addEventListener("click", function (e) {
+    var im = e.target.closest(".pres-grid img");
+    if (im) { lb.querySelector("img").src = im.src; lb.querySelector("img").alt = im.alt; lb.classList.add("on"); }
+  });
 
   show();
 })();

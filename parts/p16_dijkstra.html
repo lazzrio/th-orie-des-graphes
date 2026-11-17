@@ -1,0 +1,50 @@
+
+<!-- ============ ATELIER DIJKSTRA ============ -->
+<section class="view" id="view-dijkstra">
+  <h1>🧮 Atelier Dijkstra</h1>
+  <p>Exécute l'algorithme de Dijkstra pas à pas. À chaque étape, le sommet <b>non marqué de plus petite distance provisoire</b> est marqué (<b>bleu</b>), puis ses successeurs non marqués sont mis à jour (<b>jaune</b> : découvert, distance provisoire). Le nombre sur chaque sommet est sa distance provisoire d<sub>p</sub>. Dans le tableau : <b>gras</b> = marqué, <span class="one" style="padding:0 4px">couleur</span> = mis à jour à cette étape, l'initiale en vert = parent.</p>
+  <div class="atelier">
+    <div class="panel">
+      <div class="ctl">
+        <label for="dj-graph">Graphe</label>
+        <select id="dj-graph"></select>
+        <label for="dj-start">Départ</label>
+        <select id="dj-start"></select>
+      </div>
+      <div id="dj-svg" style="max-width:640px;margin:0 auto"></div>
+      <div class="ctl" style="justify-content:center">
+        <button class="btn" id="dj-next">Étape suivante ▶</button>
+        <button class="btn ghost" id="dj-all">Tout exécuter ⏭</button>
+        <button class="btn ghost" id="dj-reset">↺ Recommencer</button>
+      </div>
+      <div class="ctl" style="justify-content:center">
+        <label><input type="checkbox" id="dj-arbo"> Afficher l'arborescence des parents</label>
+      </div>
+      <h3>Comparer avec le BFS</h3>
+      <div class="ctl">
+        <label for="dj-cible">Cible</label>
+        <select id="dj-cible"></select>
+        <button class="btn ghost" id="dj-cmp">Comparer avec le BFS</button>
+      </div>
+      <div id="dj-bfs" class="log" style="max-height:none"></div>
+    </div>
+    <div class="panel">
+      <h3>Marquage</h3>
+      <div class="stat" id="dj-stats"></div>
+      <p id="dj-verdict" style="font-weight:600"></p>
+      <h3>Tableau des distances</h3>
+      <div class="tw" style="max-height:300px;overflow:auto"><table class="mat dj" id="dj-table"></table></div>
+      <h3>Déroulé</h3>
+      <div class="log" id="dj-log" aria-live="polite"></div>
+      <h3>Chemins trouvés</h3>
+      <div class="log" id="dj-chemins" style="max-height:none"></div>
+      <div class="box comp" style="margin-top:14px"><span class="bt">À essayer</span>
+        <ul style="margin:.3em 0 0">
+          <li><b>Exercice 9</b> depuis B : ordre de marquage B, C, A, D, E, F ; A passe de 6 à 3 quand C est marqué.</li>
+          <li><b>Contre-exemple du BFS</b>, cible D : le BFS donne 15, Dijkstra 13.</li>
+          <li>Cible <b>t</b> seulement : repère à quelle étape t est <i>marqué</i> (on pourrait s'arrêter là) et compare avec l'étape où il est <i>découvert</i>.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

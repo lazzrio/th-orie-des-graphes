@@ -1,0 +1,92 @@
+
+  <!-- ---------- FICHE ---------- -->
+  <div class="pane fiche toc-auto" data-pane="fiche">
+    <button class="btn ghost printbtn" onclick="window.print()">🖨️ Imprimer</button>
+    <h2 style="margin-top:0">Fiche « À retenir » — Semaine 4</h2>
+
+    <h3>Graphes pondérés</h3>
+    <div class="tw"><table>
+      <tr><th>Notion</th><th>À retenir</th></tr>
+      <tr><td><b>Étiqueté / valué / pondéré</b></td><td>étiquettes quelconques / nombres réels (poids) / poids <b>positifs</b></td></tr>
+      <tr><td><b>Poids d'arcs</b> / <b>de sommets</b></td><td>distance, durée, coût, flux, messages échangés / temps d'attente à une station, temps de chargement ; un poids de sommet peut devenir un poids d'arcs (altitude → dénivelé)</td></tr>
+      <tr><td><b>Longueur</b> / <b>longueur pondérée</b></td><td>nombre d'arcs / <b>somme des poids</b> des arcs : l(c) = Σ p((s<sub>i</sub>, s<sub>i+1</sub>))</td></tr>
+      <tr><td><b>Plus court chemin pondéré (PCC)</b></td><td>chemin de longueur pondérée <b>minimum</b> ; pas forcément celui qui a le moins d'arcs</td></tr>
+    </table></div>
+    <div class="box warn"><span class="bt">Pourquoi le BFS ne suffit plus</span>La première découverte d'un sommet n'est plus forcément par le chemin de plus petit poids (A→D : le BFS donne 15, le PCC vaut 13). Il faut mémoriser une <b>distance provisoire</b> par sommet et la <b>mettre à jour</b>. Brute force (tous les chemins) : exponentiel.</div>
+
+    <h3>Algorithme de Dijkstra</h3>
+    <ol>
+      <li><b>Initialisation</b> : d<sub>p</sub>(s₀) = 0, d<sub>p</sub>(s) = ∞ ; aucun sommet marqué ; pas de parents.</li>
+      <li><b>Répéter</b> : choisir et <b>marquer</b> le sommet <b>non marqué de plus petite d<sub>p</sub></b> (s<sub>min</sub>) ; pour chaque successeur <b>non marqué</b> s : si d<sub>p</sub>(s<sub>min</sub>) + p(s<sub>min</sub>, s) &lt; d<sub>p</sub>(s), alors d<sub>p</sub>(s) ← cette valeur et Parent(s) ← s<sub>min</sub>.</li>
+      <li><b>Arrêt</b> : plus de sommet non marqué à distance finie (ou, pour un PCC vers t seulement : <b>dès que t est marqué</b>).</li>
+    </ol>
+    <ul>
+      <li>Distance d'un sommet <b>marqué = définitive</b> (preuve par l'absurde : un chemin plus court passerait par un non marqué de d<sub>p</sub> ≤).</li>
+      <li><b>Poids ≥ 0 indispensables</b> (sinon Bellman-Ford ou Floyd-Warshall). Si tous les poids valent 1, Dijkstra = BFS.</li>
+      <li>Sortie : une <b>arborescence</b> de PCC enracinée en s₀ ; chemin = remonter les parents. Un seul critère optimisé.</li>
+    </ul>
+    <div class="tw"><table class="mat">
+      <tr><th>Exercice 9 (depuis B)</th><th>B</th><th>C</th><th>A</th><th>D</th><th>E</th><th>F</th></tr>
+      <tr><th>Ordre de marquage</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+      <tr><th>Distance</th><td>0</td><td>2</td><td>3</td><td>4</td><td>6</td><td>9</td></tr>
+      <tr><th>Parent</th><td>-</td><td>B</td><td>C</td><td>C</td><td>D</td><td>A</td></tr>
+    </table></div>
+
+    <h3>Implémentation et complexité</h3>
+    <div class="tw"><table>
+      <tr><th></th><th class="c">Matrice d'adjacence</th><th class="c">Liste de successeurs</th></tr>
+      <tr><td>Tableau / liste pour les distances (minimum en O(n))</td><td class="c">O(n²)</td><td class="c">O(n²)</td></tr>
+      <tr><td>File de priorité (tas, O(log n))</td><td class="c">O(n²)</td><td class="c">O(m + n log n)</td></tr>
+    </table></div>
+    <ul>
+      <li><b>File de priorité</b> : sort l'élément de plus haute priorité (pas le plus ancien) ; <code>PriorityQueue</code> : <code>add</code>, <code>peek</code> (sans retirer), <code>poll</code> (retire, <code>null</code> si vide), <code>remove</code>, <code>contains</code>, <code>size</code> ; ordre fourni par <code>Comparable</code> (<code>compareTo</code>) ou <code>Comparator</code> (<code>compare</code>).</li>
+      <li>Parcours des successeurs : O(n²) (matrice) ou O(m) (listes) sur l'ensemble des étapes.</li>
+    </ul>
+    <h3>Limites et perspectives</h3>
+    <ul>
+      <li>Poids négatifs → <b>Bellman-Ford</b>, <b>Floyd-Warshall</b>. Très grands graphes → prétraitement, Contraction Hierarchies, ALT ; destination connue → <b>A*</b>. Plusieurs critères → algorithmes multicritères, <b>front de Pareto</b>.</li>
+    </ul>
+
+    <h3>Modéliser le métro (activité 9)</h3>
+    <div class="tw"><table>
+      <tr><th>Notion</th><th>À retenir</th></tr>
+      <tr><td><b>Modèle</b></td><td>ligne = <b>2 voies</b> ; voie = suite <b>ordonnée</b> de tronçons ; réseau = <b>multigraphe orienté sans boucle</b> (sommet = station, arc = tronçon)</td></tr>
+      <tr><td><b>Identifiants</b></td><td>noms de stations plutôt qu'indices 0..n−1 (suppression, renumérotation, réalité) → <b>association qualifiée</b></td></tr>
+      <tr><td><b>Association qualifiée</b></td><td>(instance de A, qualificatif) → sous-ensemble de B ; avec <b>clé</b> et cardinalité 0..1 → au plus une instance ; ex. ReseauMetro —nomStation→ Station</td></tr>
+      <tr><td><b>HashMap&lt;K,V&gt;</b></td><td><code>put</code> (remplace si clé existante), <code>get</code> (O(1) moyen, <code>null</code> si absente), <code>containsKey</code>, <code>keySet</code>, <code>values</code>, <code>entrySet</code> ; <b>ordre non garanti</b> (<code>LinkedHashMap</code> garde l'ordre d'insertion)</td></tr>
+      <tr><td><b>Pointillés (UML)</b></td><td><b>dépendance</b> : RechercheItineraire utilise Station et Itineraire dans ses méthodes (paramètres, retour), sans attribut</td></tr>
+      <tr><td><b>BFS du programme</b></td><td>enfile des <b>tronçons</b> ; Map nom → tronçon d'arrivée (parent) ; s'arrête à la découverte de la destination</td></tr>
+    </table></div>
+    <div class="tw"><table>
+      <tr><th>Trajet</th><th class="c">BFS</th><th class="c">Meilleur possible</th></tr>
+      <tr><td>Place d'Italie → Bastille</td><td class="c">5 tronçons, 0 chang.</td><td class="c">identique</td></tr>
+      <tr><td>Maison Blanche → Bastille</td><td class="c">7 tronçons, 1 chang.</td><td class="c">identique</td></tr>
+      <tr><td>Maison Blanche → Jussieu</td><td class="c">6 tronçons, <span class="mm">2 chang.</span></td><td class="c">6 tronçons, 0 chang. (M7)</td></tr>
+      <tr><td>Maison Blanche → Cambrone</td><td class="c">12 tronçons, <span class="mm">3 chang.</span></td><td class="c">12 tronçons, 1 chang.</td></tr>
+    </table></div>
+    <ul>
+      <li>Le BFS minimise les <b>tronçons</b>, pas les <b>changements</b> (premier plus court chemin trouvé selon l'ordre du fichier).</li>
+      <li><b>BFS/DFS mélangés</b> (même ligne en tête de file) : plus FIFO, plus de garantie (Tolbiac → Gare de l'Est : 17 tronçons au lieu de 12).</li>
+      <li><b>Ordre préférentiel</b> (même ligne d'abord, puis fin de file) : reste un BFS, avantage <b>local</b> seulement (contre-exemple A→F : A-B-C-F avec 2 changements alors que A-B-G-F en a 1).</li>
+      <li><b>Comparer globalement</b> : paire (tronçons, changements) comparée dans cet ordre ; remplacer le chemin mémorisé si même nombre de tronçons et moins de changements ; première découverte insuffisante → idée de <b>coût</b> et de Dijkstra.</li>
+    </ul>
+    <div class="box warn"><span class="bt">Pièges classiques</span>
+      <ul>
+        <li>Longueur (nombre d'arcs) ≠ longueur pondérée (somme des poids) ; PCC ≠ chemin avec le moins d'arcs.</li>
+        <li>Dijkstra : on arrête à t <b>marqué</b>, pas à t <b>découvert</b> ; on ne met à jour que les successeurs <b>non marqués</b>.</li>
+        <li>Poids négatifs : Dijkstra donne un résultat faux (la preuve suppose poids ≥ 0).</li>
+        <li><code>HashMap</code> : ordre d'itération ≠ ordre d'insertion ; <code>get</code> renvoie <code>null</code> (pas d'exception) si la clé manque.</li>
+        <li><code>peek()</code> consulte, <code>poll()</code> retire.</li>
+      </ul>
+    </div>
+  </div> <!-- /pane fiche -->
+
+  <!-- ---------- QCM ---------- -->
+  <div class="pane" data-pane="qcm">
+    <h2 style="margin-top:0">QCM — Semaine 4</h2>
+    <p><span data-qcount="s4">66</span> questions sur le chapitre 5 (graphes pondérés, Dijkstra, files de priorité) et l'activité 9 (métro, <code>HashMap</code>, limites du BFS). Réponds, clique sur <b>Valider</b> pour voir la correction et l'explication. Ta progression est mémorisée dans ce navigateur.</p>
+    <div id="qcm-s4"></div>
+  </div>
+
+  {{PART:s4_pres.html}}
+</section>

@@ -1,0 +1,242 @@
+
+<!-- ============ SEMAINE 4 ============ -->
+<section class="view" id="view-s4">
+  <div class="weekhead"><h1>Semaine 4</h1><span class="tag">Chapitre 5 · Plus courts chemins pondérés (Dijkstra)</span></div>
+  <p style="color:var(--muted);margin-top:0">Graphes pondérés, limites du BFS, algorithme de Dijkstra, files de priorité ; modélisation du métro (associations qualifiées, <code>HashMap</code>). Exercice 9 et activité 9.</p>
+  <div class="tabs" role="tablist">
+    <button data-pane="cours" data-go="s4/cours">📘 Cours</button>
+    <button data-pane="corriges" data-go="s4/corriges">✅ Exercices corrigés</button>
+    <button data-pane="fiche" data-go="s4/fiche">📌 À retenir</button>
+    <button data-pane="qcm" data-go="s4/qcm">🎯 QCM</button>
+    <button data-pane="pres" data-go="s4/pres">🖥️ Présentations</button>
+  </div>
+
+  <!-- ---------- COURS ---------- -->
+  <div class="pane" data-pane="cours">
+    <div class="chnav">
+      <button data-chap="1" data-go="s4/cours/1">Chap. 5 · Graphes pondérés et Dijkstra</button>
+      <button data-chap="2" data-go="s4/cours/2">Activité 9 · Modéliser le métro</button>
+    </div>
+
+    <!-- ===== CHAPITRE 5 ===== -->
+    <article class="chap" data-chap="1">
+      <h2 style="margin-top:0">Chapitre 5 — Plus courts chemins dans les graphes pondérés (Dijkstra)</h2>
+      <p><b>Objectifs :</b> découvrir les graphes pondérés ; comprendre et utiliser l'algorithme de Dijkstra ; étudier sa complexité selon les structures de données ; identifier ses limites.</p>
+
+      <h2>I. Les graphes pondérés</h2>
+      <h3>1. Graphes étiquetés, valués, pondérés</h3>
+      <div class="box def"><span class="bt">Définitions</span>
+        <ul style="margin:.2em 0 0">
+          <li><b>Graphe étiqueté</b> : les arêtes (ou les sommets) portent des informations dont il faut tenir compte pour certains problèmes (recherche de chemins, optimisation…) : lettre, mot, nombre, symbole, code…</li>
+          <li><b>Graphe valué</b> : les étiquettes sont des <b>nombres réels</b> appelés <b>poids</b>.</li>
+          <li><b>Graphe pondéré</b> : les poids sont <b>positifs</b>.</li>
+        </ul>
+      </div>
+      <p>Dans les cas les plus classiques, l'information concerne les <b>arêtes ou arcs</b> ; parfois ce sont les <b>sommets</b> (voire les deux) qui portent l'information essentielle.</p>
+      <div class="tw"><table>
+        <tr><th>Poids sur…</th><th>Exemples</th></tr>
+        <tr><td><b>les arcs</b></td><td>graphes routiers ou de transports : distance, durée, coût, flux (personnes, véhicules, marchandises) · construction de réseaux (énergie, télécoms) : coût financier ou écologique, durée des travaux · réseau social : nombre de messages échangés</td></tr>
+        <tr><td><b>les sommets</b></td><td>transports : temps d'attente moyen à une station · tournées de livraison ou de collecte : temps de chargement ou de déchargement</td></tr>
+      </table></div>
+      <div class="box ex"><span class="bt">Poids de sommets → poids d'arcs</span>Un poids de sommet peut parfois être transformé en valuation d'arcs : dans un graphe routier, les <b>dénivelés</b> se déduisent de l'<b>altitude</b> des sommets.</div>
+
+      <h3>2. Longueur pondérée (coût) d'un chemin — plus court chemin pondéré</h3>
+      <div class="box def"><span class="bt">Définitions</span>
+        Soit G = (S, A) un graphe simple et p : A → ℝ₊ la fonction qui à chaque arc associe son poids. La <b>longueur pondérée</b> l(c) d'un chemin c = &lt;(s₀,s₁), (s₁,s₂), …, (s<sub>k−1</sub>,s<sub>k</sub>)&gt; est la <b>somme des poids de ses arcs</b> :
+        <div style="text-align:center;margin:.5em 0"><b>l(c) = Σ<sub>i=0…k−1</sub> p((s<sub>i</sub>, s<sub>i+1</sub>))</b></div>
+        Un <b>plus court chemin pondéré (PCC)</b> est un chemin de <b>longueur pondérée minimum</b>.
+      </div>
+      <figure class="fig" style="max-width:480px"><div data-graph="dij" data-hl="B-C,C-D,D-E"></div><figcaption>En rouge : le PCC de B à E (longueur 6)</figcaption></figure>
+      <div class="box ex"><span class="bt">Exemple : les 4 chemins élémentaires de B à E</span>
+        <ul style="margin:.2em 0 0">
+          <li>&lt;(B,A), (A,D), (D,E)&gt; : 6 + 5 + 2 = <b>13</b></li>
+          <li>&lt;(B,C), (C,A), (A,D), (D,E)&gt; : 2 + 1 + 5 + 2 = <b>10</b></li>
+          <li>&lt;(B,C), (C,D), (D,E)&gt; : 2 + 2 + 2 = <b>6</b></li>
+          <li>&lt;(B,C), (C,E)&gt; : 2 + 8 = <b>10</b></li>
+        </ul>
+        Le plus court chemin pondéré de B à E est &lt;(B,C), (C,D), (D,E)&gt;, de longueur <b>6</b>.</div>
+      <div class="box warn"><span class="bt">Ne pas confondre</span><b>Longueur</b> d'un chemin = nombre d'arcs ; <b>longueur pondérée</b> = somme des poids. Ici le chemin &lt;(B,C), (C,E)&gt; a 2 arcs (le moins) mais 10 de longueur pondérée, alors que le meilleur en a 3.</div>
+
+      <h2>II. Recherche d'un plus court chemin avec pondérations</h2>
+      <h3>1. Le BFS ne fonctionne plus</h3>
+      <div class="box prop"><span class="bt">Rappel sur le BFS</span>
+        <ul style="margin:.2em 0 0">
+          <li>À chaque étape, tous les chemins explorés sont augmentés d'<b>un arc</b> (sans tenir compte des poids).</li>
+          <li>Les sommets en attente sont stockés en <b>FIFO</b> (file).</li>
+          <li>Le FIFO garantit que la <b>première découverte</b> d'un sommet se fait par un plus court chemin <b>en nombre d'arcs</b> : on marque et on enfile dès la découverte, et on peut arrêter la recherche dès qu'on découvre la destination.</li>
+        </ul></div>
+      <figure class="fig" style="max-width:500px"><div data-graph="dijbfs"></div><figcaption>Contre-exemple : de A à D</figcaption></figure>
+      <div class="tw"><table class="mat">
+        <tr><th colspan="2">Étapes</th><th>A</th><th>B</th><th>C</th><th>D</th><th>File</th></tr>
+        <tr><th>0</th><th></th><td>1</td><td>0</td><td>0</td><td>0</td><td>A</td></tr>
+        <tr><th>1</th><th></th><td>2</td><td>1</td><td>1</td><td>0</td><td>B C</td></tr>
+        <tr><th>2</th><th></th><td></td><td>2</td><td></td><td></td><td>C D</td></tr>
+      </table></div>
+      <p style="font-size:.92rem;color:var(--muted)">Marquage : 0 non découvert, 1 découvert, 2 exploré. Parents obtenus : B ← A, C ← A, D ← B.</p>
+      <p>Le BFS trouve &lt;(A,B), (B,D)&gt; : 2 arcs, longueur pondérée <b>12 + 3 = 15</b>. Or le plus court chemin pondéré est &lt;(A,C), (C,B), (B,D)&gt; de longueur <b>6 + 4 + 3 = 13</b>.</p>
+      <div class="box warn"><span class="bt">Qu'est-ce qui ne fonctionne pas ?</span>
+        Quand on découvre un sommet, ce n'est <b>pas forcément</b> par le plus court chemin pondéré : on peut atteindre un sommet déjà découvert par un chemin plus court en pondération.
+        <ul style="margin:.3em 0 0">
+          <li>Le <b>marquage à la découverte</b> ne convient plus.</li>
+          <li>Mémoriser le parent ne suffit plus : il faut aussi mémoriser la <b>longueur pondérée</b> des chemins parcourus, et faire des <b>mises à jour</b>.</li>
+        </ul></div>
+
+      <h3>2. Recherche de solutions</h3>
+      <div class="box prop"><span class="bt">Solution 1 : brute force</span>Chercher <b>tous les chemins sans cycle</b> partant du sommet initial, puis sélectionner les plus courts. Le nombre de chemins élémentaires explose avec la taille : de l'ordre de <b>(n−1)!</b> dans un graphe complet de n sommets, donc une complexité <b>exponentielle (factorielle)</b> : inutilisable dès quelques dizaines de sommets.</div>
+      <div class="box prop"><span class="bt">Solution 2 : l'algorithme de Dijkstra</span>Des algorithmes <b>polynomiaux</b> existent, dont le célèbre algorithme d'<b>Edsger Wybe Dijkstra</b> (1930 – 2002). Il peut être vu comme un <b>BFS adapté aux graphes pondérés</b> : l'exploration reste « concentrique » mais selon des <b>cercles dont le rayon est la somme des poids</b> et non le nombre d'arcs. <b>Si tous les poids valent 1, Dijkstra est équivalent à un BFS.</b></div>
+
+      <h3>3. L'algorithme de Dijkstra</h3>
+      <h4>a. Fonctionnement</h4>
+      <div class="box def"><span class="bt">Vocabulaire</span>
+        <ul style="margin:.2em 0 0">
+          <li><b>Longueur</b> d'un chemin : nombre d'arcs. <b>Longueur pondérée</b> : somme des poids.</li>
+          <li><b>Longueur pondérée provisoire</b> : meilleure longueur actuellement connue, qui peut encore être améliorée. <b>Définitive</b> : elle ne pourra plus être améliorée.</li>
+          <li><b>Distance provisoire d<sub>p</sub>(s)</b> : longueur pondérée provisoire du chemin ayant permis de découvrir s depuis s₀. <b>Distance (définitive)</b> : longueur pondérée définitive de s₀ à s.</li>
+          <li>Un sommet est <b>marqué</b> quand on est sûr que sa distance provisoire est devenue <b>définitive</b>.</li>
+        </ul></div>
+      <h4>Quand faut-il marquer un sommet ?</h4>
+      <ul>
+        <li><b>Au départ</b> : d<sub>p</sub>(s₀) = 0 et d<sub>p</sub>(s) = ∞ pour tout s ≠ s₀ ; s₀ est marqué tout de suite (sa distance est définitivement nulle).</li>
+        <li><b>En cours d'exploration</b> : soit s<sub>min</sub> le sommet <b>non marqué</b> de plus petite distance provisoire : d<sub>p</sub>(s<sub>min</sub>) ≤ d<sub>p</sub>(s) pour tout s non marqué. <b>Sa distance est définitive.</b></li>
+      </ul>
+      <div class="box prop"><span class="bt">Démonstration par l'absurde</span>
+        S'il existait un chemin c plus court vers s<sub>min</sub> (l(c) &lt; d<sub>p</sub>(s<sub>min</sub>)), il passerait forcément par un sommet x <b>non marqué</b>. <b>Les poids étant positifs ou nuls</b>, la portion de s₀ à x est plus courte ou égale au chemin complet : d<sub>p</sub>(x) ≤ l(c). On aurait d<sub>p</sub>(x) ≤ l(c) ≤ d<sub>p</sub>(s<sub>min</sub>), ce qui <b>contredit le choix de s<sub>min</sub></b>.<br>
+        <i>C'est ici que la positivité des poids est indispensable.</i></div>
+      <h4>Mises à jour</h4>
+      <p>Après avoir marqué s<sub>min</sub>, on vérifie si passer par lui améliore l'accès à ses successeurs <b>non marqués</b> :</p>
+      <pre class="code"><code>Pour chaque successeur s non marqué de s_min :
+    si dp(s_min) + p(s_min, s) &lt; dp(s) :
+        dp(s) ← dp(s_min) + p(s_min, s)      // distance provisoire améliorée
+        Parent(s) ← s_min                    // nouveau chemin vers s</code></pre>
+      <div class="box prop"><span class="bt">Algorithme de Dijkstra</span>
+        <b>Entrée :</b> graphe simple pondéré, sommet initial s₀. <b>Sortie :</b> plus courts chemins de s₀ vers tous les sommets atteignables.
+<pre class="code"><code>1. Initialisation :
+     marquage : tous les sommets non marqués
+     distances : dp(s0) = 0 ; dp(s) = ∞ pour les autres
+     parents : aucun
+2. Faire :
+     sélectionner et marquer le sommet s_min non marqué de plus petite distance dp
+     pour chaque successeur s non marqué de s_min :
+         si le chemin passant par s_min est plus court :
+             mettre à jour dp(s) ; Parent(s) ← s_min
+   tant qu'il reste des sommets non marqués à distance provisoire non infinie</code></pre></div>
+      <div class="box comp"><span class="bt">Question du cours : on ne veut qu'un PCC entre s₀ et t</span>On peut <b>s'arrêter dès que t est marqué</b> (c'est-à-dire quand t est sélectionné comme s<sub>min</sub>, pas dès qu'il est simplement découvert : sa distance n'est définitive qu'à ce moment-là). C'est la différence avec le BFS, qui s'arrête dès la découverte.</div>
+      <p>👉 Exercice 9 (à la main, sur le graphe ci-dessus) et <a data-go="dijkstra" href="#dijkstra">atelier Dijkstra</a> pas à pas.</p>
+
+      <h4>b. Implémentation</h4>
+      <p>À chaque étape il faut <b>trouver le sommet non marqué de plus petite distance provisoire</b>. Deux solutions :</p>
+      <ul>
+        <li><b>Liste ou tableau</b> des distances : parcourir tous les sommets pour trouver le minimum : <b>O(n)</b>.</li>
+        <li><b>File de priorité</b> (implémentée par un <b>tas</b>) : ajout et suppression en <b>O(log n)</b>.</li>
+      </ul>
+      <div class="box def"><span class="bt">File de priorité et <code>PriorityQueue</code> (Java)</span>
+        <ul style="margin:.2em 0 0">
+          <li>Collection d'éléments organisés selon une <b>priorité</b> : contrairement à la file FIFO, l'ordre de sortie dépend de la priorité, pas de l'ordre d'arrivée.</li>
+          <li>Un seul élément est accessible : celui de <b>plus haute priorité</b> (le prochain traité).</li>
+          <li>Un <b>tas</b> (heap) est une structure arborescente qui retrouve très vite le plus petit (ou plus grand) élément ; ajout et suppression en O(log n).</li>
+          <li>Il faut pouvoir <b>comparer</b> les éléments : soit la classe implémente <code>Comparable</code> (<code>compareTo</code>), soit on fournit au constructeur un <code>Comparator</code> (<code>compare</code>).</li>
+          <li>Méthodes principales : <code>add(e)</code>, <code>peek()</code> (lit la tête sans l'enlever, <code>null</code> si vide), <code>poll()</code> (retire la tête, <code>null</code> si vide), <code>remove(o)</code>, <code>contains(o)</code>, <code>clear()</code>, <code>size()</code>.</li>
+        </ul></div>
+      <h4>c. Complexité</h4>
+      <p>Soit G d'ordre n et de taille m. Parcourir les successeurs du sommet marqué, sur toutes les étapes : <b>O(n²)</b> avec une matrice d'adjacence, <b>O(m)</b> avec des listes de successeurs. Chercher le minimum : <b>O(n)</b> avec un tableau, <b>O(log n)</b> avec une file de priorité par tas.</p>
+      <div class="tw"><table>
+        <tr><th></th><th class="c">Matrice d'adjacence</th><th class="c">Liste de successeurs</th></tr>
+        <tr><td><b>Liste ou tableau</b> pour stocker les distances</td><td class="c">O(n²)</td><td class="c">O(n²)</td></tr>
+        <tr><td><b>File de priorité</b> (tas)</td><td class="c">O(n²)</td><td class="c">O(m + n log n)</td></tr>
+      </table></div>
+      <div class="box comp"><span class="bt">Complément (non détaillé dans le cours)</span>Le résultat O(m + n log n) correspond à un tas avec « diminution de clé » (tas de Fibonacci). Avec la <code>PriorityQueue</code> de Java (pas de diminution de clé : on réinsère le sommet à chaque amélioration et on ignore les entrées périmées), on obtient plutôt O((n + m) log n). Dans les deux cas, la file de priorité n'apporte un gain que si le graphe est <b>peu dense</b> et représenté par <b>listes de successeurs</b>.</div>
+      <pre class="code"><code>// Dijkstra avec PriorityQueue (code testé : code/Dijkstra.java)
+PriorityQueue&lt;double[]&gt; file = new PriorityQueue&lt;&gt;((x, y) -&gt; Double.compare(x[1], y[1]));
+file.add(new double[]{s0, 0});
+while (!file.isEmpty()) {
+    double[] cur = file.poll();               // sommet de plus petite distance provisoire
+    int u = (int) cur[0];
+    if (marque[u]) continue;                  // entrée périmée : u est déjà définitif
+    marque[u] = true;
+    for (int v = 0; v &lt; n; v++) {
+        if (poids[u][v] != INF &amp;&amp; !marque[v] &amp;&amp; dp[u] + poids[u][v] &lt; dp[v]) {
+            dp[v] = dp[u] + poids[u][v];
+            file.add(new double[]{v, dp[v]});
+        }
+    }
+}</code></pre>
+
+      <h3>4. Limites et perspectives</h3>
+      <div class="tw"><table>
+        <tr><th>Limite</th><th>Solutions / pistes</th></tr>
+        <tr><td>Dijkstra ne fonctionne qu'avec des poids <b>positifs ou nuls</b> (or certains graphes, financiers par exemple, ont des poids négatifs)</td><td>algorithmes de <b>Bellman-Ford</b> ou <b>Floyd-Warshall</b></td></tr>
+        <tr><td>Sur de <b>très grands graphes</b> (millions de sommets), Dijkstra reste trop coûteux</td><td>prétraitement du graphe ; algorithmes spécialisés pour les réseaux routiers (Contraction Hierarchies, ALT…) ; si la destination est connue : heuristiques (<b>algorithme A*</b>)</td></tr>
+        <tr><td>Dijkstra n'optimise qu'<b>un seul critère</b></td><td>algorithmes multicritères ; recherche de compromis (<b>front de Pareto</b>)</td></tr>
+      </table></div>
+      <div class="box ret"><span class="bt">Bilan</span>
+        <ul style="margin:.2em 0 0">
+          <li>Un BFS trouve les plus courts chemins <b>en nombre d'arcs</b> ; dans un graphe pondéré, son premier chemin trouvé n'est pas forcément le meilleur en longueur pondérée.</li>
+          <li>Dijkstra trouve les PCC pondérés depuis un sommet initial : poids <b>positifs ou nuls</b> ; distances provisoires mises à jour ; à chaque étape on <b>marque le non marqué de plus petite distance provisoire</b> ; la distance des sommets marqués est <b>définitive</b>.</li>
+          <li>Son efficacité dépend des <b>structures de données</b> utilisées.</li>
+        </ul></div>
+    </article>
+
+    <!-- ===== ACTIVITÉ 9 ===== -->
+    <article class="chap" data-chap="2">
+      <h2 style="margin-top:0">Activité 9 — Plus courts itinéraires dans le métro : les limites du BFS</h2>
+      <p><b>Problématique :</b> le parcours en largeur trouve un plus court chemin <i>en nombre d'arcs</i>. Mais dans un réseau ferré, est-ce un itinéraire satisfaisant pour l'usager ? <b>Objectifs :</b> modéliser un réseau ferré, approfondir l'UML, comprendre les limites du BFS et faire émerger la notion de <b>coût</b> d'un chemin.</p>
+
+      <h2>I. Le modèle adopté</h2>
+      <div class="box def"><span class="bt">Hypothèse (une seule branche par ligne)</span>
+        <ul style="margin:.2em 0 0">
+          <li>Une <b>ligne</b> est composée de <b>deux voies</b>.</li>
+          <li>Une <b>voie</b> est une <b>suite ordonnée de tronçons</b>, ordonnés selon le sens de circulation ; le premier et le dernier conduisent aux stations terminus.</li>
+          <li>Le réseau est un <b>multigraphe orienté sans boucle</b> : chaque <b>sommet</b> est une <b>station</b> ; deux stations sont <b>adjacentes</b> si l'on peut aller directement de l'une à l'autre par un <b>tronçon de voie</b> (elles se suivent sur une même voie).</li>
+        </ul></div>
+      <p>Les stations desservies par plusieurs lignes sont <b>un seul sommet</b> : les correspondances sont les sommets de degré élevé. Plusieurs lignes peuvent relier les mêmes stations : d'où le <b>multigraphe</b> (cf. semaine 1, Raspail–Denfert).</p>
+
+      <h2>II. Identifier les stations et les lignes : associations qualifiées et HashMap</h2>
+      <p>Jusqu'ici les sommets d'un graphe d'ordre n étaient identifiés par un numéro de 0 à n−1 : l'identifiant était l'<b>indice</b> dans un tableau (<code>ArrayList</code>, matrice, tableau des marquages). Cette convention a deux limites :</p>
+      <ul>
+        <li>elle rend les <b>modifications</b> délicates : supprimer un sommet laisse un « trou », ou oblige à renuméroter et à mettre à jour toutes les références ;</li>
+        <li>dans les applications réelles, les sommets ont <b>leurs propres identifiants</b> (nom d'hôte, adresse IP, nom de station) : on ne demande pas à un usager un itinéraire entre les sommets 17 et 42, mais entre « Bastille » et « République ».</li>
+      </ul>
+      <p>Il vaut mieux <b>distinguer l'identifiant d'un sommet de sa position</b> dans une structure de stockage : on utilise une <b>association qualifiée</b>.</p>
+      <div class="box def"><span class="bt">Association qualifiée (UML)</span>
+        La <b>qualification</b> (ou restriction) d'une association sélectionne un <b>sous-ensemble</b> d'objets parmi ceux qui participent à l'association, grâce à un ou plusieurs attributs appelés <b>qualificatifs</b>. Sans qualificatif, une instance de A est liée à un <i>ensemble</i> d'instances de B. Avec un qualificatif, c'est la <b>paire (instance de A, qualificatif)</b> qui est liée à un <i>sous-ensemble</i> d'instances de B.
+        <br>Souvent on restreint la cardinalité à <b>0..1</b> : le qualificatif, appelé <b>clé</b>, identifie alors de façon <b>unique</b> une instance de la classe cible.
+        <ul style="margin:.4em 0 0">
+          <li>Réseau —<code>email</code>→ Personne (0..1)</li>
+          <li>Train —<code>n°wagon</code>→ Wagon (1)</li>
+          <li>Échiquier —<code>ligne, colonne</code>→ Case (1)</li>
+        </ul></div>
+      <h3>Implémentation : tableau associatif et <code>HashMap</code></h3>
+      <p>Une association qualifiée s'implémente avec un <b>tableau associatif</b> (<b>dictionnaire</b>) : une structure qui associe une <b>clé</b> à une <b>valeur</b>. En Java : <code>HashMap&lt;K,V&gt;</code>.</p>
+      <div class="tw"><table>
+        <tr><th>Besoin</th><th>Code</th></tr>
+        <tr><td>Déclarer</td><td><code>private HashMap&lt;String,Station&gt; l_stations;</code></td></tr>
+        <tr><td>Ajouter (clé, valeur)</td><td><code>l_stations.put(nomArret2, s2);</code> — si la clé existe déjà, la <b>nouvelle valeur remplace l'ancienne</b> (la clé est unique)</td></tr>
+        <tr><td>Retrouver</td><td><code>Station s = l_stations.get("Chatelet");</code> — O(1) en moyenne ; <b>retourne <code>null</code></b> si la clé n'existe pas</td></tr>
+        <tr><td>Tester l'existence d'une clé</td><td><code>if (l_stations.containsKey("Chatelet")) …</code></td></tr>
+        <tr><td>Parcourir les clés</td><td><code>for (String nom : stations.keySet()) {…}</code></td></tr>
+        <tr><td>Parcourir les valeurs</td><td><code>for (Station s : stations.values()) {…}</code></td></tr>
+        <tr><td>Parcourir les couples</td><td><code>for (Map.Entry&lt;String,Station&gt; e : stations.entrySet()) { e.getKey(); e.getValue(); }</code></td></tr>
+      </table></div>
+      <div class="box warn"><span class="bt">Attention</span>Un <code>HashMap</code> ne conserve <b>pas</b> l'ordre d'insertion : <code>keySet()</code>, <code>values()</code> et <code>entrySet()</code> parcourent les éléments dans l'ordre interne de la table (lié aux codes de hachage des clés). Pour garder l'ordre d'insertion, on utilise un <code>LinkedHashMap</code>.</div>
+
+      <h3>Modèle conceptuel du réseau de métro</h3>
+      <figure class="fig" style="max-width:780px"><div data-uml="metroConc"></div><figcaption>ReseauMetro retrouve une Station par <code>nomStation</code> et une Ligne par <code>nomLigne</code> (associations qualifiées de cardinalité 1)</figcaption></figure>
+      <p>Une <b>Ligne</b> contient des <b>Voies</b> (deux) ; une <b>Voie</b> contient des <b>TronçonVoie</b> <b>ordonnés</b> ; chaque tronçon a une <b>station de départ</b> et une <b>station d'arrivée</b>.</p>
+      <h3>Modèle orienté implémentation</h3>
+      <p>On sépare la <b>représentation structurelle</b> du graphe de la <b>logique algorithmique</b> : une classe <code>RechercheItineraire</code> contient les algorithmes ; les itinéraires trouvés sont des objets <code>Itineraire</code> (station de départ, station de destination, liste ordonnée des tronçons du chemin).</p>
+      <figure class="fig" style="max-width:800px"><div data-uml="metroImpl"></div><figcaption>Les flèches en pointillés sont des <b>dépendances</b> : RechercheItineraire <i>utilise</i> Station et Itineraire sans les avoir comme attribut</figcaption></figure>
+
+      <h2>III. Le BFS sur le métro et ses limites</h2>
+      <p>La méthode <code>rechercherItineraireBFS(Station, Station)</code> enfile des <b>tronçons</b> (les arcs), marque les stations dans un <code>HashMap&lt;String, TronconVoie&gt;</code> (nom de station → tronçon par lequel elle a été atteinte) et reconstitue le chemin en remontant ces tronçons. Elle s'arrête dès que la destination est découverte.</p>
+      <div class="box warn"><span class="bt">Limite</span>Le BFS minimise le nombre de <b>tronçons</b>, pas le nombre de <b>changements de ligne</b>. Parmi plusieurs plus courts chemins, il garde le premier trouvé, selon l'ordre du fichier : il peut imposer des changements inutiles (voir les résultats dans les corrigés : Maison Blanche → Jussieu, 2 changements alors que la ligne 7 y va directement).</div>
+      <h3>Stratégies pour privilégier la même ligne</h3>
+      <ul>
+        <li><b>Mélange BFS/DFS</b> (fausse bonne idée) : continuer sur la même ligne en insérant le tronçon <b>en début de file</b>, changer de ligne en <b>fin de file</b>. Ce n'est plus un BFS : on perd la garantie de plus court chemin en tronçons.</li>
+        <li><b>Ordre préférentiel des successeurs</b> : on ajoute d'abord à la file les tronçons qui poursuivent la ligne, puis ceux qui changent de ligne. On reste un BFS, mais l'avantage n'est que <b>local</b>.</li>
+        <li><b>Comparer globalement les chemins</b> : associer à chaque chemin <b>deux informations</b> (nombre de tronçons, nombre de changements), les comparer dans cet ordre, <b>autoriser l'amélioration</b> d'un chemin déjà mémorisé et décider quand il devient définitif — c'est l'esprit de Dijkstra, avec un coût composé.</li>
+      </ul>
+      <figure class="fig" style="max-width:380px"><div data-graph="cfg" data-hl="A-B,B-C,C-F"></div><figcaption>Contre-exemple au BFS préférentiel, de A à F : chemin trouvé A-B-C-F (L1, L2, L4 : 2 changements) alors que A-B-G-F n'en a qu'un (L1, L3)</figcaption></figure>
+      <div class="box ret"><span class="bt">À retenir</span>Marquer un sommet dès sa première découverte suffit pour connaître sa distance minimale <b>en nombre de tronçons</b>. Cela ne suffit plus pour optimiser un <b>second critère</b> parmi les chemins de même longueur : il faut mémoriser plusieurs informations par chemin, autoriser leur amélioration et savoir quand le meilleur chemin devient définitif.</div>
+      <p>👉 Corrigé complet de l'activité 9 dans l'onglet <a data-go="s4/corriges" href="#s4/corriges">Exercices corrigés</a>.</p>
+    </article>
+  </div> <!-- /pane cours -->

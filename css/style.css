@@ -195,6 +195,18 @@ details.cx>.cxb{padding:2px 18px 16px;border-top:1px solid var(--line)}
 .usvg .cl text{font:13px var(--font);fill:var(--ink)}
 .usvg .cl text.h{font:700 13.5px var(--head);text-anchor:middle}
 .usvg .cl text.a{font:12px var(--mono)}
+.usvg .cl text.q{font:12px var(--font);text-anchor:middle}
+table.dj td{white-space:nowrap}
+table.dj td.mk{font-weight:700}
+table.dj td.sm{box-shadow:inset 0 -3px 0 var(--accent)}
+table.dj .pp2{color:var(--ok);font-weight:700;font-size:.85em}
+.pres-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin:14px 0}
+.pres-grid figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.pres-grid img{display:block;width:100%;height:auto;cursor:zoom-in}
+.pres-grid figcaption{padding:6px 10px;font-size:.85rem;color:var(--muted)}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;z-index:100;padding:16px}
+.lightbox.on{display:flex}
+.lightbox img{max-width:100%;max-height:100%;border-radius:8px}
 .usvg .rl{stroke:var(--ink);stroke-width:1.5;fill:none}
 .usvg .rl.d{stroke-dasharray:5 4}
 .usvg .hd{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}

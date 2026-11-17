@@ -156,6 +156,15 @@
       }
       el("polyline", { points: pts.map(function (p) { return p.join(","); }).join(" "), "class": "rl" + (r.dashed ? " d" : "") }, svg);
       var p0 = pts[0], p1 = pts[1], q0 = pts[pts.length - 1], q1 = pts[pts.length - 2];
+      if (r.q) { // association qualifiée : le qualificatif est une boîte accolée à la classe source
+        var uq = norm(p1[0] - p0[0], p1[1] - p0[1]);
+        var qw = 16 + 6.4 * r.q.length, qh = 22, off = Math.abs(uq[0]) * qw + Math.abs(uq[1]) * qh;
+        var qc = [p0[0] + uq[0] * off / 2, p0[1] + uq[1] * off / 2];
+        var qg = el("g", { "class": "cl" }, svg);
+        el("rect", { x: qc[0] - qw / 2, y: qc[1] - qh / 2, width: qw, height: qh }, qg);
+        var qt = el("text", { x: qc[0], y: qc[1] + 4, "class": "q" }, qg); qt.textContent = r.q;
+        p0 = [p0[0] + uq[0] * off, p0[1] + uq[1] * off];
+      }
       function deco(type, p, q) { // p = pointe, q = point précédent
         var u = norm(q[0] - p[0], q[1] - p[1]), n = [-u[1], u[0]], L = 14, Wd = 6;
         var a = [p[0] + u[0] * L + n[0] * Wd, p[1] + u[1] * L + n[1] * Wd];
@@ -290,7 +299,61 @@
   D.bipartite = { w: 300, h: 160, r: 15, nodes: { x1: [50, 40], x2: [50, 120], y1: [220, 20], y2: [220, 80], y3: [220, 140] },
     edges: [["x1", "y1"], ["x1", "y2"], ["x2", "y2"], ["x2", "y3"]] };
 
+  /* semaine 4 : graphes pondérés (poids p dans l'option w, étiquette affichée dans l) */
+  D.dij = { w: 440, h: 280, r: 17, directed: true, alt: "Graphe pondéré orienté de l'exercice 9",
+    nodes: { A: [215, 55], F: [405, 35], D: [355, 135], B: [55, 180], C: [215, 205], E: [385, 245] },
+    edges: [["B", "A", { l: "6", w: 6 }], ["A", "B", { l: "4", w: 4 }], ["B", "C", { l: "2", w: 2 }], ["C", "A", { l: "1", w: 1 }], ["A", "D", { l: "5", w: 5 }],
+      ["A", "F", { l: "6", w: 6 }], ["C", "D", { l: "2", w: 2 }], ["C", "E", { l: "8", w: 8 }], ["D", "E", { l: "2", w: 2 }], ["E", "F", { l: "10", w: 10 }]] };
+  D.dijbfs = { w: 480, h: 190, r: 17, directed: true, alt: "Contre-exemple du BFS : A vers D",
+    nodes: { A: [45, 130], C: [175, 45], B: [320, 130], D: [440, 130] },
+    edges: [["A", "C", { l: "6", w: 6 }], ["C", "B", { l: "4", w: 4 }], ["A", "B", { l: "12", w: 12 }], ["B", "D", { l: "3", w: 3 }]] };
+  D.dijtree = { w: 330, h: 290, r: 17, directed: true, alt: "Arborescence des plus courts chemins depuis B",
+    nodes: { B: [165, 32], C: [165, 105], A: [75, 185], D: [255, 185], F: [75, 255], E: [255, 255] },
+    edges: [["B", "C", { l: "2" }], ["C", "A", { l: "1" }], ["C", "D", { l: "2" }], ["D", "E", { l: "2" }], ["A", "F", { l: "6" }]] };
+  D.cfg = { w: 360, h: 390, r: 16, alt: "Configuration de l'activité 9 : de A à F",
+    nodes: { F: [180, 35], E: [180, 115], D: [180, 195], B: [180, 275], A: [180, 355], C: [60, 160], G: [300, 160] },
+    edges: [["F", "E", { l: "L5" }], ["E", "D", { l: "L5" }], ["D", "B", { l: "L5" }], ["B", "A", { l: "L1" }], ["C", "B", { l: "L2" }], ["G", "B", { l: "L3" }], ["C", "F", { l: "L4" }], ["G", "F", { l: "L3" }]] };
+
+  D.dijg3 = { w: 470, h: 260, r: 17, alt: "Réseau non orienté pondéré de 7 sommets",
+    nodes: { S: [45, 125], A: [150, 45], C: [150, 205], B: [275, 65], D: [295, 185], E: [395, 115], T: [425, 215] },
+    edges: [["S", "A", { l: "7", w: 7 }], ["S", "C", { l: "8", w: 8 }], ["A", "C", { l: "3", w: 3 }], ["A", "B", { l: "6", w: 6 }], ["B", "C", { l: "4", w: 4 }],
+      ["B", "D", { l: "5", w: 5 }], ["C", "D", { l: "3", w: 3 }], ["D", "E", { l: "2", w: 2 }], ["D", "T", { l: "7", w: 7 }], ["E", "T", { l: "3", w: 3 }]] };
+
   var UM = {};
+  UM.metroConc = { w: 760, h: 330, alt: "Modèle conceptuel du réseau de métro", classes: [
+    { id: "R", name: "ReseauMetro", x: 20, y: 70, w: 150 },
+    { id: "S", name: "Station", x: 350, y: 20, w: 130, attrs: ["- nom"] },
+    { id: "T", name: "TronçonVoie", x: 610, y: 20, w: 130 },
+    { id: "L", name: "Ligne", x: 350, y: 240, w: 130, attrs: ["- nomLigne"] },
+    { id: "V", name: "Voie", x: 610, y: 240, w: 130 }],
+    rels: [
+      { a: "R", b: "S", da: "agg", db: "arrow", q: "nomStation", mb: "1" },
+      { a: "R", b: "L", da: "agg", db: "arrow", q: "nomLigne", mb: "1", pts: [[95, 268]] },
+      { a: "S", b: "T", ma: "1", mb: "*", label: "station de départ", ly: -4 },
+      { a: "T", b: "S", db: "arrow", ma: "*", mb: "1", label: "station d'arrivée", pts: [[545, 115]], ly: 24 },
+      { a: "L", b: "V", da: "agg", ma: "1", mb: "*" },
+      { a: "V", b: "T", da: "agg", ma: "1", mb: "*", label: "{ordered}", lx: 36 }]
+  };
+  UM.metroImpl = { w: 760, h: 500, alt: "Modèle orienté implémentation du réseau de métro", classes: [
+    { id: "RI", name: "RechercheItineraire", x: 20, y: 15, w: 330, attrs: ["+ rechercherItineraireBFS(Station, Station) : Itineraire"] },
+    { id: "I", name: "Itineraire", x: 470, y: 15, w: 130 },
+    { id: "R", name: "ReseauMetro", x: 20, y: 250, w: 150 },
+    { id: "S", name: "Station", x: 350, y: 200, w: 130, attrs: ["- nom"] },
+    { id: "T", name: "TronçonVoie", x: 610, y: 200, w: 130 },
+    { id: "L", name: "Ligne", x: 350, y: 400, w: 130, attrs: ["- nomLigne"] },
+    { id: "V", name: "Voie", x: 610, y: 400, w: 130 }],
+    rels: [
+      { a: "RI", b: "I", dashed: true, db: "arrow" },
+      { a: "RI", b: "S", dashed: true, db: "arrow" },
+      { a: "I", b: "S", db: "arrow", mb: "1", label: "départ", pts: [[480, 150]], ly: -2 },
+      { a: "I", b: "T", db: "arrow", mb: "*", label: "{ordered}", ly: 10 },
+      { a: "R", b: "S", da: "agg", db: "arrow", q: "nomStation", mb: "1" },
+      { a: "R", b: "L", da: "agg", db: "arrow", q: "nomLigne", mb: "1", pts: [[95, 428]] },
+      { a: "S", b: "T", ma: "1", mb: "*", label: "station de départ", ly: -4 },
+      { a: "T", b: "S", db: "arrow", ma: "*", mb: "1", label: "station d'arrivée", pts: [[545, 290]], ly: 22 },
+      { a: "L", b: "V", da: "agg", ma: "1", mb: "*" },
+      { a: "V", b: "T", da: "agg", ma: "1", mb: "*", label: "{ordered}", lx: 36 }]
+  };
   UM.social = { w: 560, h: 210, alt: "Diagramme de classes : réseau social", classes: [
     { id: "C", name: "Compte", x: 30, y: 20, w: 150, attrs: ["pseudo {id}", "photo [0..1]", "bio [0..1]"] },
     { id: "P", name: "Publication", x: 30, y: 140, w: 150, attrs: ["date", "contenu"] },
