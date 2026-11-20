@@ -20,7 +20,7 @@ Site de révision statique : cours semaine par semaine, exercices et activités 
 **Semaine 3** (chapitre 4 : exploration des graphes)
 - Cours : chemins et chaînes (simples, élémentaires), descendants et ascendants, circuits, arborescences ; parcours en largeur (file) et en profondeur (pile, récursivité) ; reconstruction des chemins par les parents (arborescence de parcours) ; faible connexité et composantes connexes.
 - Corrigés : questions du cours, exercice 7 (tableaux pas à pas file et pile), activité 7, exercice 8, activité 8 (code Java complété, compilé et exécuté sur `exercice7.txt`, `activite6_wiki.txt` et `connexite.txt`).
-- Fiche « À retenir » et QCM de 43 questions.
+- Fiche « À retenir » (rappels S1-S2, vocabulaire, parcours, chemins, connexité, pièges de QCM, 10 schémas SVG générés par `outils/gen_fiche_figs.py`) et QCM de 51 questions.
 - Atelier d'exploration enrichi : choix du graphe (wiki, exercice 7, connexite.txt), arborescence des parents, chemin reconstruit.
 
 **Semaine 4** (chapitre 5 : plus courts chemins pondérés, Dijkstra)
@@ -46,4 +46,5 @@ python -m http.server 8000
 - `code/Graphes.java` (semaine 1), `code/Semaine2.java` (Welsh-Powell, parcours en largeur et en profondeur) et `code/Dijkstra.java` (semaine 4 : Dijkstra par tableau et par `PriorityQueue`, exercice 9 et contre-exemple du BFS), `code/activite8/` (semaine 3 : `Graphe`, `Sommet`, `Main` ; uniquement les méthodes demandées par l'énoncé : BFS, DFS itératif et récursif, parents BFS et DFS, chemins, composantes connexes) : implémentations Java compilées et exécutées pour vérifier les corrigés
 
 Pour modifier le contenu : éditer les fichiers de `parts/` puis lancer `python outils/build.py`.
+Les schémas de la fiche de la semaine 3 sont des fragments `parts/figs/f3_*.html` produits par `python outils/gen_fiche_figs.py` (qui écrit aussi leur CSS dans `css/style.css`, entre deux marqueurs `FIGURES FICHE S3`) ; relancer ce script puis `build.py` après toute modification.
 Pour ajouter une semaine : nouveaux fragments dans `parts/`, une entrée dans `PARTS` de `build.py`, un bouton dans la barre de navigation (`p0_head.html`) et un bloc dans `js/qcm-data.js`.

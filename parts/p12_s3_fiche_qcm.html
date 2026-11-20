@@ -3,51 +3,132 @@
   <div class="pane fiche toc-auto" data-pane="fiche">
     <button class="btn ghost printbtn" onclick="window.print()">🖨️ Imprimer</button>
     <h2 style="margin-top:0">Fiche « À retenir » — Semaine 3</h2>
+    <!-- Les schémas (figs/f3_*.html) sont générés par outils/gen_fiche_figs.py, puis assemblés par outils/build.py. -->
+
+    <h3>Rappels des semaines 1 et 2 utiles ici</h3>
+    <ul>
+      <li><b>Succ(x)</b> : successeurs de x (arcs sortants) ; <b>Pred(x)</b> : prédécesseurs (arcs entrants) ; <b>Adj(x)</b> : voisins en non orienté. Ordre <b>n</b> = nombre de sommets, taille <b>m</b> = nombre d'arêtes (d'arcs).</li>
+      <li><b>Matrice d'adjacence</b> (sommets numérotés de 0 à n − 1) : m<sub>ij</sub> = 1 si j est un successeur de i. <b>Ligne i = successeurs de i</b>, <b>colonne j = prédécesseurs de j</b> ; symétrique en non orienté.</li>
+      <li><b>Liste de successeurs</b> : chaque sommet connaît ses successeurs (<code>getSuccesseurs()</code> dans l'activité 8) ; mémoire en n + m. C'est elle qui donne les parcours en <b>O(n + m)</b>.</li>
+    </ul>
+    <div class="ffigs">
+      {{PART:figs/f3_matrice.html}}
+    </div>
 
     <h3>Vocabulaire</h3>
     <div class="tw"><table>
       <tr><th>Notion</th><th>À retenir</th></tr>
-      <tr><td><b>Chemin</b> (orienté) / <b>chaîne</b> (non orienté)</td><td>suite d'arcs contigus de u à v ; <b>longueur</b> = nombre d'arcs ; il peut y en avoir 0, 1 ou plusieurs</td></tr>
+      <tr><td><b>Chemin</b> (orienté) / <b>chaîne</b> (non orienté)</td><td>suite d'arcs contigus de u à v ; <b>longueur</b> = nombre d'arcs (pas de sommets) ; il peut y en avoir 0, 1 ou plusieurs</td></tr>
       <tr><td><b>Simple</b> / <b>élémentaire</b></td><td>simple : pas deux fois le même <b>arc</b> ; élémentaire : pas deux fois le même <b>sommet</b>. Élémentaire ⇒ simple, pas l'inverse</td></tr>
-      <tr><td><b>Desc(x)</b> / <b>Asc(x)</b></td><td>sommets atteignables <b>depuis</b> x / sommets <b>depuis lesquels</b> on atteint x</td></tr>
+      <tr><td><b>Desc(x)</b> / <b>Asc(x)</b></td><td>sommets atteignables <b>depuis</b> x / sommets <b>depuis lesquels</b> on atteint x. Une exploration depuis x découvre x et Desc(x) ; Asc(x) = Desc(x) dans le graphe dont on a <b>inversé les arcs</b></td></tr>
+      <tr><td>Desc / Asc : à ne pas confondre</td><td>y ∈ Asc(x) ⇔ x ∈ Desc(y). Exercice 7 : F ∈ Asc(C) (F → D → E → I → A → C) mais F ∉ Desc(C). Avec la convention du cours, x ∈ Desc(x) seulement si x est sur un <b>circuit</b></td></tr>
       <tr><td><b>Circuit</b> / <b>cycle</b></td><td>chemin (chaîne) qui revient à son point de départ ; <b>acyclique</b> = sans circuit (cycle)</td></tr>
       <tr><td>Taille minimale</td><td>circuit simple en orienté simple sans boucle : <b>2 arcs</b> ; cycle simple en non orienté simple : <b>3 arêtes</b> ; multigraphe : <b>2</b></td></tr>
       <tr><td>Propriétés (simple non orienté)</td><td>n ≥ 3 et tous les degrés ≥ 2 ⇒ il existe un cycle ; acyclique ⇒ un sommet de degré 0 ou 1 ; acyclique d'ordre n ⇒ <b>au plus n − 1 arêtes</b></td></tr>
       <tr><td><b>Source</b> / <b>puits</b> / <b>feuille</b></td><td>sans prédécesseur / sans successeur / sommet d'une arborescence sans successeur</td></tr>
       <tr><td><b>Arborescence</b></td><td>une seule source (la <b>racine</b>) et un <b>unique chemin</b> de la racine vers chaque sommet ; chaque sommet a <b>un seul prédécesseur</b> (sauf la racine)</td></tr>
+      <tr><td>Arborescence : conséquences</td><td>d'ordre n elle a <b>n − 1 arcs</b> (un arc entrant par sommet sauf la racine) et <b>aucun circuit</b>. Réciproque fausse : un seul prédécesseur par sommet ne suffit pas, il faut que tout soit <b>atteignable depuis la racine</b></td></tr>
     </table></div>
+    <div class="ffigs">
+      {{PART:figs/f3_simple_elem.html}}
+      {{PART:figs/f3_circuit_cycle.html}}
+      {{PART:figs/f3_desc_asc.html}}
+      {{PART:figs/f3_arbo.html}}
+    </div>
 
     <h3>Explorer depuis un sommet initial</h3>
     <ul>
       <li><b>Découvrir</b> = rencontrer pour la première fois ; <b>explorer</b> = parcourir ses successeurs. États : 0 non découvert, 1 découvert, 2 exploré.</li>
       <li>Marquer un sommet <b>dès sa découverte</b> (quand il entre dans la collection), sinon il peut y entrer plusieurs fois.</li>
-      <li>On découvre <b>exactement les sommets atteignables</b> depuis le départ, quelle que soit la stratégie ; seul l'<b>ordre</b> change.</li>
+      <li>On découvre <b>exactement les sommets atteignables</b> depuis le départ, quelle que soit la stratégie ; seul l'<b>ordre</b> change. Donc : v est atteignable depuis s ⇔ v est découvert par une exploration depuis s.</li>
+      <li>Sauf indication contraire, on parcourt les successeurs dans l'<b>ordre alphabétique</b> (ou croissant) : il faut le respecter, car il fixe l'ordre obtenu.</li>
     </ul>
+    <pre class="code"><code>BFS (file) ou DFS itératif (pile)
+marquer s0 ; ajouter s0 à la collection
+tant que la collection n'est pas vide :
+    retirer s   (file : le plus ancien ; pile : le dernier ajouté)
+    pour chaque successeur t de s :
+        si t n'est pas marqué :
+            marquer t ; ajouter t à la collection</code></pre>
+    <pre class="code"><code>DFS récursif
+explorer(s) :
+    pour chaque successeur t de s :
+        si t n'est pas marqué :
+            marquer t ; explorer(t)</code></pre>
     <div class="tw"><table>
       <tr><th></th><th>BFS (largeur)</th><th>DFS (profondeur)</th></tr>
       <tr><td><b>Collection</b></td><td><b>file</b> (FIFO) : <code>Queue</code> / <code>ArrayDeque</code>, <code>add</code> / <code>poll</code></td><td><b>pile</b> (LIFO) : <code>Stack</code>, <code>push</code> / <code>pop</code>, ou la <b>récursivité</b></td></tr>
       <tr><td><b>Comportement</b></td><td>explore tous les chemins au même rythme : distance 1, puis 2, puis 3…</td><td>va au bout d'un chemin, puis revient au dernier embranchement</td></tr>
-      <tr><td><b>Chemins obtenus</b></td><td><b>nombre minimal d'arcs</b> garanti</td><td>pas de garantie (souvent plus longs)</td></tr>
-      <tr><td><b>Complexité</b></td><td colspan="2">O(n + m) avec des listes de successeurs ; O(n²) avec une matrice d'adjacence</td></tr>
+      <tr><td><b>Chemins obtenus</b></td><td><b>nombre minimal d'arcs</b> garanti</td><td>pas de garantie : jamais plus courts que ceux du BFS, souvent plus longs</td></tr>
+      <tr><td><b>Découverte / exploration</b></td><td>même ordre (la file rend les sommets dans l'ordre d'entrée)</td><td>pile : ordres <b>différents</b> ; récursif : même ordre</td></tr>
+      <tr><td><b>Complexité</b></td><td colspan="2">O(n + m) avec des listes de successeurs ; O(n²) avec une matrice d'adjacence (chercher les successeurs d'un sommet coûte O(n)). En non orienté, chaque arête est vue deux fois : toujours O(n + m)</td></tr>
+      <tr><td><b>Remarques Java</b></td><td>marques : <code>ArrayList&lt;Boolean&gt;</code> indexée par <code>getId()</code> (ids de 0 à n − 1)</td><td>récursivité : jusqu'à n appels imbriqués (risque de <code>StackOverflowError</code> sur un très long chemin)</td></tr>
     </table></div>
-    <div class="box warn"><span class="bt">Piège</span>DFS avec une pile et DFS récursif ne donnent pas le même ordre de découverte : la pile marque tous les successeurs d'un coup. Exercice 7 depuis C : pile → C B D G H J I A E ; récursif → C B A D E I G H J.</div>
+    <div class="box warn"><span class="bt">Piège</span>DFS avec une pile et DFS récursif ne donnent pas le même ordre de découverte : la pile marque tous les successeurs d'un coup. Exercice 7 depuis C : pile → C B D G H J I A E ; récursif → C B A D E I G H J. Avec la pile, l'ordre d'<b>exploration</b> (sommets retirés) est encore autre : C H J I A G D E B.</div>
+    <div class="ffigs">
+      {{PART:figs/f3_file_pile.html}}
+      {{PART:figs/f3_bfs.html}}
+      {{PART:figs/f3_dfs.html}}
+    </div>
+    <div class="box ret"><span class="bt">Méthode pour dérouler un parcours (exercice type)</span>
+      <ol style="margin:.3em 0 0">
+        <li>Écrire la liste des successeurs de chaque sommet, dans l'ordre imposé.</li>
+        <li>Tableau : <b>étape | sommet retiré | nouveaux découverts | collection</b> (file : tête à gauche ; pile : sommet à droite).</li>
+        <li>Marquer et ajouter un successeur <b>seulement s'il n'est pas déjà marqué</b> ; un sommet entre <b>une seule fois</b> dans la collection.</li>
+        <li>Ne pas oublier les sommets <b>non atteignables</b> (ex. 7 : F reste à l'état 0) ; s'arrêter quand la collection est vide.</li>
+        <li>Si on demande les parents : noter parent[x] = y <b>au moment où x est marqué</b>.</li>
+      </ol></div>
+    <h4>Résultats à connaître (vérifiés avec le code Java de l'activité 8)</h4>
+    <div class="tw"><table>
+      <tr><th>Graphe (départ)</th><th>BFS (file)</th><th>DFS (pile)</th><th>DFS récursif</th></tr>
+      <tr><td>Exercice 7 (C)</td><td>C B D G H A E J I</td><td>C B D G H J I A E</td><td>C B A D E I G H J</td></tr>
+      <tr><td>Mini wiki (A)</td><td>A B C D E F G K H I</td><td>A B C D F E H I G K</td><td>A B C F E G K H D I</td></tr>
+      <tr><td><code>connexite.txt</code> (A)</td><td colspan="3">A B C D dans les trois cas : seulement 4 sommets sur 10 (3 composantes)</td></tr>
+    </table></div>
 
     <h3>Chemins et arborescence de parcours</h3>
     <ul>
       <li>À la découverte de x depuis y : <b>parent[x] ← y</b> (la racine n'a pas de parent, un sommet non découvert non plus).</li>
       <li>Les arcs parent → enfant forment une <b>arborescence de parcours</b> enracinée au départ.</li>
       <li>Chemin départ → x : <b>remonter les parents</b> depuis x jusqu'à la racine, puis <b>inverser</b>. Si on n'atteint jamais la racine, x n'est pas atteignable (liste vide).</li>
-      <li>BFS et DFS donnent des arborescences, donc des chemins, en général <b>différents</b>.</li>
+      <li>BFS et DFS donnent des arborescences, donc des chemins, en général <b>différents</b>. Exercice 7 vers A : C → B → A (2 arcs) avec la file ; C → H → J → I → A (4 arcs) avec la pile.</li>
+      <li>Le tableau des parents ne sert que pour les chemins qui <b>partent de sa racine</b> : pour un autre départ, il faut relancer un parcours.</li>
+      <li>Le BFS minimise le <b>nombre d'arcs</b>, pas une somme de poids : pour des arcs pondérés, il faudra Dijkstra (semaine 4).</li>
     </ul>
+    <div class="ffigs">
+      {{PART:figs/f3_parents.html}}
+    </div>
 
     <h3>Faible connexité</h3>
     <ul>
       <li>Connectés = reliés par une <b>chaîne</b> (on ignore l'orientation). C'est une relation d'<b>équivalence</b>.</li>
-      <li><b>Composantes connexes</b> = classes d'équivalence = sous-graphes connexes <b>maximaux</b> ; elles forment une <b>partition</b>. CC(s) = composante de s.</li>
+      <li><b>Composantes connexes</b> = classes d'équivalence = sous-graphes connexes <b>maximaux</b> ; elles forment une <b>partition</b>. CC(s) = composante de s. Un sommet isolé forme une composante à lui seul.</li>
       <li>Non orienté : une exploration depuis s découvre exactement <b>CC(s)</b>. Connexe ⇔ une exploration découvre <b>tous</b> les sommets.</li>
-      <li>Toutes les composantes : relancer une exploration depuis chaque sommet <b>non encore marqué</b> (marques partagées) ; <b>une exploration par composante</b>.</li>
-      <li>Graphe orienté : explorer avec successeurs <b>et</b> prédécesseurs pour la faible connexité.</li>
+      <li>Toutes les composantes : relancer une exploration depuis chaque sommet <b>non encore marqué</b> (marques partagées) ; <b>une exploration par composante</b> (3 composantes ⇒ 3 explorations).</li>
+      <li>Graphe orienté : explorer avec successeurs <b>et</b> prédécesseurs pour la faible connexité. Faiblement connexe n'implique pas « tout est atteignable depuis un sommet » (exercice 7 : faiblement connexe, mais F inatteignable depuis C).</li>
+      <li>Comptage : un graphe connexe d'ordre n a <b>au moins n − 1 arêtes</b> ; un graphe acyclique en a <b>au plus n − 1</b> ; connexe <b>et</b> acyclique ⇒ exactement n − 1 (c'est un arbre).</li>
     </ul>
+    <div class="ffigs">
+      {{PART:figs/f3_connexe.html}}
+    </div>
+
+    <h3>Pièges classiques de QCM</h3>
+    <div class="tw"><table>
+      <tr><th>Piège</th><th>À retenir</th></tr>
+      <tr><td>Longueur d'un chemin</td><td>= nombre d'<b>arcs</b>, pas de sommets (un chemin de 4 sommets a une longueur 3)</td></tr>
+      <tr><td>Chemin / chaîne, circuit / cycle</td><td>chemin et circuit = <b>orientés</b> ; chaîne et cycle = non orientés</td></tr>
+      <tr><td>Simple ou élémentaire ?</td><td>élémentaire ⇒ simple, <b>jamais l'inverse</b> ; un chemin qui répète un arc n'est ni simple ni élémentaire</td></tr>
+      <tr><td>Plus petit cycle</td><td>2 arcs (orienté), <b>3</b> arêtes (non orienté simple), 2 arêtes (multigraphe)</td></tr>
+      <tr><td>Desc ou Asc ?</td><td>Desc = ce qu'on atteint <b>depuis</b> x ; Asc = ce qui <b>atteint</b> x. Les deux ensembles peuvent être très différents</td></tr>
+      <tr><td>Arborescence</td><td>une source <b>et</b> un chemin unique vers chaque sommet ; n − 1 arcs ; sans circuit. Un seul prédécesseur par sommet ne suffit pas</td></tr>
+      <tr><td>Moment du marquage</td><td>à l'<b>ajout</b> dans la collection (découverte), pas au retrait</td></tr>
+      <tr><td>Pile ≠ récursivité</td><td>deux DFS valides mais deux <b>ordres</b> différents ; découverte ≠ exploration pour la pile</td></tr>
+      <tr><td>Ce que découvre un parcours</td><td><b>seulement</b> les atteignables depuis le départ, pas forcément tout le graphe ; file ou pile, <b>même ensemble</b></td></tr>
+      <tr><td>BFS et plus court chemin</td><td>minimal en <b>nombre d'arcs</b> seulement (pas en poids) ; le DFS ne garantit rien</td></tr>
+      <tr><td>Complexité</td><td>O(n + m) avec des <b>listes</b> de successeurs ; O(n²) avec une matrice</td></tr>
+      <tr><td>Remonter les parents</td><td>on obtient le chemin <b>à l'envers</b> : il faut l'inverser ; racine ou sommet non découvert : pas de parent</td></tr>
+      <tr><td>Faible connexité</td><td>l'orientation est <b>ignorée</b> ; une exploration par <b>composante</b> (pas par sommet)</td></tr>
+    </table></div>
   </div> <!-- /pane fiche -->
 
   <!-- ---------- QCM ---------- -->

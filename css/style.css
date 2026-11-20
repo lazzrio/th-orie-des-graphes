@@ -249,3 +249,51 @@ select,input[type=number]{font:inherit;padding:6px 9px;border:1px solid var(--li
 .result{background:var(--accent-soft);border:1px solid var(--accent);border-radius:14px;padding:16px 20px;margin:18px 0;text-align:center}
 .result b{font:800 2rem var(--head);color:var(--accent)}
 footer{max-width:1100px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:.85rem}
+
+/* === FIGURES FICHE S3 (généré par outils/gen_fiche_figs.py, ne pas éditer à la main) === */
+.ffigs{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));margin:14px 0;align-items:start}
+.ffigs .ffig{margin:0}
+.ffig svg{display:block;width:100%;height:auto;max-width:420px;margin:0 auto}
+.ffig figcaption{margin-top:6px;text-align:left}
+.ffig text{font-family:var(--font);fill:var(--ink)}
+.ffig .fs-s{font-size:12.5px;fill:var(--muted)}
+.ffig .fs-h{font:700 13px var(--head);fill:var(--ink)}
+.ffig .fs-bt{font:700 14px var(--head);text-anchor:middle}
+.ffig .fs-st{font:700 12px var(--head);fill:var(--hot);text-anchor:middle;paint-order:stroke;stroke:var(--surface);stroke-width:4px}
+.ffig .fs-lb{font:600 12px var(--font);text-anchor:middle;paint-order:stroke;stroke:var(--surface);stroke-width:4px}
+.ffig .fs-e{fill:none;stroke:var(--edge);stroke-width:2;stroke-linecap:round}
+.ffig .fs-e.tree{stroke:var(--accent);stroke-width:3.4}
+.ffig .fs-e.hot{stroke:var(--hot);stroke-width:3.2}
+.ffig .fs-e.faint{stroke-width:1.6;stroke-dasharray:5 4;opacity:.6}
+.ffig .fs-ar{fill:var(--edge)}
+.ffig .fs-ar.tree{fill:var(--accent)}
+.ffig .fs-ar.hot{fill:var(--hot)}
+.ffig .fs-ar.faint{fill:var(--edge);opacity:.6}
+.ffig .fs-n circle{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+.ffig .fs-n text{font:700 13px var(--head);fill:var(--ink);text-anchor:middle;dominant-baseline:central}
+.ffig .fs-n.root circle{stroke:var(--accent);stroke-width:4;fill:var(--accent-soft)}
+.ffig .fs-n.hotn circle{stroke:var(--hot);stroke-width:3.4}
+.ffig .fs-n.doub circle{stroke:var(--hot);stroke-width:3.4}
+.ffig .fs-n.c0 circle{fill:var(--c0f);stroke:var(--c0s)}
+.ffig .fs-n.c1 circle{fill:var(--c1f);stroke:var(--c1s)}
+.ffig .fs-n.c2 circle{fill:var(--c2f);stroke:var(--c2s)}
+.ffig .fs-n.c3 circle{fill:var(--c3f);stroke:var(--c3s)}
+.ffig .fs-n.c4 circle{fill:var(--c4f);stroke:var(--c4s)}
+.ffig .fs-n.c5 circle{fill:var(--c5f);stroke:var(--c5s)}
+.ffig .fs-n.root.c1 circle{fill:var(--c1f)}
+.ffig .fs-n.off circle{fill:var(--bg);stroke:var(--muted);stroke-dasharray:4 3;stroke-width:1.8}
+.ffig .fs-n.off text{fill:var(--muted)}
+.ffig .fs-b circle{fill:var(--ink);stroke:var(--surface);stroke-width:1.5}
+.ffig .fs-b text{font:700 11.5px var(--head);fill:var(--bg);text-anchor:middle;dominant-baseline:central}
+.ffig .fs-sep{fill:none;stroke:var(--line);stroke-width:1.5}
+.ffig .fs-box{fill:var(--surface2);stroke:var(--ink);stroke-width:1.6}
+.ffig .fs-box.nxt{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.6}
+.ffig .fs-in,.ffig .fs-out{fill:none;stroke:var(--muted);stroke-width:2}
+.ffig .fs-wall{fill:none;stroke:var(--ink);stroke-width:4;stroke-linecap:round}
+.ffig .fs-cell{fill:var(--surface);stroke:var(--line);stroke-width:1.2}
+.ffig .fs-cell.hd{fill:var(--surface2)}
+.ffig .fs-cell.hot{fill:var(--warm-soft);stroke:var(--hot)}
+.ffig .fs-cell.rowh{fill:var(--accent-soft)}
+.ffig .fs-cell.colh{fill:var(--warm-soft)}
+.ffig .fs-cell.rowh.colh{fill:var(--c1f)}
+/* === /FIGURES FICHE S3 === */

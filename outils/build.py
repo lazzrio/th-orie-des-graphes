@@ -46,8 +46,15 @@ def inclure(m):
 
 
 while "{{PART:" in html:  # inclusions imbriquées (un fragment peut en inclure un autre)
-    html = re.sub(r"\{\{PART:([\w.]+)\}\}", inclure, html)
+    html = re.sub(r"\{\{PART:([\w./]+)\}\}", inclure, html)
 html = re.sub(r"\{\{MAT:(\w+)\}\}", lambda m: MATS[m.group(1)], html)
-with open(os.path.join(ROOT, "index.html"), "w", encoding="utf-8", newline="\n") as f:
-    f.write(html)
+OUT = os.path.join(ROOT, "index.html")
+try:
+    with open(OUT, "w", encoding="utf-8", newline="\n") as f:
+        f.write(html)
+except OSError:  # Windows : ouverture en "w" parfois refusée si le fichier est ouvert ailleurs (serveur, navigateur) ; r+ puis truncate
+    with open(OUT, "r+", encoding="utf-8", newline="\n") as f:
+        f.seek(0)
+        f.write(html)
+        f.truncate()
 print("index.html :", len(html), "caractères")

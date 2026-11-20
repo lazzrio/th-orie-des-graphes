@@ -20,6 +20,8 @@ window.QCM.s3 = {
       e: "Depuis 2 on atteint directement 3, 4, 5, puis 6 par 5 → 6. On n'atteint pas 1 (aucun arc n'entre dans 1)." },
     { ch: 1, q: "Même graphe. Que vaut <b>Asc(4)</b> (sommets depuis lesquels on atteint 4) ?", o: ["{2, 6}", "{1, 2, 5, 6}", "{3}", "{1, 2}"], ok: [1],
       e: "2 → 4 et 6 → 4 directement ; 5 → 6 → 4 ; 1 → 2 → 4. Donc Asc(4) = {1, 2, 5, 6}." },
+    { ch: 1, q: "Exercice 7 (arcs : A → C, B → A, C → B, C → D, C → G, C → H, D → E, E → I, F → D, G → H, H → J, I → A, J → I). Que peut-on dire de F par rapport à C ?", o: ["F ∈ Desc(C) et F ∈ Asc(C)", "F ∈ Asc(C) mais F ∉ Desc(C)", "F ∈ Desc(C) mais F ∉ Asc(C)", "F n'appartient ni à Desc(C) ni à Asc(C)"], ok: [1],
+      e: "F → D → E → I → A → C : F atteint C, donc F ∈ Asc(C). Mais aucun arc n'entre dans F : on ne l'atteint pas depuis C, donc F ∉ Desc(C). Desc et Asc ne sont pas symétriques." },
     { ch: 1, q: "Dans un graphe orienté <b>simple sans boucle</b>, un circuit simple contient au minimum :", o: ["1 arc", "2 arcs", "3 arcs", "4 arcs"], ok: [1],
       e: "u → v puis v → u : deux arcs distincts. 1 arc ne suffit que s'il s'agit d'une boucle, exclue ici." },
     { ch: 1, q: "Dans un graphe <b>simple non orienté</b>, un cycle simple contient au minimum :", o: ["1 arête", "2 arêtes", "3 arêtes", "4 arêtes"], ok: [2],
@@ -30,6 +32,10 @@ window.QCM.s3 = {
       e: "C'est la propriété du cours ; par contraposée, un graphe acyclique a au moins un sommet de degré 0 ou 1." },
     { ch: 1, q: "Une <b>arborescence</b> est un graphe orienté qui :", o: ["possède une seule source, la racine", "possède un unique chemin de la racine vers tout autre sommet", "contient au moins un circuit", "a tous ses sommets de degré 2"], ok: [0, 1],
       e: "Une seule source s₀ et un unique chemin de s₀ vers chaque sommet. Conséquence : chaque sommet sauf la racine a exactement un prédécesseur, et il n'y a pas de circuit." },
+    { ch: 1, q: "Une <b>arborescence</b> d'ordre n possède :", o: ["n − 1 arcs", "n arcs", "au moins un circuit", "n + 1 arcs"], ok: [0],
+      e: "Chaque sommet sauf la racine reçoit exactement un arc (celui de son parent) : n − 1 arcs. Il n'y a pas de circuit non plus : sinon un sommet du circuit serait relié à la racine par plusieurs chemins." },
+    { ch: 1, q: "Dans un graphe orienté, tous les sommets sauf r ont exactement un prédécesseur et r n'en a aucun. Est-ce forcément une arborescence ?", o: ["Oui, c'est la définition", "Non : il faut aussi que tous les sommets soient atteignables depuis r (un circuit isolé b ⇄ c est un contre-exemple)", "Oui, mais seulement si le graphe est non orienté", "Non, une arborescence a au moins deux sources"], ok: [1],
+      e: "Contre-exemple : r → a, et b ⇄ c. b et c ont chacun un seul prédécesseur mais aucun chemin ne mène de r à b ou c. L'unicité du chemin depuis la racine est exigée pour tous les sommets." },
     { ch: 1, q: "Dans un graphe orienté, un <b>puits</b> est :", o: ["un sommet sans prédécesseur", "un sommet sans successeur", "un sommet de degré 0", "la racine d'une arborescence"], ok: [1],
       e: "Puits : sans successeur. Source : sans prédécesseur. Dans une arborescence, la racine est la source et les feuilles sont des sommets sans successeur." },
 
@@ -48,6 +54,12 @@ window.QCM.s3 = {
       e: "File : C → B, D, G, H ; B → A ; D → E ; G : rien ; H → J ; A : rien ; E → I. La 2ᵉ réponse est l'ordre avec une pile, la 3ᵉ celui du DFS récursif, la 4ᵉ l'ordre d'exploration avec la pile." },
     { ch: 2, q: "Exercice 7 avec une <b>pile</b> : quel est le premier sommet exploré après C ?", o: ["B", "D", "H", "A"], ok: [2],
       e: "On empile B, D, G, H dans cet ordre ; le sommet du dessus est H, le dernier empilé." },
+    { ch: 2, q: "Exercice 7 avec une <b>pile</b>, départ C : quel est l'ordre dans lequel les sommets sont <b>explorés</b> (retirés de la pile) ?", o: ["C, B, D, G, H, J, I, A, E", "C, H, J, I, A, G, D, E, B", "C, B, A, D, E, I, G, H, J", "C, B, D, G, H, A, E, J, I"], ok: [1],
+      e: "On retire toujours le sommet du dessus : C, puis H (J empilé), J (I), I (A), A, puis G, D (E), E, B. La 1ʳᵉ réponse est l'ordre de <i>découverte</i> avec la pile, la 3ᵉ celui du DFS récursif, la 4ᵉ celui de la file." },
+    { ch: 2, q: "Exercice 7, parcours en largeur depuis C : à quelle distance (en arcs) de C se trouve I ?", o: ["2", "3", "4", "5"], ok: [1],
+      e: "Niveaux du BFS : C (0) ; B, D, G, H (1) ; A, E, J (2) ; I (3), découvert depuis E. Avec la pile, le chemin vers I a aussi 3 arcs (C → H → J → I), mais ce n'est pas garanti en général." },
+    { ch: 2, q: "Complexité d'un parcours en largeur sur un graphe de n sommets représenté par une <b>matrice d'adjacence</b> :", o: ["O(n + m)", "O(n²)", "O(n)", "O(m²)"], ok: [1],
+      e: "Pour trouver les successeurs d'un sommet il faut balayer sa ligne (n cases) : n sommets × n cases = O(n²). Avec des listes de successeurs on retombe sur O(n + m)." },
     { ch: 2, q: "Exercice 7 : quel sommet n'est découvert <b>ni avec la file, ni avec la pile</b> ?", o: ["A", "F", "J", "Aucun : tous sont découverts"], ok: [1],
       e: "Aucun arc n'entre dans F (son seul arc est F → D) : F n'est pas atteignable depuis C." },
     { ch: 2, q: "Une exploration depuis un sommet s₀ découvre :", o: ["tous les sommets du graphe", "exactement les sommets atteignables depuis s₀", "seulement les successeurs directs de s₀", "des sommets différents selon qu'on utilise une file ou une pile"], ok: [1],
@@ -72,6 +84,8 @@ window.QCM.s3 = {
       e: "File : parent(A) = B, d'où C → B → A (2 arcs). Pile : parent(A) = I, I ← J ← H ← C, d'où C → H → J → I → A (4 arcs)." },
     { ch: 3, q: "BFS et DFS depuis le même sommet donnent :", o: ["toujours la même arborescence", "en général des arborescences différentes, donc des chemins différents", "des arborescences qui ne contiennent pas les mêmes sommets", "toujours des chemins de même longueur"], ok: [1],
       e: "Les sommets sont les mêmes (les atteignables) mais les parents diffèrent, donc les chemins et leurs longueurs aussi." },
+    { ch: 3, q: "On a calculé les parents d'un BFS depuis C (exercice 7). Peut-on lire directement dans ce tableau un chemin de B à I ?", o: ["Oui, en remontant les parents depuis I", "Non : le tableau ne donne que des chemins issus de la racine C ; il faut relancer un parcours depuis B", "Oui, mais seulement avec une pile", "Oui, en lisant l'ordre de découverte"], ok: [1],
+      e: "En remontant les parents de I on arrive à C (I ← E ← D ← C), pas à B. L'arborescence de parcours est enracinée au départ de l'exploration." },
 
     /* ---------- 4. Connexité ---------- */
     { ch: 4, q: "Deux sommets sont <b>connectés</b> (faible connexité) s'il existe :", o: ["un arc de l'un vers l'autre", "une chaîne de l'un à l'autre, sans tenir compte de l'orientation", "un chemin orienté dans les deux sens", "un circuit qui les contient"], ok: [1],
@@ -88,6 +102,8 @@ window.QCM.s3 = {
       e: "{A, B, C, D}, {E, F} et {G, H, I, J} (résultat de chercherCC)." },
     { ch: 4, q: "Exercice 7 : le graphe est-il faiblement connexe ?", o: ["Oui", "Non, car F n'est pas atteignable depuis C"], ok: [0],
       e: "En ignorant l'orientation, F est relié à D par l'arc F → D. Un graphe peut être faiblement connexe même si un sommet n'est pas atteignable depuis un autre." },
+    { ch: 4, q: "Un graphe connexe d'ordre n possède au minimum :", o: ["n − 1 arêtes", "n arêtes", "n(n − 1)/2 arêtes", "0 arête"], ok: [0],
+      e: "Pour relier n sommets il faut au moins n − 1 arêtes (un graphe connexe et acyclique, un arbre, en a exactement n − 1). À l'inverse, un graphe acyclique en a au plus n − 1." },
 
     /* ---------- 5. Activité 8 ---------- */
     { ch: 5, q: "Dans <code>explorerLargeur</code>, quelle structure Java joue le rôle de la file ?", o: ["<code>Stack&lt;Sommet&gt;</code>", "<code>Queue&lt;Sommet&gt; file = new ArrayDeque&lt;&gt;()</code>", "<code>HashMap&lt;Integer, Sommet&gt;</code>", "<code>int[]</code>"], ok: [1],
