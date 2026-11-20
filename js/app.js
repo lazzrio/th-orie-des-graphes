@@ -12,7 +12,7 @@
   if (th) root.setAttribute("data-theme", th);
   window.toggleTheme = function () {
     var cur = root.getAttribute("data-theme");
-    if (!cur) cur = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    if (!cur) cur = "light";
     var nx = cur === "dark" ? "light" : "dark";
     root.setAttribute("data-theme", nx); safeSet("tg_theme", nx);
   };
